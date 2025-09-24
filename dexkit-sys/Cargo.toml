@@ -1,0 +1,10 @@
+[package]
+name = "dexkit-sys"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+
+[build-dependencies]
+cmake = { workspace = true }
+dotenv = { workspace = true }

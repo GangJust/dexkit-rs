@@ -1,0 +1,16 @@
+[workspace]
+members = ["example", "dexkit-sys", "dexkit"]
+resolver = "3"
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+
+[workspace.dependencies]
+cmake = "0.1"
+dotenv = "0.15"
+thiserror = "2"
+flatbuffers = "25.2"
+
+dexkit-sys = { path = "dexkit-sys" }
+dexkit = { path = "dexkit" }

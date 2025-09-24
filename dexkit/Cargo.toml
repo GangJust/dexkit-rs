@@ -1,0 +1,10 @@
+[package]
+name = "dexkit"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+thiserror = { workspace = true }
+dexkit-sys = { workspace = true }
+flatbuffers = { workspace = true }
+# dexkit-schema = { workspace = true }

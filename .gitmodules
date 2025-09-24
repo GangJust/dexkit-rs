@@ -1,0 +1,3 @@
+[submodule "dexkit-sys/external/DexKit"]
+	path = dexkit-sys/external/DexKit
+	url = https://github.com/GangJust/DexKit.git
