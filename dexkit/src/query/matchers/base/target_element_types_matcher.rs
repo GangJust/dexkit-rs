@@ -57,4 +57,14 @@ impl TargetElementTypesMatcher {
         self.match_type = match_type;
         self
     }
+
+    // extend types
+    pub fn add_target_element_type(mut self, element_type: TargetElementType) -> Self {
+        if let Some(types) = &mut self.types {
+            types.push(element_type);
+        } else {
+            self.types = Some(vec![element_type]);
+        }
+        self
+    }
 }

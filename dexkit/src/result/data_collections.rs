@@ -1,12 +1,18 @@
+use std::collections::HashMap;
+
 use crate::DexkitBridge;
 use crate::gen_flatbuffers::dexkit::schema::{
+    BatchClassMetaArrayHolder as FBBatchClassMetaArrayHolder,
+    BatchClassMetaArrayHolderArgs as FBBatchClassMetaArrayHolderArgs,
+    BatchMethodMetaArrayHolder as FBBatchMethodMetaArrayHolder,
+    BatchMethodMetaArrayHolderArgs as FBBatchMethodMetaArrayHolderArgs,
     ClassMetaArrayHolder as FBClassMetaArrayHolder, FieldMetaArrayHolder as FBFieldMetaArrayHolder,
     MethodMetaArrayHolder as FBMethodMetaArrayHolder,
 };
 use crate::result::{ClassData, FieldData, MethodData};
 
 /// ClassDataList represents a collection of ClassData objects.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ClassDataList<'a> {
     classes: Vec<ClassData<'a>>,
 }
@@ -34,7 +40,8 @@ impl<'a> ClassDataList<'a> {
         self.classes.len()
     }
 
-    pub(crate) fn form_data(dexkit_bridge: &'a DexkitBridge, data: &'a [u8]) -> ClassDataList<'a> {
+    /// ...
+    pub(crate) fn from_data(bridge: &'a DexkitBridge, data: &'a [u8]) -> ClassDataList<'a> {
         // println!("Class data list vector of length: {}", data.len());
         let class_meta_list = flatbuffers::root::<FBClassMetaArrayHolder>(&data).unwrap();
         // println!("Class meta list: {:#?}", class_meta_list);
@@ -42,15 +49,43 @@ impl<'a> ClassDataList<'a> {
         let mut class_data_list = Self::new();
         for classes in class_meta_list.classes().iter() {
             for class_meta in classes {
-                class_data_list.add(ClassData::with_meta(dexkit_bridge, class_meta));
+                class_data_list.add(ClassData::with_meta(bridge, class_meta));
             }
         }
         class_data_list
     }
+
+    /// ...
+    pub(crate) fn from_batch_data(
+        bridge: &'a DexkitBridge,
+        data: &'a [u8],
+    ) -> HashMap<String, ClassDataList<'a>> {
+        // println!("Batch class data list vector of length: {}", data.len());
+        let batch_class_meta_list =
+            flatbuffers::root::<FBBatchClassMetaArrayHolder>(&data).unwrap();
+        // println!("Batch class meta list: {:#?}", batch_class_meta_list);
+
+        batch_class_meta_list
+            .items()
+            .iter()
+            .flat_map(|class_meta_list| {
+                class_meta_list.iter().map(|class_meta| {
+                    let union_key = class_meta.union_key();
+                    let mut class_data_list = ClassDataList::new();
+                    for class_meta in class_meta.classes().iter() {
+                        for class_meta in class_meta {
+                            class_data_list.add(ClassData::with_meta(bridge, class_meta));
+                        }
+                    }
+                    (union_key.unwrap_or_default().to_string(), class_data_list)
+                })
+            })
+            .collect::<HashMap<_, _>>()
+    }
 }
 
 /// MethodDataList represents a collection of MethodData objects.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MethodDataList<'a> {
     methods: Vec<MethodData<'a>>,
 }
@@ -78,7 +113,7 @@ impl<'a> MethodDataList<'a> {
         self.methods.len()
     }
 
-    pub(crate) fn form_data(dexkit_bridge: &'a DexkitBridge, vec: &'a [u8]) -> MethodDataList<'a> {
+    pub(crate) fn form_data(bridge: &'a DexkitBridge, vec: &'a [u8]) -> MethodDataList<'a> {
         // println!("Method data list vector of length: {}", vec.len());
         let method_meta_array = flatbuffers::root::<FBMethodMetaArrayHolder>(&vec).unwrap();
         // println!("Method meta array: {:#?}", method_meta_array);
@@ -86,16 +121,43 @@ impl<'a> MethodDataList<'a> {
         let mut method_data_list = Self::new();
         for methods in method_meta_array.methods().iter() {
             for method_meta in methods {
-                method_data_list.add(MethodData::with_meta(dexkit_bridge, method_meta));
+                method_data_list.add(MethodData::with_meta(bridge, method_meta));
             }
         }
 
         method_data_list
     }
+
+    pub(crate) fn from_batch_data(
+        bridge: &'a DexkitBridge,
+        data: &'a [u8],
+    ) -> HashMap<String, MethodDataList<'a>> {
+        // println!("Batch method data list vector of length: {}", data.len());
+        let batch_method_meta_list =
+            flatbuffers::root::<FBBatchMethodMetaArrayHolder>(&data).unwrap();
+        // println!("Batch method meta list: {:#?}", batch_method_meta_list);
+
+        batch_method_meta_list
+            .items()
+            .iter()
+            .flat_map(|method_meta_list| {
+                method_meta_list.iter().map(|method_meta| {
+                    let union_key = method_meta.union_key();
+                    let mut method_data_list = MethodDataList::new();
+                    for method_meta in method_meta.methods().iter() {
+                        for method_meta in method_meta {
+                            method_data_list.add(MethodData::with_meta(bridge, method_meta));
+                        }
+                    }
+                    (union_key.unwrap_or_default().to_string(), method_data_list)
+                })
+            })
+            .collect::<HashMap<_, _>>()
+    }
 }
 
 /// FieldDataList represents a collection of FieldData objects.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FieldDataList<'a> {
     fields: Vec<FieldData<'a>>,
 }

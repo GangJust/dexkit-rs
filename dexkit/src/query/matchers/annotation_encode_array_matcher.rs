@@ -8,8 +8,9 @@ use crate::gen_flatbuffers::dexkit::schema::{
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::MatchType;
-use crate::query::matchers::base::AnnotationEncodeValueMatcher;
 use crate::query::matchers::base::IntRange;
+use crate::query::matchers::base::{AnnotationEncodeValueMatcher, StringMatcher};
+use crate::query::matchers::{ClassMatcher, FieldMatcher, MethodMatcher};
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub struct AnnotationEncodeArrayMatcher {
@@ -78,7 +79,7 @@ impl AnnotationEncodeArrayMatcher {
     }
 
     // base
-    pub fn set_encode_values_matcher(mut self, matcher: Vec<AnnotationEncodeValueMatcher>) -> Self {
+    pub fn set_values_matcher(mut self, matcher: Vec<AnnotationEncodeValueMatcher>) -> Self {
         self.encode_values_matcher = Some(matcher);
         self
     }
@@ -90,6 +91,107 @@ impl AnnotationEncodeArrayMatcher {
 
     pub fn set_range_matcher(mut self, matcher: IntRange) -> Self {
         self.range_matcher = Some(matcher);
+        self
+    }
+
+    // extend encode_values_matcher
+    pub fn add_value_matcher(mut self, matcher: AnnotationEncodeValueMatcher) -> Self {
+        if let Some(ref mut matchers) = self.encode_values_matcher {
+            matchers.push(matcher);
+        } else {
+            self.encode_values_matcher = Some(vec![matcher]);
+        }
+        self
+    }
+
+    pub fn add_byte_value(mut self, value: i8) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_number_byte(value));
+        self
+    }
+
+    pub fn add_short_value(mut self, value: i16) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_number_short(value));
+        self
+    }
+
+    pub fn add_int_value(mut self, value: i32) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_number_int(value));
+        self
+    }
+
+    pub fn add_long_value(mut self, value: i64) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_number_long(value));
+        self
+    }
+
+    pub fn add_float_value(mut self, value: f32) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_number_float(value));
+        self
+    }
+
+    pub fn add_double_value(mut self, value: f64) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_number_double(value));
+        self
+    }
+
+    pub fn add_string_value(mut self, value: StringMatcher) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_string(value));
+        self
+    }
+
+    pub fn add_string_value_str<S: Into<String>>(mut self, value: S) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_string_str(value));
+        self
+    }
+
+    pub fn add_class_value(mut self, value: ClassMatcher) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_class(value));
+        self
+    }
+
+    pub fn add_method_value(mut self, value: MethodMatcher) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_method(value));
+        self
+    }
+
+    pub fn addd_enum_value(mut self, value: FieldMatcher) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_enum(value));
+        self
+    }
+
+    pub fn add_annotation_value(mut self, value: AnnotationEncodeArrayMatcher) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_array(value));
+        self
+    }
+
+    pub fn add_null_value(mut self) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_null());
+        self
+    }
+
+    pub fn add_bool_value(mut self, value: bool) -> Self {
+        self = self.add_value_matcher(AnnotationEncodeValueMatcher::create_bool(value));
+        self
+    }
+
+    // extend range_matcher
+    pub fn count(mut self, count: u32) -> Self {
+        self.range_matcher = Some(IntRange::exactly(count));
+        self
+    }
+
+    pub fn count_range(mut self, min: u32, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::range(min, max));
+        self
+    }
+
+    pub fn count_min(mut self, min: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_least(min));
+        self
+    }
+
+    pub fn count_max(mut self, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_most(max));
         self
     }
 }

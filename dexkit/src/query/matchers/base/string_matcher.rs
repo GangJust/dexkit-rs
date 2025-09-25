@@ -61,6 +61,14 @@ impl StringMatcher {
         }
     }
 
+    pub fn create_eq_string_str<S: Into<String>>(value: S) -> Self {
+        Self {
+            value: Some(value.into()),
+            match_type: StringMatchType::Equals,
+            ignore_case: false,
+        }
+    }
+
     // base
     pub fn set_value<S: Into<String>>(mut self, value: S) -> Self {
         self.value = Some(value.into());

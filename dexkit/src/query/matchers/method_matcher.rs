@@ -3,15 +3,15 @@ use crate::gen_flatbuffers::dexkit::schema::{
     NumberWrapper as FBNumberWrapper, NumberWrapperArgs as FBNumberWrapperArgs,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::NumberEncodeValueMatcher;
-use crate::query::matchers::base::OpCodesMatcher;
-use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::ClassMatcher;
 use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::ParametersMatcher;
 use crate::query::matchers::UsingFieldMatcher;
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::NumberEncodeValueMatcher;
+use crate::query::matchers::base::OpCodesMatcher;
+use crate::query::matchers::base::StringMatcher;
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub struct MethodMatcher {
@@ -137,6 +137,7 @@ impl MethodMatcher {
         MethodMatcher::default()
     }
 
+    // base
     pub fn set_name_matcher(mut self, matcher: StringMatcher) -> Self {
         self.name_matcher = Some(matcher);
         self
@@ -206,4 +207,7 @@ impl MethodMatcher {
         self.name_matcher = Some(StringMatcher::create_string_str(name));
         self
     }
+
+    // extend
+    // todo!
 }

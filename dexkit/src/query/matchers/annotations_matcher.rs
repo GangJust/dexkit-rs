@@ -58,13 +58,6 @@ impl AnnotationsMatcher {
         self
     }
 
-    pub fn add_annotation_matcher(mut self, matcher: AnnotationMatcher) -> Self {
-        self.annotations_matcher
-            .get_or_insert_with(Vec::new)
-            .push(matcher);
-        self
-    }
-
     pub fn set_match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
@@ -76,27 +69,37 @@ impl AnnotationsMatcher {
     }
 
     // extend annotations_matcher
-    pub fn add_annotation_type_class_name_strs<S: Into<String>>(
-        mut self,
-        annotations: Vec<S>,
-    ) -> Self {
-        if self.annotations_matcher.is_none() {
-            self.set_annotations_matcher(
-                annotations
-                    .into_iter()
-                    .map(|s| AnnotationMatcher::create().set_type_class_name(s))
-                    .collect(),
-            )
-        } else {
-            self.annotations_matcher = self.annotations_matcher.map(|mut am| {
-                am.extend(
-                    annotations
-                        .into_iter()
-                        .map(|s| AnnotationMatcher::create().set_type_class_name(s)),
-                );
-                am
-            });
-            self
-        }
+    pub fn add_annotation_matchers(mut self, matchers: Vec<AnnotationMatcher>) -> Self {
+        let annotations = self.annotations_matcher.get_or_insert_with(Vec::new);
+        annotations.extend(matchers);
+        self
+    }
+
+    pub fn add_annotation_matcher(mut self, matcher: AnnotationMatcher) -> Self {
+        self.annotations_matcher
+            .get_or_insert_with(Vec::new)
+            .push(matcher);
+        self
+    }
+
+    // extend int_ranges
+    pub fn count(mut self, count: u32) -> Self {
+        self.range_matcher = Some(IntRange::exactly(count));
+        self
+    }
+
+    pub fn count_range(mut self, min: u32, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::range(min, max));
+        self
+    }
+
+    pub fn count_min(mut self, min: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_least(min));
+        self
+    }
+
+    pub fn count_max(mut self, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_most(max));
+        self
     }
 }

@@ -4,8 +4,8 @@ use crate::gen_flatbuffers::dexkit::schema::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::base::IntRange;
 use crate::query::matchers::FieldMatcher;
+use crate::query::matchers::base::IntRange;
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct FieldsMatcher {
@@ -64,10 +64,6 @@ impl FieldsMatcher {
         self
     }
 
-    pub fn add_field_matcher_str<S: Into<String>>(self, field_name: S) -> Self {
-        self.add_field_matcher(FieldMatcher::create().set_field_name_str(field_name))
-    }
-
     pub fn set_match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
@@ -113,6 +109,27 @@ impl FieldsMatcher {
         self.fields_matcher
             .get_or_insert_with(Vec::new)
             .push(FieldMatcher::create().set_field_name_str(field_name));
+        self
+    }
+
+    // extend range_matcher
+    pub fn count(mut self, count: u32) -> Self {
+        self.range_matcher = Some(IntRange::exactly(count));
+        self
+    }
+
+    pub fn count_range(mut self, min: u32, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::range(min, max));
+        self
+    }
+
+    pub fn count_min(mut self, min: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_least(min));
+        self
+    }
+
+    pub fn count_max(mut self, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_most(max));
         self
     }
 }

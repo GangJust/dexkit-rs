@@ -4,8 +4,8 @@ use crate::gen_flatbuffers::dexkit::schema::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::base::IntRange;
 use crate::query::matchers::AnnotationElementMatcher;
+use crate::query::matchers::base::IntRange;
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct AnnotationElementsMatcher {
@@ -65,6 +65,37 @@ impl AnnotationElementsMatcher {
 
     pub fn set_range_matcher(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
+        self
+    }
+
+    // extend elements_matcher
+    pub fn add_element_matcher(mut self, matcher: AnnotationElementMatcher) -> Self {
+        if let Some(ref mut vec) = self.elements_matcher {
+            vec.push(matcher);
+        } else {
+            self.elements_matcher = Some(vec![matcher]);
+        }
+        self
+    }
+
+    // extend range_matcher
+    pub fn count(mut self, count: u32) -> Self {
+        self.range_matcher = Some(IntRange::exactly(count));
+        self
+    }
+
+    pub fn count_range(mut self, min: u32, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::range(min, max));
+        self
+    }
+
+    pub fn count_min(mut self, min: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_least(min));
+        self
+    }
+
+    pub fn count_max(mut self, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_most(max));
         self
     }
 }

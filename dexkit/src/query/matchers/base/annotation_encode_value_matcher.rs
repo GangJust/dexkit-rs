@@ -3,8 +3,9 @@ use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::AnnotationEncodeValueType;
 use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::{
-    ClassMatcher, EncodeValueByte, EncodeValueDouble, EncodeValueFloat, EncodeValueInt,
-    EncodeValueLong, EncodeValueShort, MethodMatcher,
+    AnnotationEncodeArrayMatcher, AnnotationMatcher, ClassMatcher, EncodeValueBoolean,
+    EncodeValueByte, EncodeValueDouble, EncodeValueFloat, EncodeValueInt, EncodeValueLong,
+    EncodeValueNull, EncodeValueShort, FieldMatcher, MethodMatcher,
 };
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
@@ -110,6 +111,41 @@ impl AnnotationEncodeValueMatcher {
         Self {
             value: Some(Box::new(value)),
             value_type: Some(AnnotationEncodeValueType::MethodValue),
+        }
+    }
+
+    pub fn create_enum(value: FieldMatcher) -> Self {
+        Self {
+            value: Some(Box::new(value)),
+            value_type: Some(AnnotationEncodeValueType::EnumValue),
+        }
+    }
+
+    pub fn create_array(value: AnnotationEncodeArrayMatcher) -> Self {
+        Self {
+            value: Some(Box::new(value)),
+            value_type: Some(AnnotationEncodeValueType::ArrayValue),
+        }
+    }
+
+    pub fn create_annotation(value: AnnotationMatcher) -> Self {
+        Self {
+            value: Some(Box::new(value)),
+            value_type: Some(AnnotationEncodeValueType::AnnotationValue),
+        }
+    }
+
+    pub fn create_null() -> Self {
+        Self {
+            value: Some(Box::new(EncodeValueNull)),
+            value_type: Some(AnnotationEncodeValueType::NullValue),
+        }
+    }
+
+    pub fn create_bool(value: bool) -> Self {
+        Self {
+            value: Some(Box::new(EncodeValueBoolean(value))),
+            value_type: Some(AnnotationEncodeValueType::BoolValue),
         }
     }
 

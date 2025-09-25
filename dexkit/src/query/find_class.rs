@@ -51,11 +51,10 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFindClass<'a>>> for FindClass<'a> {
         let in_classes = self.search_classes.as_ref().map(|classes| {
             let ids = classes
                 .iter()
-                .map(|class| class.get_encode_id())
+                .map(|class| class.get_mine_encode_id())
                 .collect::<Vec<i64>>();
             fbb.create_vector(&ids)
         });
-
         let matcher = self.matcher.as_ref().map(|m| m.inner_build(fbb));
 
         FBFindClass::create(

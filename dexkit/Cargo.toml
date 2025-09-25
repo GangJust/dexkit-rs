@@ -7,4 +7,3 @@ edition.workspace = true
 thiserror = { workspace = true }
 dexkit-sys = { workspace = true }
 flatbuffers = { workspace = true }
-# dexkit-schema = { workspace = true }

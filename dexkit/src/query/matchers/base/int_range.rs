@@ -5,8 +5,8 @@ use crate::query::base::BaseQuery;
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct IntRange {
-    min: i32,
-    max: i32,
+    min: u32,
+    max: u32,
 }
 
 impl Default for IntRange {
@@ -23,8 +23,8 @@ impl<'a> BaseQuery<'a, WIPOffset<FBIntRange<'a>>> for IntRange {
         let root = FBIntRange::create(
             fbb,
             &FBIntRangeArgs {
-                min: self.min,
-                max: self.max,
+                min: self.min as i32,
+                max: self.max as i32,
             },
         );
         root
@@ -36,13 +36,35 @@ impl IntRange {
         Self::default()
     }
 
+    pub fn exactly(count: u32) -> Self {
+        IntRange {
+            min: count,
+            max: count,
+        }
+    }
+
+    pub fn range(min: u32, max: u32) -> Self {
+        IntRange { min, max }
+    }
+
+    pub fn at_least(count: u32) -> Self {
+        IntRange {
+            min: count,
+            max: 2147483647,
+        }
+    }
+
+    pub fn at_most(count: u32) -> Self {
+        IntRange { min: 0, max: count }
+    }
+
     // base
-    pub fn set_min(mut self, min: i32) -> Self {
+    pub fn set_min(mut self, min: u32) -> Self {
         self.min = min;
         self
     }
 
-    pub fn set_max(mut self, max: i32) -> Self {
+    pub fn set_max(mut self, max: u32) -> Self {
         self.max = max;
         self
     }

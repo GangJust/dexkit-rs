@@ -91,10 +91,15 @@ pub mod query {
         mod parameter_matcher;
         pub use parameter_matcher::*;
         mod using_field_matcher;
-
         pub use using_field_matcher::*;
+        mod string_matchers_group;
+        pub use string_matchers_group::*;
     }
 
+    mod batch_find_class_using_strings;
+    pub use batch_find_class_using_strings::*;
+    mod batch_find_method_using_strings;
+    pub use batch_find_method_using_strings::*;
     mod find_class;
     pub use find_class::*;
     mod find_field;
@@ -119,12 +124,41 @@ pub mod result {
     pub use field_data::*;
     mod method_data;
     pub use method_data::*;
+    mod annotation_data;
+    pub use annotation_data::*;
+    mod annotation_element_data;
+    pub use annotation_element_data::*;
+    mod annotation_encode_array_data;
+    pub use annotation_encode_array_data::*;
+    mod annotation_encode_value;
+    pub use annotation_encode_value::*;
+    mod using_field_data;
+    pub use using_field_data::*;
+    mod field_using_type;
+    pub use field_using_type::*;
+}
+
+pub mod wrap {
+    mod dex_class;
+    pub use dex_class::*;
+    mod dex_field;
+    pub use dex_field::*;
+    mod dex_method;
+    pub use dex_method::*;
 }
 
 #[allow(unused)]
 pub mod uitls {
     mod modifier;
     pub use modifier::*;
+    mod dex_signature;
+    pub use dex_signature::*;
+    mod mutf8;
+    pub use mutf8::*;
+    mod string_unicode_encode_decode;
+    pub use string_unicode_encode_decode::*;
+    mod op_codes;
+    pub use op_codes::*;
 }
 
 mod dexkit_bridge;

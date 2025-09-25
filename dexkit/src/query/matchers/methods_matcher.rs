@@ -72,4 +72,37 @@ impl MethodsMatcher {
             .push(matcher);
         self
     }
+
+    pub fn add_method_names_strs<S: Into<String>>(self, method_name: Vec<S>) -> Self {
+        let matchers: Vec<MethodMatcher> = method_name
+            .into_iter()
+            .map(|name| MethodMatcher::create().set_method_name_str(name))
+            .collect();
+        self.set_methods_matcher(matchers)
+    }
+
+    pub fn add_method_name_str<S: Into<String>>(self, method_name: S) -> Self {
+        self.add_method_matcher(MethodMatcher::create().set_method_name_str(method_name))
+    }
+
+    // extend range_matcher
+    pub fn count(mut self, count: u32) -> Self {
+        self.range_matcher = Some(IntRange::exactly(count));
+        self
+    }
+
+    pub fn count_range(mut self, min: u32, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::range(min, max));
+        self
+    }
+
+    pub fn count_min(mut self, min: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_least(min));
+        self
+    }
+
+    pub fn count_max(mut self, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_most(max));
+        self
+    }
 }

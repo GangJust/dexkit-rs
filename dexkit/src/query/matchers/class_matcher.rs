@@ -3,16 +3,16 @@ use crate::gen_flatbuffers::dexkit::schema::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
-use crate::query::enums::MatchType;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::StringMatcher;
-use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
+use crate::query::enums::{MatchType, StringMatchType};
 use crate::query::matchers::AnnotationMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::FieldMatcher;
 use crate::query::matchers::FieldsMatcher;
 use crate::query::matchers::MethodMatcher;
 use crate::query::matchers::MethodsMatcher;
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::StringMatcher;
+use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct ClassMatcher {
@@ -148,23 +148,27 @@ impl ClassMatcher {
 
     // extend class_name
     pub fn set_class_name_str<S: Into<String>>(self, class_name: S) -> Self {
-        self.set_class_name_matcher(StringMatcher::create_string_str(class_name))
-    }
-
-    // extend modifiers
-    pub fn set_modifiers(self, modifiers: u32) -> Self {
-        self.set_modifiers_matcher(
-            AccessFlagsMatcher::create()
-                .set_modifiers(modifiers)
-                .set_match_type(MatchType::default()),
+        self.set_class_name_matcher(
+            StringMatcher::create()
+                .set_value(class_name)
+                .set_match_type(StringMatchType::Equals),
         )
     }
 
-    pub fn or_modifiers(mut self, modifiers: u32) -> Self {
+    // extend modifiers
+    pub fn set_modifiers<U: Into<u32>>(mut self, modifiers: U) -> Self {
+        self.modifiers_matcher = Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
+        self
+    }
+
+    pub fn or_modifiers<U: Into<u32>>(mut self, modifiers: U) -> Self {
         if self.modifiers_matcher.is_none() {
-            self.modifiers_matcher = Some(AccessFlagsMatcher::create().set_modifiers(modifiers));
+            self.modifiers_matcher =
+                Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
         } else {
-            self.modifiers_matcher = self.modifiers_matcher.map(|mm| mm.or_modifiers(modifiers));
+            self.modifiers_matcher = self
+                .modifiers_matcher
+                .map(|mm| mm.or_modifiers(modifiers.into()));
         }
         self
     }
@@ -220,22 +224,52 @@ impl ClassMatcher {
         self.add_interface(ClassMatcher::create().set_class_name_str(interface))
     }
 
-    // extend annotations
-    pub fn set_annotations(mut self, annotations: Vec<AnnotationMatcher>) -> Self {
-        self.annotations_matcher =
-            Some(AnnotationsMatcher::create().set_annotations_matcher(annotations));
+    pub fn interface_count(mut self, count: u32) -> Self {
+        if self.interfaces_matcher.is_none() {
+            self.interfaces_matcher = Some(InterfacesMatcher::create().count(count));
+        } else {
+            self.interfaces_matcher = self.interfaces_matcher.map(|im| im.count(count));
+        }
         self
     }
 
-    pub fn set_annotations_strs<S: Into<String>>(mut self, annotations: Vec<S>) -> Self {
-        self.annotations_matcher = Some(
-            AnnotationsMatcher::create().set_annotations_matcher(
-                annotations
-                    .into_iter()
-                    .map(|s| AnnotationMatcher::create().set_type_class_name(s))
-                    .collect(),
-            ),
-        );
+    pub fn interface_count_range(mut self, min: u32, max: u32) -> Self {
+        if self.interfaces_matcher.is_none() {
+            self.interfaces_matcher = Some(InterfacesMatcher::create().count_range(min, max));
+        } else {
+            self.interfaces_matcher = self.interfaces_matcher.map(|im| im.count_range(min, max));
+        }
+        self
+    }
+
+    pub fn interface_count_min(mut self, min: u32) -> Self {
+        if self.interfaces_matcher.is_none() {
+            self.interfaces_matcher = Some(InterfacesMatcher::create().count_min(min));
+        } else {
+            self.interfaces_matcher = self.interfaces_matcher.map(|im| im.count_min(min));
+        }
+        self
+    }
+
+    pub fn interface_count_max(mut self, max: u32) -> Self {
+        if self.interfaces_matcher.is_none() {
+            self.interfaces_matcher = Some(InterfacesMatcher::create().count_max(max));
+        } else {
+            self.interfaces_matcher = self.interfaces_matcher.map(|im| im.count_max(max));
+        }
+        self
+    }
+
+    // extend annotations
+    pub fn add_annotations(mut self, annotations: Vec<AnnotationMatcher>) -> Self {
+        if self.annotations_matcher.is_none() {
+            self.annotations_matcher =
+                Some(AnnotationsMatcher::create().set_annotations_matcher(annotations));
+        } else {
+            self.annotations_matcher = self
+                .annotations_matcher
+                .map(|am| am.add_annotation_matchers(annotations));
+        }
         self
     }
 
@@ -253,38 +287,75 @@ impl ClassMatcher {
 
     pub fn add_annotations_strs<S: Into<String>>(mut self, annotations: Vec<S>) -> Self {
         if self.annotations_matcher.is_none() {
-            self.set_annotations(
+            self.add_annotations(
                 annotations
                     .into_iter()
                     .map(|s| AnnotationMatcher::create().set_type_class_name(s))
                     .collect(),
             )
         } else {
-            self.annotations_matcher = self
-                .annotations_matcher
-                .map(|am| am.add_annotation_type_class_name_strs(annotations));
+            self.annotations_matcher = self.annotations_matcher.map(|am| {
+                am.add_annotation_matchers(
+                    annotations
+                        .into_iter()
+                        .map(|s| AnnotationMatcher::create().set_type_class_name(s))
+                        .collect(),
+                )
+            });
             self
         }
     }
 
-    pub fn add_annotations_str<S: Into<String>>(self, annotation: S) -> Self {
-        self.add_annotation(AnnotationMatcher::create().set_type_class_name(annotation))
+    pub fn add_annotations_str<S: Into<String>>(mut self, annotation: S) -> Self {
+        if self.annotations_matcher.is_none() {
+            self.add_annotation(AnnotationMatcher::create().set_type_class_name(annotation))
+        } else {
+            self.annotations_matcher = self.annotations_matcher.map(|am| {
+                am.add_annotation_matcher(
+                    AnnotationMatcher::create().set_type_class_name(annotation),
+                )
+            });
+            self
+        }
+    }
+
+    pub fn annotation_count(mut self, count: u32) -> Self {
+        if self.annotations_matcher.is_none() {
+            self.annotations_matcher = Some(AnnotationsMatcher::create().count(count));
+        } else {
+            self.annotations_matcher = self.annotations_matcher.map(|am| am.count(count));
+        }
+        self
+    }
+
+    pub fn annotation_count_range(mut self, min: u32, max: u32) -> Self {
+        if self.annotations_matcher.is_none() {
+            self.annotations_matcher = Some(AnnotationsMatcher::create().count_range(min, max));
+        } else {
+            self.annotations_matcher = self.annotations_matcher.map(|am| am.count_range(min, max));
+        }
+        self
+    }
+
+    pub fn annotation_count_min(mut self, min: u32) -> Self {
+        if self.annotations_matcher.is_none() {
+            self.annotations_matcher = Some(AnnotationsMatcher::create().count_min(min));
+        } else {
+            self.annotations_matcher = self.annotations_matcher.map(|am| am.count_min(min));
+        }
+        self
+    }
+
+    pub fn annotation_count_max(mut self, max: u32) -> Self {
+        if self.annotations_matcher.is_none() {
+            self.annotations_matcher = Some(AnnotationsMatcher::create().count_max(max));
+        } else {
+            self.annotations_matcher = self.annotations_matcher.map(|am| am.count_max(max));
+        }
+        self
     }
 
     // extend fields
-    pub fn set_fields(mut self, fields: Vec<FieldMatcher>) -> Self {
-        self.fields_matcher = Some(FieldsMatcher::create().set_fields_matcher(fields));
-        self
-    }
-
-    pub fn set_fields_strs<S: Into<String>>(mut self, fields: Vec<S>) -> Self {
-        self.fields_matcher = Some(
-            FieldsMatcher::create()
-                .set_field_name_strs(fields.into_iter().map(Into::into).collect()),
-        );
-        self
-    }
-
     pub fn add_field(mut self, field: FieldMatcher) -> Self {
         if self.fields_matcher.is_none() {
             self.fields_matcher = Some(FieldsMatcher::create().add_field_matcher(field));
@@ -294,16 +365,58 @@ impl ClassMatcher {
         self
     }
 
+    pub fn add_field_strs<S: Into<String>>(mut self, field_names: Vec<S>) -> Self {
+        if self.fields_matcher.is_none() {
+            self.fields_matcher = Some(FieldsMatcher::create().add_field_names_strs(field_names));
+        } else {
+            self.fields_matcher = self
+                .fields_matcher
+                .map(|fm| fm.add_field_names_strs(field_names));
+        }
+        self
+    }
+
     pub fn add_field_str<S: Into<String>>(self, field_name: S) -> Self {
         self.add_field(FieldMatcher::create().set_field_name_str(field_name))
     }
 
-    // extend methods
-    pub fn set_methods(mut self, methods: Vec<MethodMatcher>) -> Self {
-        self.methods_matcher = Some(MethodsMatcher::create().set_methods_matcher(methods));
+    pub fn field_count(mut self, count: u32) -> Self {
+        if self.fields_matcher.is_none() {
+            self.fields_matcher = Some(FieldsMatcher::create().count(count));
+        } else {
+            self.fields_matcher = self.fields_matcher.map(|fm| fm.count(count));
+        }
         self
     }
 
+    pub fn field_count_range(mut self, min: u32, max: u32) -> Self {
+        if self.fields_matcher.is_none() {
+            self.fields_matcher = Some(FieldsMatcher::create().count_range(min, max));
+        } else {
+            self.fields_matcher = self.fields_matcher.map(|fm| fm.count_range(min, max));
+        }
+        self
+    }
+
+    pub fn field_count_min(mut self, min: u32) -> Self {
+        if self.fields_matcher.is_none() {
+            self.fields_matcher = Some(FieldsMatcher::create().count_min(min));
+        } else {
+            self.fields_matcher = self.fields_matcher.map(|fm| fm.count_min(min));
+        }
+        self
+    }
+
+    pub fn field_count_max(mut self, max: u32) -> Self {
+        if self.fields_matcher.is_none() {
+            self.fields_matcher = Some(FieldsMatcher::create().count_max(max));
+        } else {
+            self.fields_matcher = self.fields_matcher.map(|fm| fm.count_max(max));
+        }
+        self
+    }
+
+    // extend methods
     pub fn add_method(mut self, method: MethodMatcher) -> Self {
         if self.methods_matcher.is_none() {
             self.methods_matcher = Some(MethodsMatcher::create().add_method_matcher(method));
@@ -313,11 +426,71 @@ impl ClassMatcher {
         self
     }
 
+    pub fn add_method_strs<S: Into<String>>(mut self, method_names: Vec<S>) -> Self {
+        if self.methods_matcher.is_none() {
+            self.methods_matcher =
+                Some(MethodsMatcher::create().add_method_names_strs(method_names));
+        } else {
+            self.methods_matcher = self
+                .methods_matcher
+                .map(|mm| mm.add_method_names_strs(method_names));
+        }
+        self
+    }
+
     pub fn add_method_str<S: Into<String>>(self, method_name: S) -> Self {
         self.add_method(MethodMatcher::create().set_method_name_str(method_name))
     }
 
+    pub fn method_count(mut self, count: u32) -> Self {
+        if self.methods_matcher.is_none() {
+            self.methods_matcher = Some(MethodsMatcher::create().count(count));
+        } else {
+            self.methods_matcher = self.methods_matcher.map(|mm| mm.count(count));
+        }
+        self
+    }
+
+    pub fn method_count_range(mut self, min: u32, max: u32) -> Self {
+        if self.methods_matcher.is_none() {
+            self.methods_matcher = Some(MethodsMatcher::create().count_range(min, max));
+        } else {
+            self.methods_matcher = self.methods_matcher.map(|mm| mm.count_range(min, max));
+        }
+        self
+    }
+
+    pub fn method_count_min(mut self, min: u32) -> Self {
+        if self.methods_matcher.is_none() {
+            self.methods_matcher = Some(MethodsMatcher::create().count_min(min));
+        } else {
+            self.methods_matcher = self.methods_matcher.map(|mm| mm.count_min(min));
+        }
+        self
+    }
+
+    pub fn method_count_max(mut self, max: u32) -> Self {
+        if self.methods_matcher.is_none() {
+            self.methods_matcher = Some(MethodsMatcher::create().count_max(max));
+        } else {
+            self.methods_matcher = self.methods_matcher.map(|mm| mm.count_max(max));
+        }
+        self
+    }
+
     // extend using_strings
+    pub fn add_using_strings(mut self, using_strings: Vec<StringMatcher>) -> Self {
+        if self.using_strings_matcher.is_none() {
+            self.using_strings_matcher = Some(using_strings);
+        } else {
+            self.using_strings_matcher = self.using_strings_matcher.map(|mut v| {
+                v.extend(using_strings);
+                v
+            });
+        }
+        self
+    }
+
     pub fn add_using_string(mut self, using_string: StringMatcher) -> Self {
         if self.using_strings_matcher.is_none() {
             self.using_strings_matcher = Some(vec![using_string]);
@@ -330,7 +503,39 @@ impl ClassMatcher {
         self
     }
 
+    pub fn add_using_strings_strs<S: Into<String>>(mut self, using_strings: Vec<S>) -> Self {
+        let matchers: Vec<StringMatcher> = using_strings
+            .into_iter()
+            .map(|s| StringMatcher::create_string_str(s))
+            .collect();
+        if self.using_strings_matcher.is_none() {
+            self.using_strings_matcher = Some(matchers);
+        } else {
+            self.using_strings_matcher = self.using_strings_matcher.map(|mut v| {
+                v.extend(matchers);
+                v
+            });
+        }
+        self
+    }
+
     pub fn add_using_string_str<S: Into<String>>(self, using_string: S) -> Self {
         self.add_using_string(StringMatcher::create_string_str(using_string))
+    }
+
+    pub fn add_eq_using_string_str<S: Into<String>>(self, using_string: S) -> Self {
+        self.add_using_string(
+            StringMatcher::create()
+                .set_value(using_string)
+                .set_match_type(StringMatchType::Equals),
+        )
+    }
+
+    pub fn add_contains_using_string_str<S: Into<String>>(self, using_string: S) -> Self {
+        self.add_using_string(
+            StringMatcher::create()
+                .set_value(using_string)
+                .set_match_type(StringMatchType::Contains),
+        )
     }
 }
