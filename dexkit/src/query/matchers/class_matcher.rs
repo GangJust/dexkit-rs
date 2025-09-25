@@ -3,16 +3,16 @@ use crate::gen_flatbuffers::dexkit::schema::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
-use crate::query::enums::MatchType;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::StringMatcher;
-use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
+use crate::query::enums::{MatchType, StringMatchType};
 use crate::query::matchers::AnnotationMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::FieldMatcher;
 use crate::query::matchers::FieldsMatcher;
 use crate::query::matchers::MethodMatcher;
 use crate::query::matchers::MethodsMatcher;
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::StringMatcher;
+use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct ClassMatcher {
@@ -148,7 +148,11 @@ impl ClassMatcher {
 
     // extend class_name
     pub fn set_class_name_str<S: Into<String>>(self, class_name: S) -> Self {
-        self.set_class_name_matcher(StringMatcher::create_string_str(class_name))
+        self.set_class_name_matcher(
+            StringMatcher::create()
+                .set_value(class_name)
+                .set_match_type(StringMatchType::Equals),
+        )
     }
 
     // extend modifiers

@@ -56,14 +56,14 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodFind<'a>>> for FindMethod<'a> {
         let in_classes = self.search_classes.as_ref().map(|classes| {
             let ids = classes
                 .iter()
-                .map(|class| class.get_encode_id())
+                .map(|class| class.get_mine_encode_id())
                 .collect::<Vec<i64>>();
             fbb.create_vector(&ids)
         });
         let in_methods = self.search_fields.as_ref().map(|methods| {
             let ids = methods
                 .iter()
-                .map(|method| method.get_encode_id())
+                .map(|method| method.get_mine_encode_id())
                 .collect::<Vec<i64>>();
             fbb.create_vector(&ids)
         });

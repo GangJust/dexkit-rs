@@ -6,7 +6,7 @@ use crate::gen_flatbuffers::dexkit::schema::{
 use crate::result::{ClassData, FieldData, MethodData};
 
 /// ClassDataList represents a collection of ClassData objects.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ClassDataList<'a> {
     classes: Vec<ClassData<'a>>,
 }
@@ -50,7 +50,7 @@ impl<'a> ClassDataList<'a> {
 }
 
 /// MethodDataList represents a collection of MethodData objects.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MethodDataList<'a> {
     methods: Vec<MethodData<'a>>,
 }
@@ -95,7 +95,7 @@ impl<'a> MethodDataList<'a> {
 }
 
 /// FieldDataList represents a collection of FieldData objects.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FieldDataList<'a> {
     fields: Vec<FieldData<'a>>,
 }

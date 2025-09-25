@@ -119,12 +119,29 @@ pub mod result {
     pub use field_data::*;
     mod method_data;
     pub use method_data::*;
+    mod annotation_data;
+    pub use annotation_data::*;
+    mod annotation_element_data;
+    pub use annotation_element_data::*;
+    mod annotation_encode_value;
+    pub use annotation_encode_value::*;
+}
+
+pub mod wrap {
+    mod dex_class;
+    pub use dex_class::*;
+    mod dex_field;
+    pub use dex_field::*;
+    mod dex_method;
+    pub use dex_method::*;
 }
 
 #[allow(unused)]
 pub mod uitls {
     mod modifier;
     pub use modifier::*;
+    mod dex_signature;
+    pub use dex_signature::*;
 }
 
 mod dexkit_bridge;

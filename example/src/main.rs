@@ -1,7 +1,11 @@
 use dexkit::{
     DexkitBridge,
     errors::Error,
-    query::{FindClass, FindField, FindMethod, matchers::FieldMatcher},
+    query::{
+        FindClass, FindField, FindMethod,
+        enums::StringMatchType,
+        matchers::{ClassMatcher, FieldMatcher, base::StringMatcher},
+    },
     uitls::Modifier,
 };
 
@@ -50,4 +54,34 @@ fn do_search(bridge: DexkitBridge) {
     // for ele in list.iter() {
     //     println!("modifiers: {:?}", Modifier::from_bits(ele.modifiers()));
     // }
+
+    let class_data_list = bridge.find_class(
+        FindClass::create().set_find_first(true).set_matcher(
+            ClassMatcher::create().set_class_name_matcher(
+                StringMatcher::create()
+                    .set_value("io/github/cargo/ndk/plugin/MainActivity")
+                    .set_match_type(StringMatchType::Equals),
+            ),
+        ),
+    );
+    println!(
+        "[Rust] Found class with super class MainActivity: {:#?}",
+        class_data_list.len()
+    );
+
+    let first = class_data_list.first();
+    println!("[Rust] First class: {:#?}", first);
+
+    let supper_class = first.unwrap().supper_class();
+    println!("[Rust] Found supper class: {:#?}", supper_class);
+
+    let interfaces = supper_class.clone().unwrap().interfaces();
+    println!("[Rust] Found interfaces: {:#?}", interfaces.len());
+    // for ele in interfaces.iter() {
+    //     println!("interface descriptor: {:?}", ele.descriptor());
+    // }
+
+    let annotations = supper_class.unwrap().annotations();
+    println!("[Rust] Found annotations: {:#?}", annotations.len());
+
 }

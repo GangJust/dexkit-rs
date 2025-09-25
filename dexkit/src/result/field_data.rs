@@ -2,9 +2,9 @@ use crate::gen_flatbuffers::dexkit::schema::FieldMeta as FBFieldMeta;
 use crate::{DexkitBridge, result::base::BaseData};
 
 #[allow(unused)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FieldData<'a> {
-    dexkit_bridge: &'a DexkitBridge,
+    bridge: &'a DexkitBridge,
     id: u32,
     dex_id: u32,
     class_id: u32,
@@ -14,6 +14,10 @@ pub struct FieldData<'a> {
 }
 
 impl<'a> BaseData for FieldData<'a> {
+    fn get_bradge(&self) -> &DexkitBridge {
+        self.bridge
+    }
+
     fn get_dex_id(&self) -> u32 {
         self.dex_id
     }
@@ -24,7 +28,6 @@ impl<'a> BaseData for FieldData<'a> {
 }
 
 impl<'a> FieldData<'a> {
-
     /// modifiers bitmask, see `Modifier`
     pub fn modifiers(&self) -> u32 {
         self.modifiers
@@ -36,7 +39,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(dexkit_bridge: &'a DexkitBridge, meta: FBFieldMeta<'a>) -> Self {
+    pub(crate) fn with_meta(bridge: &'a DexkitBridge, meta: FBFieldMeta<'a>) -> Self {
         let id = meta.id();
         let dex_id = meta.dex_id();
         let class_id = meta.class_id();
@@ -45,7 +48,7 @@ impl<'a> FieldData<'a> {
         let type_id = meta.type_id();
 
         Self {
-            dexkit_bridge,
+            bridge,
             id,
             dex_id,
             class_id,

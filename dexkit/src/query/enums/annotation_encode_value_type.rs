@@ -1,6 +1,6 @@
 use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationEncodeValueMatcher as FBAnnotationEncodeValueMatcher,
-    // AnnotationEncodeValueType as FBAnnotationEncodeValueType,
+    AnnotationEncodeValueType as FBAnnotationEncodeValueType,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -20,6 +20,29 @@ pub enum AnnotationEncodeValueType {
     AnnotationValue,
     NullValue,
     BoolValue,
+}
+
+impl From<FBAnnotationEncodeValueType> for AnnotationEncodeValueType {
+    fn from(value: FBAnnotationEncodeValueType) -> Self {
+        match value {
+            FBAnnotationEncodeValueType::ByteValue => Self::ByteValue,
+            FBAnnotationEncodeValueType::ShortValue => Self::ShortValue,
+            FBAnnotationEncodeValueType::CharValue => Self::CharValue,
+            FBAnnotationEncodeValueType::IntValue => Self::IntValue,
+            FBAnnotationEncodeValueType::LongValue => Self::LongValue,
+            FBAnnotationEncodeValueType::FloatValue => Self::FloatValue,
+            FBAnnotationEncodeValueType::DoubleValue => Self::DoubleValue,
+            FBAnnotationEncodeValueType::StringValue => Self::StringValue,
+            FBAnnotationEncodeValueType::TypeValue => Self::TypeValue,
+            FBAnnotationEncodeValueType::MethodValue => Self::MethodValue,
+            FBAnnotationEncodeValueType::EnumValue => Self::EnumValue,
+            FBAnnotationEncodeValueType::ArrayValue => Self::ArrayValue,
+            FBAnnotationEncodeValueType::AnnotationValue => Self::AnnotationValue,
+            FBAnnotationEncodeValueType::NullValue => Self::NullValue,
+            FBAnnotationEncodeValueType::BoolValue => Self::BoolValue,
+            _ => panic!("Unsupported FBAnnotationEncodeValueMatcher variant"),
+        }
+    }
 }
 
 /*impl From<AnnotationEncodeValueType> for FBAnnotationEncodeValueType {

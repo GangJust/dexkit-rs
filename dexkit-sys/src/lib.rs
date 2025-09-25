@@ -42,4 +42,35 @@ unsafe extern "C" {
         out_buf: *mut *mut c_void,
         out_len: *mut usize,
     );
+
+    pub fn dexkit_get_class_by_ids(
+        handle: *mut c_void,
+        encode_id_array: *mut c_void,
+        ids_len: usize,
+        out_buf: *mut *mut c_void,
+        out_len: *mut usize,
+    );
+
+    pub fn dexkit_get_method_by_ids(
+        handle: *mut c_void,
+        encode_id_array: *mut c_void,
+        ids_len: usize,
+        out_buf: *mut *mut c_void,
+        out_len: *mut usize,
+    );
+
+    pub fn dexkit_get_field_by_ids(
+        handle: *mut c_void,
+        encode_id_array: *mut c_void,
+        ids_len: usize,
+        out_buf: *mut *mut c_void,
+        out_len: *mut usize,
+    );
+
+    pub fn dexkit_get_class_annotations(
+        handle: *mut c_void,
+        class_id: i64,
+        out_buf: *mut *mut c_void,
+        out_len: *mut usize,
+    );
 }

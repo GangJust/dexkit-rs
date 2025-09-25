@@ -2,9 +2,9 @@ use crate::gen_flatbuffers::dexkit::schema::MethodMeta as FBMethodMeta;
 use crate::{dexkit_bridge::DexkitBridge, result::base::BaseData};
 
 #[allow(unused)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MethodData<'a> {
-    dexkit_bridge: &'a DexkitBridge,
+    bridge: &'a DexkitBridge,
     id: u32,
     dex_id: u32,
     class_id: u32,
@@ -15,6 +15,10 @@ pub struct MethodData<'a> {
 }
 
 impl<'a> BaseData for MethodData<'a> {
+    fn get_bradge(&self) -> &DexkitBridge {
+        self.bridge
+    }
+
     fn get_dex_id(&self) -> u32 {
         self.dex_id
     }
@@ -36,7 +40,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(dexkit_bridge: &'a DexkitBridge, meta: FBMethodMeta<'a>) -> Self {
+    pub(crate) fn with_meta(bridge: &'a DexkitBridge, meta: FBMethodMeta<'a>) -> Self {
         let id = meta.id();
         let dex_id = meta.dex_id();
         let class_id = meta.class_id();
@@ -48,7 +52,7 @@ impl<'a> MethodData<'a> {
             .map_or(vec![], |params| params.iter().collect());
 
         Self {
-            dexkit_bridge,
+            bridge,
             id,
             dex_id,
             class_id,

@@ -162,4 +162,126 @@ extern "C"
         // Release the FlatBufferBuilder to free its internal memory
         result->Release();
     }
+
+    void dexkit_get_class_by_ids(void *handle, void *encode_id_array, size_t ids_len, void **out_buf, size_t *out_len)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        auto id_ptr = static_cast<int64_t *>(encode_id_array);
+        std::vector<int64_t> ids_vec(id_ptr, id_ptr + ids_len);
+        auto result = dexkit->GetClassByIds(ids_vec);
+        if (result == nullptr)
+        {
+            *out_buf = nullptr;
+            *out_len = 0;
+            return;
+        }
+
+        // Copy the buffer to a new memory location
+        size_t size = result->GetSize();
+        void *buf = nullptr;
+        if (size > 0)
+        {
+            buf = malloc(size);
+            if (buf != nullptr)
+            {
+                memcpy(buf, result->GetBufferPointer(), size);
+            }
+        }
+        *out_buf = buf;
+        *out_len = (buf != nullptr) ? size : 0;
+
+        // Release the FlatBufferBuilder to free its internal memory
+        result->Release();
+    }
+
+    void dexkit_get_method_by_ids(void *handle, void *encode_id_array, size_t ids_len, void **out_buf, size_t *out_len)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        auto id_ptr = static_cast<int64_t *>(encode_id_array);
+        std::vector<int64_t> ids_vec(id_ptr, id_ptr + ids_len);
+        auto result = dexkit->GetMethodByIds(ids_vec);
+        if (result == nullptr)
+        {
+            *out_buf = nullptr;
+            *out_len = 0;
+            return;
+        }
+
+        // Copy the buffer to a new memory location
+        size_t size = result->GetSize();
+        void *buf = nullptr;
+        if (size > 0)
+        {
+            buf = malloc(size);
+            if (buf != nullptr)
+            {
+                memcpy(buf, result->GetBufferPointer(), size);
+            }
+        }
+        *out_buf = buf;
+        *out_len = (buf != nullptr) ? size : 0;
+
+        // Release the FlatBufferBuilder to free its internal memory
+        result->Release();
+    }
+
+    void dexkit_get_field_by_ids(void *handle, void *encode_id_array, size_t ids_len, void **out_buf, size_t *out_len)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        auto id_ptr = static_cast<int64_t *>(encode_id_array);
+        std::vector<int64_t> ids_vec(id_ptr, id_ptr + ids_len);
+        auto result = dexkit->GetFieldByIds(ids_vec);
+        if (result == nullptr)
+        {
+            *out_buf = nullptr;
+            *out_len = 0;
+            return;
+        }
+
+        // Copy the buffer to a new memory location
+        size_t size = result->GetSize();
+        void *buf = nullptr;
+        if (size > 0)
+        {
+            buf = malloc(size);
+            if (buf != nullptr)
+            {
+                memcpy(buf, result->GetBufferPointer(), size);
+            }
+        }
+        *out_buf = buf;
+        *out_len = (buf != nullptr) ? size : 0;
+
+        // Release the FlatBufferBuilder to free its internal memory
+        result->Release();
+    }
+
+    void dexkit_get_class_annotations(void *handle, int64_t encode_class_id, void **out_buf, size_t *out_len)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        auto result = dexkit->GetClassAnnotations(encode_class_id);
+        if (result == nullptr)
+        {
+            *out_buf = nullptr;
+            *out_len = 0;
+            return;
+        }
+
+        // Copy the buffer to a new memory location
+        size_t size = result->GetSize();
+        void *buf = nullptr;
+        if (size > 0)
+        {
+            buf = malloc(size);
+            if (buf != nullptr)
+            {
+                memcpy(buf, result->GetBufferPointer(), size);
+            }
+        }
+        *out_buf = buf;
+        *out_len = (buf != nullptr) ? size : 0;
+
+        // Release the FlatBufferBuilder to free its internal memory
+        result->Release();
+    }
 }
