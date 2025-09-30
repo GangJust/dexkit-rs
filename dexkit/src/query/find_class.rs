@@ -92,8 +92,8 @@ impl<'a> FindClass<'a> {
         self
     }
 
-    pub fn set_search_classes(mut self, classes: Vec<ClassData<'a>>) -> Self {
-        self.search_classes = Some(classes);
+    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+        self.search_classes = Some(classes.into());
         self
     }
 
@@ -126,16 +126,6 @@ impl<'a> FindClass<'a> {
     // extend search_classes
     pub fn add_search_class(mut self, class: ClassData<'a>) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
-        self
-    }
-
-    // extend matcher
-    pub fn class_name<S: Into<String>>(mut self, class_name: S) -> Self {
-        if self.matcher.is_none() {
-            self.matcher = Some(ClassMatcher::create().set_class_name_str(class_name));
-        } else {
-            self.matcher = self.matcher.map(|m| m.set_class_name_str(class_name));
-        }
         self
     }
 }

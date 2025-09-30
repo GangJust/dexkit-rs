@@ -100,8 +100,8 @@ impl<'a> BatchFindClassUsingStrings<'a> {
         self
     }
 
-    pub fn set_search_classes(mut self, classes: Vec<ClassData<'a>>) -> Self {
-        self.search_classes = Some(classes);
+    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+        self.search_classes = Some(classes.into());
         self
     }
 
@@ -135,13 +135,6 @@ impl<'a> BatchFindClassUsingStrings<'a> {
     // extend groups
     pub fn add_group(mut self, group: StringMatchersGroup) -> Self {
         self.search_groups.get_or_insert_with(Vec::new).push(group);
-        self
-    }
-
-    pub fn add_groups(mut self, groups: Vec<StringMatchersGroup>) -> Self {
-        self.search_groups
-            .get_or_insert_with(Vec::new)
-            .extend(groups);
         self
     }
 }

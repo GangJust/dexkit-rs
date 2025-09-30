@@ -3,13 +3,21 @@ use std::collections::HashMap;
 use crate::DexkitBridge;
 use crate::gen_flatbuffers::dexkit::schema::{
     BatchClassMetaArrayHolder as FBBatchClassMetaArrayHolder,
-    BatchClassMetaArrayHolderArgs as FBBatchClassMetaArrayHolderArgs,
     BatchMethodMetaArrayHolder as FBBatchMethodMetaArrayHolder,
-    BatchMethodMetaArrayHolderArgs as FBBatchMethodMetaArrayHolderArgs,
     ClassMetaArrayHolder as FBClassMetaArrayHolder, FieldMetaArrayHolder as FBFieldMetaArrayHolder,
     MethodMetaArrayHolder as FBMethodMetaArrayHolder,
 };
+use crate::query::{FindClass, FindField, FindMethod};
+use crate::result::base::BaseData;
 use crate::result::{ClassData, FieldData, MethodData};
+
+pub trait BaseDataList<'a, T> {
+    fn size(&self) -> usize;
+
+    fn single(&self) -> Option<&T>;
+
+    fn single_where(&self, predicate: impl Fn(&T) -> bool) -> Option<&T>;
+}
 
 /// ClassDataList represents a collection of ClassData objects.
 #[derive(Debug, Clone)]
@@ -25,6 +33,35 @@ impl<'a> std::ops::Deref for ClassDataList<'a> {
     }
 }
 
+impl<'a> From<ClassDataList<'a>> for Vec<ClassData<'a>> {
+    fn from(value: ClassDataList<'a>) -> Self {
+        value.classes
+    }
+}
+
+impl<'a> BaseDataList<'a, ClassData<'a>> for ClassDataList<'a> {
+    fn size(&self) -> usize {
+        self.classes.len()
+    }
+
+    fn single(&self) -> Option<&ClassData<'a>> {
+        if self.classes.len() == 1 {
+            Some(&self.classes[0])
+        } else {
+            None
+        }
+    }
+
+    fn single_where(&self, predicate: impl Fn(&ClassData<'a>) -> bool) -> Option<&ClassData<'a>> {
+        let filtered: Vec<&ClassData<'a>> = self.classes.iter().filter(|&c| predicate(c)).collect();
+        if filtered.len() == 1 {
+            Some(filtered[0])
+        } else {
+            None
+        }
+    }
+}
+
 impl<'a> ClassDataList<'a> {
     pub fn new() -> Self {
         Self {
@@ -36,8 +73,37 @@ impl<'a> ClassDataList<'a> {
         self.classes.push(class_data);
     }
 
-    pub fn size(&self) -> usize {
-        self.classes.len()
+    pub fn find_class(&self, find_class: FindClass<'a>) -> ClassDataList<'_> {
+        if self.classes.is_empty() {
+            return ClassDataList::new();
+        }
+
+        let first = &self.classes[0];
+        let bridge = first.bridge();
+        let find_class = find_class.set_search_classes(self.clone());
+        bridge.find_class(find_class)
+    }
+
+    pub fn find_method(&self, find_method: FindMethod<'a>) -> MethodDataList<'_> {
+        if self.classes.is_empty() {
+            return MethodDataList::new();
+        }
+
+        let first = &self.classes[0];
+        let bridge = first.bridge();
+        let find_method = find_method.set_search_classes(self.clone());
+        bridge.find_method(find_method)
+    }
+
+    pub fn find_field(&self, find_field: FindField<'a>) -> FieldDataList<'_> {
+        if self.classes.is_empty() {
+            return FieldDataList::new();
+        }
+
+        let first = &self.classes[0];
+        let bridge = first.bridge();
+        let find_field = find_field.set_search_classes(self.clone());
+        bridge.find_field(find_field)
     }
 
     /// ...
@@ -98,6 +164,36 @@ impl<'a> std::ops::Deref for MethodDataList<'a> {
     }
 }
 
+impl<'a> From<MethodDataList<'a>> for Vec<MethodData<'a>> {
+    fn from(value: MethodDataList<'a>) -> Self {
+        value.methods
+    }
+}
+
+impl<'a> BaseDataList<'a, MethodData<'a>> for MethodDataList<'a> {
+    fn size(&self) -> usize {
+        self.methods.len()
+    }
+
+    fn single(&self) -> Option<&MethodData<'a>> {
+        if self.methods.len() == 1 {
+            Some(&self.methods[0])
+        } else {
+            None
+        }
+    }
+
+    fn single_where(&self, predicate: impl Fn(&MethodData<'a>) -> bool) -> Option<&MethodData<'a>> {
+        let filtered: Vec<&MethodData<'a>> =
+            self.methods.iter().filter(|&c| predicate(c)).collect();
+        if filtered.len() == 1 {
+            Some(filtered[0])
+        } else {
+            None
+        }
+    }
+}
+
 impl<'a> MethodDataList<'a> {
     pub fn new() -> Self {
         Self {
@@ -109,8 +205,15 @@ impl<'a> MethodDataList<'a> {
         self.methods.push(method_data);
     }
 
-    pub fn size(&self) -> usize {
-        self.methods.len()
+    pub fn find_method(&self, find_method: FindMethod<'a>) -> MethodDataList<'_> {
+        if self.methods.is_empty() {
+            return MethodDataList::new();
+        }
+
+        let first = &self.methods[0];
+        let bridge = first.bridge();
+        let find_method = find_method.set_search_methods(self.clone());
+        bridge.find_method(find_method)
     }
 
     pub(crate) fn form_data(bridge: &'a DexkitBridge, vec: &'a [u8]) -> MethodDataList<'a> {
@@ -170,6 +273,35 @@ impl<'a> std::ops::Deref for FieldDataList<'a> {
     }
 }
 
+impl<'a> From<FieldDataList<'a>> for Vec<FieldData<'a>> {
+    fn from(value: FieldDataList<'a>) -> Self {
+        value.fields
+    }
+}
+
+impl<'a> BaseDataList<'a, FieldData<'a>> for FieldDataList<'a> {
+    fn size(&self) -> usize {
+        self.fields.len()
+    }
+
+    fn single(&self) -> Option<&FieldData<'a>> {
+        if self.fields.len() == 1 {
+            Some(&self.fields[0])
+        } else {
+            None
+        }
+    }
+
+    fn single_where(&self, predicate: impl Fn(&FieldData<'a>) -> bool) -> Option<&FieldData<'a>> {
+        let filtered: Vec<&FieldData<'a>> = self.fields.iter().filter(|&c| predicate(c)).collect();
+        if filtered.len() == 1 {
+            Some(filtered[0])
+        } else {
+            None
+        }
+    }
+}
+
 impl<'a> FieldDataList<'a> {
     pub fn new() -> Self {
         Self { fields: Vec::new() }
@@ -179,8 +311,15 @@ impl<'a> FieldDataList<'a> {
         self.fields.push(field_data);
     }
 
-    pub fn size(&self) -> usize {
-        self.fields.len()
+    pub fn find_field(&self, find_field: FindField<'a>) -> FieldDataList<'_> {
+        if self.fields.is_empty() {
+            return FieldDataList::new();
+        }
+
+        let first = &self.fields[0];
+        let bridge = first.bridge();
+        let find_field = find_field.set_search_fields(self.clone());
+        bridge.find_field(find_field)
     }
 
     pub(crate) fn form_data(dexkit_bridge: &'a DexkitBridge, vec: &'a [u8]) -> FieldDataList<'a> {

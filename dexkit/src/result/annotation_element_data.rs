@@ -3,12 +3,22 @@ use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationEncodeValueMeta as FBAnnotationEncodeValueMeta,
 };
 use crate::{DexkitBridge, result::AnnotationEncodeValue};
+use std::fmt::Debug;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AnnotationElementData<'a> {
     bridge: &'a DexkitBridge,
     name: String,
     value: AnnotationEncodeValue<'a>,
+}
+
+impl<'a> Debug for AnnotationElementData<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnnotationElementData")
+            .field("name", &self.name)
+            .field("value", &self.value)
+            .finish()
+    }
 }
 
 impl<'a> AnnotationElementData<'a> {

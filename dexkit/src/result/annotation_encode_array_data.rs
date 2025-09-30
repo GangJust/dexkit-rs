@@ -1,10 +1,19 @@
 use crate::gen_flatbuffers::dexkit::schema::AnnotationEncodeArray as FBAnnotationEncodeArray;
 use crate::{DexkitBridge, result::AnnotationEncodeValue};
+use std::fmt::Debug;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AnnotationEncodeArrayData<'a> {
     bridge: &'a DexkitBridge,
     values: Vec<AnnotationEncodeValue<'a>>,
+}
+
+impl<'a> Debug for AnnotationEncodeArrayData<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnnotationEncodeArrayData")
+            .field("values", &self.values)
+            .finish()
+    }
 }
 
 impl<'a> AnnotationEncodeArrayData<'a> {

@@ -4,9 +4,10 @@ use crate::uitls::Opcodes;
 use crate::wrap::DexMethod;
 use crate::{dexkit_bridge::DexkitBridge, result::base::BaseData};
 use std::cell::OnceCell;
+use std::fmt::Debug;
 
 #[allow(unused)]
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct MethodData<'a> {
     bridge: &'a DexkitBridge,
     id: u32,
@@ -29,6 +30,20 @@ pub struct MethodData<'a> {
     invokes: OnceCell<MethodDataList<'a>>,
     using_strings: OnceCell<Vec<String>>,
     using_fields: OnceCell<Vec<UsingFieldData<'a>>>,
+}
+
+impl<'a> Debug for MethodData<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("MethodData")
+            .field("id", &self.id)
+            .field("dex_id", &self.dex_id)
+            .field("class_id", &self.class_id)
+            .field("modifiers", &self.modifiers)
+            .field("descriptor", &self.descriptor)
+            .field("return_type_id", &self.return_type_id)
+            .field("param_type_ids", &self.param_type_ids)
+            .finish()
+    }
 }
 
 impl<'a> BaseData for MethodData<'a> {

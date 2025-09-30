@@ -66,29 +66,39 @@ impl StringMatchersGroup {
         self
     }
 
-    /// extend string_matchers
+    // extend string_matchers
     pub fn add_string_matcher(mut self, matcher: StringMatcher) -> Self {
         self.string_matchers.push(matcher);
         self
     }
 
-    pub fn add_string_matchers(mut self, matchers: Vec<StringMatcher>) -> Self {
-        self.string_matchers.extend(matchers);
-        self
-    }
-
-    pub fn add_string_matcher_str<S: Into<String>>(mut self, matcher: S) -> Self {
-        self.string_matchers
-            .push(StringMatcher::create().set_value(matcher));
-        self
-    }
-
-    pub fn add_string_matchers_str<S: Into<String>>(mut self, matchers: Vec<S>) -> Self {
+    pub fn add_string_matchers_str<S: Into<String>>(mut self, strings: Vec<S>) -> Self {
         self.string_matchers.extend(
-            matchers
+            strings
                 .into_iter()
-                .map(|m| StringMatcher::create().set_value(m)),
+                .map(|m| StringMatcher::create_string_str(m)),
         );
+        self
+    }
+
+    pub fn add_string_matcher_str<S: Into<String>>(mut self, string: S) -> Self {
+        self.string_matchers
+            .push(StringMatcher::create_string_str(string));
+        self
+    }
+
+    pub fn add_eq_string_matcher_strs<S: Into<String>>(mut self, strings: Vec<S>) -> Self {
+        self.string_matchers.extend(
+            strings
+                .into_iter()
+                .map(|m| StringMatcher::create_eq_string_str(m)),
+        );
+        self
+    }
+
+    pub fn add_eq_string_matcher_str<S: Into<String>>(mut self, string: S) -> Self {
+        self.string_matchers
+            .push(StringMatcher::create_eq_string_str(string));
         self
     }
 }

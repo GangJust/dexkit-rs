@@ -1,11 +1,12 @@
 use crate::gen_flatbuffers::dexkit::schema::FieldMeta as FBFieldMeta;
 use crate::result::{AnnotationData, ClassData, MethodDataList};
 use crate::wrap::DexField;
-use crate::{result::base::BaseData, DexkitBridge};
+use crate::{DexkitBridge, result::base::BaseData};
 use std::cell::OnceCell;
+use std::fmt::Debug;
 
 #[allow(unused)]
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct FieldData<'a> {
     bridge: &'a DexkitBridge,
     id: u32,
@@ -21,6 +22,19 @@ pub struct FieldData<'a> {
     annotations: OnceCell<Vec<AnnotationData<'a>>>,
     readers: OnceCell<MethodDataList<'a>>,
     writers: OnceCell<MethodDataList<'a>>,
+}
+
+impl<'a> Debug for FieldData<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FieldData")
+            .field("id", &self.id)
+            .field("dex_id", &self.dex_id)
+            .field("class_id", &self.class_id)
+            .field("modifiers", &self.modifiers)
+            .field("descriptor", &self.descriptor)
+            .field("type_id", &self.type_id)
+            .finish()
+    }
 }
 
 impl<'a> BaseData for FieldData<'a> {

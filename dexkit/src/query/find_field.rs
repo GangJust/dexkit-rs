@@ -107,13 +107,13 @@ impl<'a> FindField<'a> {
         self
     }
 
-    pub fn set_search_classes(mut self, classes: Vec<ClassData<'a>>) -> Self {
-        self.search_classes = Some(classes);
+    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+        self.search_classes = Some(classes.into());
         self
     }
 
-    pub fn set_search_fields(mut self, fields: Vec<FieldData<'a>>) -> Self {
-        self.search_fields = Some(fields);
+    pub fn set_search_fields<V: Into<Vec<FieldData<'a>>>>(mut self, fields: V) -> Self {
+        self.search_fields = Some(fields.into());
         self
     }
 

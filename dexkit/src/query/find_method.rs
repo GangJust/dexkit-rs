@@ -12,7 +12,7 @@ pub struct FindMethod<'a> {
     exclude_packages: Option<Vec<String>>,
     ignore_packages_case: bool,
     search_classes: Option<Vec<ClassData<'a>>>,
-    search_fields: Option<Vec<MethodData<'a>>>,
+    search_methods: Option<Vec<MethodData<'a>>>,
     find_first: bool,
     matcher: Option<MethodMatcher>,
 }
@@ -24,7 +24,7 @@ impl<'a> Default for FindMethod<'a> {
             exclude_packages: None,
             ignore_packages_case: false,
             search_classes: None,
-            search_fields: None,
+            search_methods: None,
             find_first: false,
             matcher: None,
         }
@@ -60,14 +60,13 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodFind<'a>>> for FindMethod<'a> {
                 .collect::<Vec<i64>>();
             fbb.create_vector(&ids)
         });
-        let in_methods = self.search_fields.as_ref().map(|methods| {
+        let in_methods = self.search_methods.as_ref().map(|methods| {
             let ids = methods
                 .iter()
                 .map(|method| method.get_mine_encode_id())
                 .collect::<Vec<i64>>();
             fbb.create_vector(&ids)
         });
-
         let matcher = self.matcher.as_ref().map(|m| m.inner_build(fbb));
 
         FBMethodFind::create(
@@ -106,13 +105,13 @@ impl<'a> FindMethod<'a> {
         self
     }
 
-    pub fn set_search_classes(mut self, classes: Vec<ClassData<'a>>) -> Self {
-        self.search_classes = Some(classes);
+    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+        self.search_classes = Some(classes.into());
         self
     }
 
-    pub fn set_search_fields(mut self, fields: Vec<MethodData<'a>>) -> Self {
-        self.search_fields = Some(fields);
+    pub fn set_search_methods<V: Into<Vec<MethodData<'a>>>>(mut self, fields: V) -> Self {
+        self.search_methods = Some(fields.into());
         self
     }
 
@@ -149,8 +148,8 @@ impl<'a> FindMethod<'a> {
     }
 
     // extend search_fields
-    pub fn add_search_field(mut self, field: MethodData<'a>) -> Self {
-        self.search_fields.get_or_insert_with(Vec::new).push(field);
+    pub fn add_search_method(mut self, field: MethodData<'a>) -> Self {
+        self.search_methods.get_or_insert_with(Vec::new).push(field);
         self
     }
 }

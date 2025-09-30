@@ -1,3 +1,5 @@
+use dexkit::query::matchers::{MethodMatcher, ParameterMatcher, ParametersMatcher};
+use dexkit::result::BaseDataList;
 use dexkit::{
     DexkitBridge,
     errors::Error,
@@ -49,9 +51,10 @@ fn do_search(bridge: DexkitBridge) {
     //     println!("name: {:?}", ele.descriptor());
     // }
 
-    let list = bridge.find_field(FindField::create().set_matcher(
-        FieldMatcher::create().set_modifiers(Modifier::PUBLIC | Modifier::STATIC),
-    ));
+    let list = bridge
+        .find_field(FindField::create().set_matcher(
+            FieldMatcher::create().set_modifiers(Modifier::PUBLIC | Modifier::STATIC),
+        ));
     println!("[Rust] Found public static fields: {:#?}", list.len());
     // for ele in list.iter() {
     //     println!("modifiers: {:?}", Modifier::from_bits(ele.modifiers()));
@@ -67,8 +70,24 @@ fn do_search(bridge: DexkitBridge) {
         ),
     );
     println!(
-        "[Rust] Found class with super class MainActivity: {:#?}",
+        "[Rust] Found MainActivity class: {:#?}",
         class_data_list.len()
+    );
+
+    let inner_find_method = class_data_list.find_method(
+        FindMethod::create().set_matcher(
+            MethodMatcher::create()
+                .set_eq_method_name_str("onCreate")
+                .set_params_matcher(ParametersMatcher::create().add_param_matcher(Some(
+                    ParameterMatcher::create().set_type_matcher(
+                        ClassMatcher::create().set_class_name_str("android/os/Bundle"),
+                    ),
+                ))),
+        ),
+    );
+    println!(
+        "[Rust] Found method onCreate in MainActivity: {:#?}",
+        inner_find_method
     );
 
     let first = class_data_list.first().unwrap();

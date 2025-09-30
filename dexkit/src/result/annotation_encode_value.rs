@@ -1,4 +1,5 @@
 use std::any::Any;
+use std::fmt::Debug;
 use std::str::{from_utf8, from_utf8_unchecked};
 
 use flatbuffers::{UOffsetT, Verifier, VerifierOptions, read_scalar_at};
@@ -33,10 +34,19 @@ pub enum EncodeValueData<'a> {
     Bool(bool),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AnnotationEncodeValue<'a> {
     value: EncodeValueData<'a>,
     value_type: AnnotationEncodeValueType,
+}
+
+impl<'a> Debug for AnnotationEncodeValue<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnnotationEncodeValue")
+            .field("value_type", &self.value_type)
+            .field("value", &self.value)
+            .finish()
+    }
 }
 
 impl<'a> Default for AnnotationEncodeValue<'a> {

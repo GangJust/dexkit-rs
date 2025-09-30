@@ -208,6 +208,11 @@ impl MethodMatcher {
         self
     }
 
+    pub fn set_eq_method_name_str<S: Into<String>>(mut self, name: S) -> Self {
+        self.name_matcher = Some(StringMatcher::create_eq_string_str(name));
+        self
+    }
+
     // extend
     // todo!
 }

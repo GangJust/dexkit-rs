@@ -7,8 +7,9 @@ use crate::result::AnnotationElementData;
 use crate::wrap::DexClass;
 use crate::{DexkitBridge, query::enums::AnnotationVisibilityType, result::base::BaseData};
 use std::cell::OnceCell;
+use std::fmt::Debug;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AnnotationData<'a> {
     bridge: &'a DexkitBridge,
     dex_id: u32,
@@ -18,6 +19,18 @@ pub struct AnnotationData<'a> {
     elements: Vec<AnnotationElementData<'a>>,
     // Lazy loaded fields
     dex_class: OnceCell<Option<DexClass>>,
+}
+
+impl<'a> Debug for AnnotationData<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnnotationData")
+            .field("dex_id", &self.dex_id)
+            .field("type_id", &self.type_id)
+            .field("type_descriptor", &self.type_descriptor)
+            .field("visibility", &self.visibility)
+            .field("elements", &self.elements)
+            .finish()
+    }
 }
 
 impl<'a> BaseData for AnnotationData<'a> {
