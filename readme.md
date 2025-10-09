@@ -1,34 +1,24 @@
-# Dexkit-rs
+# Dexkit-Rs
 
-这是一个套娃了 [Dexkit](https://github.com/LuckyPray/DexKit) 的Rust仓库, 你可以很好的用Rust来操作Dexkit.
+这是一个包装了 [Dexkit](https://github.com/LuckyPray/DexKit) 的 Rust 仓库, 它允许通过 Rust 来直接调用 Dexkit.
 
-## 在桌面平台运行
+## 快速开始
 
-首先参考 [Dexkit-docs|在桌面平台运行](https://luckypray.org/DexKit/zh-cn/guide/run-on-desktop.html)
+> 构建本项目需要 `rust gnu` 工具链
 
-rust 在 `windows_x64` 下默认为 `stable-x86_64-pc-windows-msvc` 编译环境
-
-你需要切换到 `gnu` 工具链, 来运行 `example`
-
-1、安装 gnu 工具链：
+1、安装 `gnu` 工具链：
 
 ```bash
 rustup toolchain install stable-x86_64-pc-windows-gnu
 ```
 
-2、设置 gnu 为默认工具链：
+2、设置 `gnu` 为默认工具链：
 
 ```bash
 rustup default stable-x86_64-pc-windows-gnu
 ```
 
-3、运行
-
-```bash
-cargo run
-```
-
-或者，如果你不想改变默认工具链，你也可以在编译时明确指定 `gnu` 工具链：
+或者，如果不想改变默认工具链，也可以在编译时明确指定 `gnu` 工具链：
 
 ```bash
 cargo +stable-x86_64-pc-windows-gnu run
@@ -39,19 +29,31 @@ cargo +stable-x86_64-pc-windows-gnu run
 ```bash
 rustup toolchain list
 
-# echo
 # stable-x86_64-pc-windows-gnu (active, default)
 # stable-x86_64-pc-windows-msvc
 ```
 
-最后，你需要修改 [.env](/.env) 中的 `MYSYS_LIB`，以此来链接到 `stdc++` 和 `zlib`
+## 在桌面平台运行
 
-到这里，你就可以愉快的`cd example & cargo run`了。
+请首先参考 [Dexkit-docs|在桌面平台运行](https://luckypray.org/DexKit/zh-cn/guide/run-on-desktop.html) 完成基本设置
 
-## 查询条件
+### Windows
 
-基本完成封装
+- 修改 [.env](/.env) 中的 `MYSYS_LIB` 环境变量路径，以此来链接到 `stdc++` 和 `zlib` 随后分别执行以下两条命令
 
-## 交叉编译
+    ```bash
+    cd example-desktop
+    cargo run
+    ```
 
-todo
+### Linux
+
+- 未测试
+
+### Mac
+
+- 未测试
+
+## 在Android平台上运行
+
+see: [example-andoird](/example-android/)

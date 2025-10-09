@@ -30,10 +30,10 @@ extern "C"
         if (ret != Error::SUCCESS)
         {
             // delete dexkit;
-            return FALSE;
+            return 0; // FALSE
         }
 
-        return TRUE;
+        return 1; // TRUE
     }
 
     void dexkit_set_thread_num(void *handle, int thread_num)
@@ -49,10 +49,10 @@ extern "C"
 
         if (ret != Error::SUCCESS)
         {
-            return FALSE;
+            return 0; // FALSE
         }
 
-        return TRUE;
+        return 1; // TRUE
     }
 
     int dexkit_get_dex_num(void *handle)
@@ -68,9 +68,10 @@ extern "C"
         auto ret = dexkit->ExportDexFile(outDirStr);
         if (ret != Error::SUCCESS)
         {
-            return FALSE;
+            return 0; // FALSE
         }
-        return TRUE;
+
+        return 1; // TRUE
     }
 
     void dexkit_find_class(void *handle, void *buffer, void **out_buf, size_t *out_len)

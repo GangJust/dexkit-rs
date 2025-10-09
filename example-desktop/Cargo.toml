@@ -1,0 +1,7 @@
+[package]
+name = "example-desktop"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+dexkit = { path = "../dexkit" }

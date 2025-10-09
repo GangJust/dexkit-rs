@@ -27,7 +27,7 @@ impl DexkitBridge {
         let c_apk_path =
             CString::new(apk_path.into()).map_err(|e| Error::BridgeCreateError(e.to_string()))?;
         let added = unsafe {
-            dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr() as *mut i8, 0)
+            dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr() as *mut c_char, 0)
         };
         if added == 0 {
             return Err(Error::BridgeCreateError("Failed to add APK path".into()));
