@@ -1,14 +1,6 @@
-use dexkit::query::matchers::{MethodMatcher, ParameterMatcher, ParametersMatcher};
-use dexkit::{
-    DexkitBridge,
-    errors::Error,
-    query::{
-        BatchFindClassUsingStrings, BatchFindMethodUsingStrings, FindClass, FindField, FindMethod,
-        enums::StringMatchType,
-        matchers::{ClassMatcher, FieldMatcher, StringMatchersGroup, base::StringMatcher},
-    },
-    uitls::Modifier,
-};
+use dexkit::query::matchers::{ClassMatcher, MethodMatcher};
+use dexkit::query::{FindClass, FindMethod};
+use dexkit::{DexkitBridge, errors::Error};
 use std::path::Path;
 
 fn main() -> Result<(), Error> {
@@ -32,140 +24,23 @@ fn main() -> Result<(), Error> {
 }
 
 fn do_search(bridge: DexkitBridge) {
-    let class_data_list = bridge.find_class(FindClass::create());
-    println!("[Rust] Found classes: {:#?}", class_data_list.len());
-    // for ele in class_data_list.iter() {
-    //     println!("descriptor: {:?}", ele.descriptor());
-    // }
+    let class_data_list = bridge.find_class(FindClass::create().set_matcher(
+        ClassMatcher::create().set_class_name_str("io.github.cargo.ndk.plugin.MainActivity"),
+    ));
+    println!("\nCLASS:");
+    for class_data in class_data_list.iter() {
+        for annotation in class_data.annotations().iter() {
+            println!("{:#?}", annotation);
+        }
+    }
 
-    let method_data_list = bridge.find_method(FindMethod::create());
-    println!("[Rust] Found methods: {:#?}", method_data_list.len());
-    // for ele in method_data_list.iter() {
-    //     println!("name: {:?}", ele.name());
-    // }
-
-    let field_data_list = bridge.find_field(FindField::create());
-    println!("[Rust] Found fields: {:#?}", field_data_list.len());
-    // for ele in field_data_list.iter() {
-    //     println!("name: {:?}", ele.descriptor());
-    // }
-
-    let list = bridge
-        .find_field(FindField::create().set_matcher(
-            FieldMatcher::create().set_modifiers(Modifier::PUBLIC | Modifier::STATIC),
-        ));
-    println!("[Rust] Found public static fields: {:#?}", list.len());
-    // for ele in list.iter() {
-    //     println!("modifiers: {:?}", Modifier::from_bits(ele.modifiers()));
-    // }
-
-    let class_data_list = bridge.find_class(
-        FindClass::create().set_find_first(true).set_matcher(
-            ClassMatcher::create().set_class_name_matcher(
-                StringMatcher::create()
-                    .set_value("io/github/cargo/ndk/plugin/MainActivity")
-                    .set_match_type(StringMatchType::Equals),
-            ),
-        ),
+    let method_data_list = class_data_list.find_method(
+        FindMethod::create().set_matcher(MethodMatcher::create().set_method_name_str("test")),
     );
-    println!(
-        "[Rust] Found MainActivity class: {:#?}",
-        class_data_list.len()
-    );
-
-    let inner_find_method = class_data_list.find_method(
-        FindMethod::create().set_matcher(
-            MethodMatcher::create()
-                .set_eq_method_name_str("onCreate")
-                .set_params_matcher(ParametersMatcher::create().add_param_matcher(Some(
-                    ParameterMatcher::create().set_type_matcher(
-                        ClassMatcher::create().set_class_name_str("android/os/Bundle"),
-                    ),
-                ))),
-        ),
-    );
-    println!(
-        "[Rust] Found method onCreate in MainActivity: {:#?}",
-        inner_find_method
-    );
-
-    let first = class_data_list.first().unwrap();
-    // println!("[Rust] First class: {:#?}", first);
-
-    let supper_class = first.supper_class();
-    // println!("[Rust] Found supper class: {:#?}", supper_class);
-
-    let interfaces = supper_class.clone().unwrap().interfaces();
-    println!("[Rust] Found interfaces: {:#?}", interfaces.len());
-    // for ele in interfaces.iter() {
-    //     println!("interface descriptor: {:?}", ele.descriptor());
-    // }
-
-    // let annotations = supper_class.clone().unwrap().annotations();
-    // std::fs::write("output.txt", format!("{:?}", annotations)).unwrap();
-
-    // let fields = supper_class.clone().unwrap().fields();
-    // println!("[Rust] Found fields: {:#?}", fields.len());
-
-    // for field in fields.iter() {
-    //     // println!("[Rust] Field: {:#?}", field.descriptor());
-    //     // println!("[Rust] First field: {:#?}", field.readers());
-    //     // println!("[Rust] First field: {:#?}", field.writers());
-    // }
-
-    // let methods = supper_class.unwrap().methods();
-    // println!("[Rust] Found methods: {:#?}", methods.len());
-
-    // for method in methods.iter() {
-    //     // println!("[Rust] Found method: {:#?}", method.descriptor());
-    //     // println!("[Rust] Found method: {:#?}", method.annotations());
-    //     // println!("[Rust] Found method: {:#?}", method.using_fields());
-    // }
-
-    // let cls_data = bridge.get_class_data("io/github/cargo/ndk/plugin/MainActivity");
-    // println!("[Rust] Get class data: {:#?}", cls_data);
-
-    // let method_data = bridge.get_method_data("Landroidx/activity/ComponentActivity;->startActivityForResult(Landroid/content/Intent;ILandroid/os/Bundle;)V");
-    // println!("[Rust] Get method data: {:#?}", method_data);
-
-    // let field_data = bridge.get_filed_data("Landroidx/activity/ComponentActivity;->ACTIVITY_RESULT_TAG:Ljava/lang/String;");
-    // println!("[Rust] Get field data: {:#?}", field_data);
-
-    let find_class_groups = bridge.batch_find_class_using_strings(
-        BatchFindClassUsingStrings::create()
-            .add_group(
-                StringMatchersGroup::create("group1")
-                    .add_string_matcher_str("M")
-                    .add_string_matcher_str("A"),
-            )
-            .add_group(
-                StringMatchersGroup::create("group2")
-                    .add_string_matcher_str("N")
-                    .add_string_matcher_str("B"),
-            ),
-    );
-    println!(
-        "[Rust] Batch find classes using strings: group1.len = {:#?}, group2.len = {:#?}",
-        find_class_groups["group1"].len(),
-        find_class_groups["group2"].len()
-    );
-
-    let find_method_groups = bridge.batch_find_method_using_strings(
-        BatchFindMethodUsingStrings::create()
-            .add_group(
-                StringMatchersGroup::create("group1")
-                    .add_string_matcher_str("M")
-                    .add_string_matcher_str("A"),
-            )
-            .add_group(
-                StringMatchersGroup::create("group2")
-                    .add_string_matcher_str("N")
-                    .add_string_matcher_str("B"),
-            ),
-    );
-    println!(
-        "[Rust] Batch find methods using strings: group1.len = {:#?}, group2.len = {:#?}",
-        find_method_groups["group1"].len(),
-        find_method_groups["group2"].len()
-    );
+    println!("\nMETHOD:");
+    for method_data in method_data_list.iter() {
+        for annotation in method_data.annotations().iter() {
+            println!("{:#?}", annotation);
+        }
+    }
 }

@@ -163,7 +163,10 @@ impl<'a> ClassData<'a> {
     /// get annotations of this class
     pub fn annotations(&self) -> Vec<AnnotationData<'a>> {
         self.annotations
-            .get_or_init(|| self.bridge.get_class_annotations(self.id as i64))
+            .get_or_init(|| {
+                let encode_id = Self::get_encode_id(self.dex_id, self.id);
+                self.bridge.get_class_annotations(encode_id)
+            })
             .clone()
     }
 

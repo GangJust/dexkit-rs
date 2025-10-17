@@ -183,14 +183,20 @@ impl<'a> MethodData<'a> {
     /// get annotations of this class
     pub fn annotations(&self) -> Vec<AnnotationData<'a>> {
         self.annotations
-            .get_or_init(|| self.bridge.get_method_annotations(self.id as i64))
+            .get_or_init(|| {
+                let encode_id = Self::get_encode_id(self.dex_id, self.id);
+                self.bridge.get_method_annotations(encode_id)
+            })
             .clone()
     }
 
     /// get parameter annotations of this method
     pub fn param_annotations(&self) -> Vec<Vec<AnnotationData<'a>>> {
         self.param_annotations
-            .get_or_init(|| self.bridge.get_parameter_annotations(self.id as i64))
+            .get_or_init(|| {
+                let encode_id = Self::get_encode_id(self.dex_id, self.id);
+                self.bridge.get_parameter_annotations(encode_id)
+            })
             .clone()
     }
 
