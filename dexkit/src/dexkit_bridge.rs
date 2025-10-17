@@ -1,17 +1,15 @@
-use crate::{
-    errors::Error,
-    query::{
-        BatchFindClassUsingStrings, BatchFindMethodUsingStrings, FindClass, FindField, FindMethod,
-    },
-    result::{
-        AnnotationData, ClassData, ClassDataList, FieldData, FieldDataList, MethodData,
-        MethodDataList,
-    },
-    wrap::{DexClass, DexMethod},
+use crate::errors::Error;
+use crate::query::{
+    BatchFindClassUsingStrings, BatchFindMethodUsingStrings, FindClass, FindField, FindMethod,
 };
+use crate::result::{
+    AnnotationData, ClassData, ClassDataList, FieldData, FieldDataList, MethodData, MethodDataList,
+    UsingFieldData,
+};
+use crate::wrap::{DexClass, DexMethod};
 use std::{
     collections::HashMap,
-    ffi::{CString, c_char, c_void},
+    ffi::{c_char, c_void, CString},
 };
 
 #[derive(Debug)]
@@ -22,7 +20,10 @@ pub struct DexkitBridge {
 impl DexkitBridge {
     /// Create a new DexkitBridge instance with the given APK path.
     /// Panics if the APK path cannot be added.
-    pub fn create_apk_path<S: Into<String>>(apk_path: S) -> Result<Self, Error> {
+    pub fn create_apk_path<S>(apk_path: S) -> Result<Self, Error>
+    where
+        S: Into<String>,
+    {
         let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
         let c_apk_path =
             CString::new(apk_path.into()).map_err(|e| Error::BridgeCreateError(e.to_string()))?;
@@ -508,7 +509,6 @@ impl DexkitBridge {
 
             let result = AnnotationData::with_annotation_meta_array_raw(self, data);
             dexkit_sys::dexkit_get_method_annotations_free(&mut out_buf, out_len); // release the memory allocated by layer C
-
             result
         }
     }
@@ -563,14 +563,15 @@ impl DexkitBridge {
                 &mut out_buf,
                 &mut out_len,
             );
-            let _data = if !out_buf.is_null() && out_len > 0 {
+            let data = if !out_buf.is_null() && out_len > 0 {
                 std::slice::from_raw_parts(out_buf as *const u8, out_len)
             } else {
                 &[]
             };
-            //todo: parse _data to Vec<Vec<AnnotationData<'_>>>
+
+            let result = AnnotationData::with_parameters_annotation_meta_array_raw(self, data);
             dexkit_sys::dexkit_get_parameter_annotations_free(&mut out_buf, out_len); // release the memory allocated by layer C
-            Vec::new() //todo: implement
+            result
         }
     }
 
@@ -685,10 +686,7 @@ impl DexkitBridge {
     }
 
     /// Get all fields used in this method by method ID
-    pub(crate) fn get_method_using_fields(
-        &self,
-        method_id: i64,
-    ) -> Vec<crate::result::UsingFieldData<'_>> {
+    pub(crate) fn get_method_using_fields(&self, method_id: i64) -> Vec<UsingFieldData<'_>> {
         unsafe {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
@@ -705,7 +703,7 @@ impl DexkitBridge {
                 &[]
             };
 
-            let result = crate::result::UsingFieldData::with_using_field_meta_array_raw(self, data);
+            let result = UsingFieldData::with_using_field_meta_array_raw(self, data);
             dexkit_sys::dexkit_get_method_using_fields_free(&mut out_buf, out_len); // release the memory allocated by layer C
             result
         }

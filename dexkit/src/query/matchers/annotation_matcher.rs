@@ -1,15 +1,16 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationMatcher as FBAnnotationMatcher, AnnotationMatcherArgs as FBAnnotationMatcherArgs,
     RetentionPolicyType as FBRetentionPolicyType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
-use crate::query::enums::{RetentionPolicyType, StringMatchType, TargetElementType};
+use crate::query::enums::RetentionPolicyType;
 use crate::query::matchers::ClassMatcher;
 use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::base::TargetElementTypesMatcher;
 use crate::query::matchers::{AnnotationElementMatcher, AnnotationElementsMatcher};
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct AnnotationMatcher {
     type_matcher: Option<ClassMatcher>,
@@ -102,7 +103,10 @@ impl AnnotationMatcher {
     }
 
     // extend type_matcher
-    pub fn set_type_class_name<S: Into<String>>(mut self, class_name: S) -> Self {
+    pub fn set_type_class_name<S>(mut self, class_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.type_matcher = Some(
             ClassMatcher::create()
                 .set_class_name_matcher(StringMatcher::create_string_str(class_name)),
@@ -110,10 +114,13 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn set_eq_type_class_name<S: Into<String>>(mut self, class_name: S) -> Self {
+    pub fn set_eq_type_class_name<S>(mut self, class_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.type_matcher = Some(
             ClassMatcher::create()
-                .set_class_name_matcher(StringMatcher::create_eq_string_str(class_name)),
+                .set_class_name_matcher(StringMatcher::create_string_eq_str(class_name)),
         );
         self
     }
@@ -188,7 +195,10 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_using_string_strs<S: Into<String>>(mut self, ss: Vec<S>) -> Self {
+    pub fn add_using_string_strs<S>(mut self, ss: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<StringMatcher> = ss
             .into_iter()
             .map(|s| StringMatcher::create_string_str(s))
@@ -201,10 +211,13 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_eq_using_string_strs<S: Into<String>>(mut self, ss: Vec<S>) -> Self {
+    pub fn add_eq_using_string_strs<S>(mut self, ss: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<StringMatcher> = ss
             .into_iter()
-            .map(|s| StringMatcher::create_eq_string_str(s))
+            .map(|s| StringMatcher::create_string_eq_str(s))
             .collect();
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.extend(matchers);
@@ -214,7 +227,10 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_using_string_str<S: Into<String>>(mut self, s: S) -> Self {
+    pub fn add_using_string_str<S>(mut self, s: S) -> Self
+    where
+        S: Into<String>,
+    {
         let matcher = StringMatcher::create_string_str(s);
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.push(matcher);
@@ -224,8 +240,11 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_eq_using_string_str<S: Into<String>>(mut self, s: S) -> Self {
-        let matcher = StringMatcher::create_eq_string_str(s);
+    pub fn add_eq_using_string_str<S>(mut self, s: S) -> Self
+    where
+        S: Into<String>,
+    {
+        let matcher = StringMatcher::create_string_eq_str(s);
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.push(matcher);
         } else {

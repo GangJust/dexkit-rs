@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     EncodeValueBoolean as FBEncodeValueBoolean, EncodeValueBooleanArgs as FBEncodeValueBooleanArgs,
     EncodeValueByte as FBEncodeValueByte, EncodeValueByteArgs as FBEncodeValueByteArgs,
@@ -12,7 +14,6 @@ use crate::gen_flatbuffers::dexkit::schema::{
 
 use crate::query::base::IAnnotationEncodeValue;
 use crate::query::base::INumberEncodeValue;
-use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub trait EncodeValue {
     type Value;
@@ -75,7 +76,12 @@ impl IAnnotationEncodeValue for EncodeValueChar {
         &self,
         fbb: &mut FlatBufferBuilder,
     ) -> WIPOffset<UnionWIPOffset> {
-        let value = FBEncodeValueShort::create(fbb, &FBEncodeValueShortArgs { value: self.0 as i16 });
+        let value = FBEncodeValueShort::create(
+            fbb,
+            &FBEncodeValueShortArgs {
+                value: self.0 as i16,
+            },
+        );
         value.as_union_value()
     }
 }

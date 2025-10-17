@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     UsingFieldMatcher as FBUsingFieldMatcher, UsingFieldMatcherArgs as FBUsingFieldMatcherArgs,
     UsingType as FBUsingType,
@@ -5,7 +7,6 @@ use crate::gen_flatbuffers::dexkit::schema::{
 use crate::query::base::BaseQuery;
 use crate::query::enums::UsingType;
 use crate::query::matchers::FieldMatcher;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct UsingFieldMatcher {
     matcher: Option<FieldMatcher>,

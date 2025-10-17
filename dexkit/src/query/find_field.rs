@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     FindField as FBFindField, FindFieldArgs as FBFindFieldArgs,
 };
@@ -5,7 +7,6 @@ use crate::query::base::BaseQuery;
 use crate::query::matchers::FieldMatcher;
 use crate::result::base::BaseData;
 use crate::result::{ClassData, FieldData};
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct FindField<'a> {
     search_packages: Option<Vec<String>>,
@@ -92,12 +93,18 @@ impl<'a> FindField<'a> {
     }
 
     // base
-    pub fn set_search_packages<S: Into<String>>(mut self, packages: Vec<S>) -> Self {
+    pub fn set_search_packages<S>(mut self, packages: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.search_packages = Some(packages.into_iter().map(Into::into).collect());
         self
     }
 
-    pub fn set_exclude_packages<S: Into<String>>(mut self, packages: Vec<S>) -> Self {
+    pub fn set_exclude_packages<S>(mut self, packages: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.exclude_packages = Some(packages.into_iter().map(Into::into).collect());
         self
     }
@@ -107,12 +114,18 @@ impl<'a> FindField<'a> {
         self
     }
 
-    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+    pub fn set_search_classes<V>(mut self, classes: V) -> Self
+    where
+        V: Into<Vec<ClassData<'a>>>,
+    {
         self.search_classes = Some(classes.into());
         self
     }
 
-    pub fn set_search_fields<V: Into<Vec<FieldData<'a>>>>(mut self, fields: V) -> Self {
+    pub fn set_search_fields<V>(mut self, fields: V) -> Self
+    where
+        V: Into<Vec<FieldData<'a>>>,
+    {
         self.search_fields = Some(fields.into());
         self
     }
@@ -128,7 +141,10 @@ impl<'a> FindField<'a> {
     }
 
     // extend search_packages
-    pub fn add_search_package<S: Into<String>>(mut self, package: S) -> Self {
+    pub fn add_search_package<S>(mut self, package: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.search_packages
             .get_or_insert_with(Vec::new)
             .push(package.into());
@@ -136,7 +152,10 @@ impl<'a> FindField<'a> {
     }
 
     // extend exclude_packages
-    pub fn add_exclude_package<S: Into<String>>(mut self, package: S) -> Self {
+    pub fn add_exclude_package<S>(mut self, package: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.exclude_packages
             .get_or_insert_with(Vec::new)
             .push(package.into());

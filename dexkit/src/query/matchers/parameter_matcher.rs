@@ -1,9 +1,10 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     ParameterMatcher as FBParameterMatcher, ParameterMatcherArgs as FBParameterMatcherArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::matchers::{AnnotationsMatcher, ClassMatcher};
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct ParameterMatcher {
     annotations_matcher: Option<AnnotationsMatcher>,

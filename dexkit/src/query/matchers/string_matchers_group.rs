@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     BatchUsingStringsMatcher as FBBatchUsingStringsMatcher,
     BatchUsingStringsMatcherArgs as FBBatchUsingStringsMatcherArgs,
@@ -11,20 +13,18 @@ pub struct StringMatchersGroup {
 
 impl From<StringMatchersGroup> for Vec<u8> {
     fn from(value: StringMatchersGroup) -> Self {
-        let mut fbb = flatbuffers::FlatBufferBuilder::with_capacity(256);
+        let mut fbb = FlatBufferBuilder::with_capacity(256);
         let root = value.inner_build(&mut fbb);
         fbb.finish(root, None);
         fbb.finished_data().to_vec()
     }
 }
 
-impl<'a> BaseQuery<'a, flatbuffers::WIPOffset<FBBatchUsingStringsMatcher<'a>>>
-    for StringMatchersGroup
-{
+impl<'a> BaseQuery<'a, WIPOffset<FBBatchUsingStringsMatcher<'a>>> for StringMatchersGroup {
     fn inner_build(
         &self,
-        fbb: &mut flatbuffers::FlatBufferBuilder<'a>,
-    ) -> flatbuffers::WIPOffset<FBBatchUsingStringsMatcher<'a>> {
+        fbb: &mut FlatBufferBuilder<'a>,
+    ) -> WIPOffset<FBBatchUsingStringsMatcher<'a>> {
         let union_key = self.group_name.as_ref().map(|name| fbb.create_string(name));
         let using_strings = if !self.string_matchers.is_empty() {
             let matchers_offsets: Vec<_> = self
@@ -48,7 +48,10 @@ impl<'a> BaseQuery<'a, flatbuffers::WIPOffset<FBBatchUsingStringsMatcher<'a>>>
 }
 
 impl StringMatchersGroup {
-    pub fn create<S: Into<String>>(group_name: S) -> Self {
+    pub fn create<S>(group_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         Self {
             group_name: Some(group_name.into()),
             string_matchers: Vec::new(),
@@ -56,7 +59,10 @@ impl StringMatchersGroup {
     }
 
     // base
-    pub fn set_group_name<S: Into<String>>(mut self, name: S) -> Self {
+    pub fn set_group_name<S>(mut self, name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.group_name = Some(name.into());
         self
     }
@@ -72,7 +78,10 @@ impl StringMatchersGroup {
         self
     }
 
-    pub fn add_string_matchers_str<S: Into<String>>(mut self, strings: Vec<S>) -> Self {
+    pub fn add_string_matchers_str<S>(mut self, strings: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.string_matchers.extend(
             strings
                 .into_iter()
@@ -81,24 +90,33 @@ impl StringMatchersGroup {
         self
     }
 
-    pub fn add_string_matcher_str<S: Into<String>>(mut self, string: S) -> Self {
+    pub fn add_string_matcher_str<S>(mut self, string: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.string_matchers
             .push(StringMatcher::create_string_str(string));
         self
     }
 
-    pub fn add_eq_string_matcher_strs<S: Into<String>>(mut self, strings: Vec<S>) -> Self {
+    pub fn add_string_matcher_eq_strs<S>(mut self, strings: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.string_matchers.extend(
             strings
                 .into_iter()
-                .map(|m| StringMatcher::create_eq_string_str(m)),
+                .map(|m| StringMatcher::create_string_eq_str(m)),
         );
         self
     }
 
-    pub fn add_eq_string_matcher_str<S: Into<String>>(mut self, string: S) -> Self {
+    pub fn add_string_matcher_eq_str<S>(mut self, string: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.string_matchers
-            .push(StringMatcher::create_eq_string_str(string));
+            .push(StringMatcher::create_string_eq_str(string));
         self
     }
 }

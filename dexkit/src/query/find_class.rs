@@ -1,11 +1,12 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     FindClass as FBFindClass, FindClassArgs as FBFindClassArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::matchers::ClassMatcher;
-use crate::result::ClassData;
 use crate::result::base::BaseData;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
+use crate::result::ClassData;
 
 pub struct FindClass<'a> {
     search_packages: Option<Vec<String>>,
@@ -77,12 +78,18 @@ impl<'a> FindClass<'a> {
     }
 
     // base
-    pub fn set_search_packages<S: Into<String>>(mut self, packages: Vec<S>) -> Self {
+    pub fn set_search_packages<S>(mut self, packages: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.search_packages = Some(packages.into_iter().map(Into::into).collect());
         self
     }
 
-    pub fn set_exclude_packages<S: Into<String>>(mut self, packages: Vec<S>) -> Self {
+    pub fn set_exclude_packages<S>(mut self, packages: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.exclude_packages = Some(packages.into_iter().map(Into::into).collect());
         self
     }
@@ -92,7 +99,10 @@ impl<'a> FindClass<'a> {
         self
     }
 
-    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+    pub fn set_search_classes<V>(mut self, classes: V) -> Self
+    where
+        V: Into<Vec<ClassData<'a>>>,
+    {
         self.search_classes = Some(classes.into());
         self
     }
@@ -108,7 +118,10 @@ impl<'a> FindClass<'a> {
     }
 
     // extend search_packages
-    pub fn add_search_package<S: Into<String>>(mut self, package: S) -> Self {
+    pub fn add_search_package<S>(mut self, package: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.search_packages
             .get_or_insert_with(Vec::new)
             .push(package.into());
@@ -116,7 +129,10 @@ impl<'a> FindClass<'a> {
     }
 
     // extend exclude_packages
-    pub fn add_exclude_package<S: Into<String>>(mut self, package: S) -> Self {
+    pub fn add_exclude_package<S>(mut self, package: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.exclude_packages
             .get_or_insert_with(Vec::new)
             .push(package.into());

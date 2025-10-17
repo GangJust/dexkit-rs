@@ -1,7 +1,8 @@
+use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::Number as FBNumber;
 use crate::query::base::{BaseQuery, INumberEncodeValue};
 use crate::query::enums::NumberEncodeValueType;
-use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub struct NumberEncodeValueMatcher {
     value: Option<Box<dyn INumberEncodeValue>>,

@@ -1,18 +1,19 @@
+use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     MethodMatcher as FBMethodMatcher, MethodMatcherArgs as FBMethodMatcherArgs, Number as FBNumber,
     NumberWrapper as FBNumberWrapper, NumberWrapperArgs as FBNumberWrapperArgs,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::NumberEncodeValueMatcher;
+use crate::query::matchers::base::OpCodesMatcher;
+use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::ClassMatcher;
 use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::ParametersMatcher;
 use crate::query::matchers::UsingFieldMatcher;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::NumberEncodeValueMatcher;
-use crate::query::matchers::base::OpCodesMatcher;
-use crate::query::matchers::base::StringMatcher;
-use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub struct MethodMatcher {
     name_matcher: Option<StringMatcher>,
@@ -153,7 +154,10 @@ impl MethodMatcher {
         self
     }
 
-    pub fn set_proto_shorty_matcher<S: Into<String>>(mut self, proto: S) -> Self {
+    pub fn set_proto_shorty_matcher<S>(mut self, proto: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.proto_shorty_matcher = Some(proto.into());
         self
     }
@@ -203,13 +207,19 @@ impl MethodMatcher {
         self
     }
 
-    pub fn set_method_name_str<S: Into<String>>(mut self, name: S) -> Self {
+    pub fn set_method_name_str<S>(mut self, name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.name_matcher = Some(StringMatcher::create_string_str(name));
         self
     }
 
-    pub fn set_eq_method_name_str<S: Into<String>>(mut self, name: S) -> Self {
-        self.name_matcher = Some(StringMatcher::create_eq_string_str(name));
+    pub fn set_eq_method_name_str<S>(mut self, name: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.name_matcher = Some(StringMatcher::create_string_eq_str(name));
         self
     }
 

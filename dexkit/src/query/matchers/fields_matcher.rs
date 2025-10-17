@@ -1,12 +1,13 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     FieldsMatcher as FBFieldsMatcher, FieldsMatcherArgs as FBFieldsMatcherArgs,
     MatchType as FBMatchType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::FieldMatcher;
 use crate::query::matchers::base::IntRange;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
+use crate::query::matchers::FieldMatcher;
 
 pub struct FieldsMatcher {
     fields_matcher: Option<Vec<FieldMatcher>>,
@@ -80,7 +81,10 @@ impl FieldsMatcher {
         self
     }
 
-    pub fn set_field_name_strs(mut self, field_names: Vec<String>) -> Self {
+    pub fn set_field_name_strs<S>(mut self, field_names: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<FieldMatcher> = field_names
             .into_iter()
             .map(|name| FieldMatcher::create().set_field_name_str(name))
@@ -89,7 +93,10 @@ impl FieldsMatcher {
         self
     }
 
-    pub fn add_field_names_strs<S: Into<String>>(mut self, field_names: Vec<S>) -> Self {
+    pub fn add_field_names_strs<S>(mut self, field_names: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<FieldMatcher> = field_names
             .into_iter()
             .map(|name| FieldMatcher::create().set_field_name_str(name))
@@ -105,7 +112,10 @@ impl FieldsMatcher {
         self
     }
 
-    pub fn add_field_name_str<S: Into<String>>(mut self, field_name: S) -> Self {
+    pub fn add_field_name_str<S>(mut self, field_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.fields_matcher
             .get_or_insert_with(Vec::new)
             .push(FieldMatcher::create().set_field_name_str(field_name));

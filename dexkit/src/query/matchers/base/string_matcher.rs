@@ -1,10 +1,11 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     StringMatchType as FBSchemaStringMatchType, StringMatcher as FBStringMatcher,
     StringMatcherArgs as FBStringMatcherArgs,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::StringMatchType;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct StringMatcher {
     value: Option<String>,
@@ -53,7 +54,10 @@ impl StringMatcher {
         Self::default()
     }
 
-    pub fn create_string_str<S: Into<String>>(value: S) -> Self {
+    pub fn create_string_str<S>(value: S) -> Self
+    where
+        S: Into<String>,
+    {
         Self {
             value: Some(value.into()),
             match_type: StringMatchType::Contains,
@@ -61,7 +65,10 @@ impl StringMatcher {
         }
     }
 
-    pub fn create_eq_string_str<S: Into<String>>(value: S) -> Self {
+    pub fn create_string_eq_str<S>(value: S) -> Self
+    where
+        S: Into<String>,
+    {
         Self {
             value: Some(value.into()),
             match_type: StringMatchType::Equals,
@@ -70,7 +77,10 @@ impl StringMatcher {
     }
 
     // base
-    pub fn set_value<S: Into<String>>(mut self, value: S) -> Self {
+    pub fn set_value<S>(mut self, value: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.value = Some(value.into());
         self
     }

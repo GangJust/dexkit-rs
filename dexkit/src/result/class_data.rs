@@ -1,13 +1,9 @@
+use crate::gen_flatbuffers::dexkit::schema::ClassMeta as FBClassMeta;
+use crate::result::{AnnotationData, ClassDataList, FieldDataList, MethodDataList};
+use crate::wrap::DexClass;
+use crate::{result::base::BaseData, DexkitBridge};
 use std::cell::OnceCell;
 use std::fmt::Debug;
-use std::sync::LazyLock;
-
-use crate::gen_flatbuffers::dexkit::schema::ClassMeta as FBClassMeta;
-use crate::result::{
-    AnnotationData, ClassDataList, FieldData, FieldDataList, MethodData, MethodDataList,
-};
-use crate::wrap::DexClass;
-use crate::{DexkitBridge, result::base::BaseData};
 
 #[allow(unused)]
 #[derive(Clone)]

@@ -1,8 +1,9 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     IntRange as FBIntRange, IntRangeArgs as FBIntRangeArgs,
 };
 use crate::query::base::BaseQuery;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct IntRange {
     min: u32,
@@ -36,6 +37,18 @@ impl IntRange {
         Self::default()
     }
 
+    // base
+    pub fn set_min(mut self, min: u32) -> Self {
+        self.min = min;
+        self
+    }
+
+    pub fn set_max(mut self, max: u32) -> Self {
+        self.max = max;
+        self
+    }
+
+    // extend
     pub fn exactly(count: u32) -> Self {
         IntRange {
             min: count,
@@ -56,16 +69,5 @@ impl IntRange {
 
     pub fn at_most(count: u32) -> Self {
         IntRange { min: 0, max: count }
-    }
-
-    // base
-    pub fn set_min(mut self, min: u32) -> Self {
-        self.min = min;
-        self
-    }
-
-    pub fn set_max(mut self, max: u32) -> Self {
-        self.max = max;
-        self
     }
 }

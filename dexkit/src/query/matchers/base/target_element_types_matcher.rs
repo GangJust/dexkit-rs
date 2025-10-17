@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     MatchType as FBMatchType, TargetElementType as FBTargetElementType,
     TargetElementTypesMatcher as FBTargetElementTypesMatcher,
@@ -6,7 +8,6 @@ use crate::gen_flatbuffers::dexkit::schema::{
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
 use crate::query::enums::TargetElementType;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct TargetElementTypesMatcher {
     types: Option<Vec<TargetElementType>>,

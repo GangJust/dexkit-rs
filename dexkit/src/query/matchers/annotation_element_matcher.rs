@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationElementMatcher as FBAnnotationElementMatcher,
     AnnotationElementMatcherArgs as FBAnnotationElementMatcherArgs,
@@ -9,7 +11,6 @@ use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::{
     AnnotationEncodeArrayMatcher, AnnotationMatcher, ClassMatcher, FieldMatcher, MethodMatcher,
 };
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct AnnotationElementMatcher {
     name_matcher: Option<StringMatcher>,
@@ -103,6 +104,26 @@ impl AnnotationElementMatcher {
 
     pub fn string_value(mut self, value: StringMatcher) -> Self {
         self.value_matcher = Some(AnnotationEncodeValueMatcher::create_string(value));
+        self
+    }
+
+    pub fn string_value_str<S>(mut self, value: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_string(
+            StringMatcher::create_string_str(value.into()),
+        ));
+        self
+    }
+
+    pub fn string_value_eq_str<S>(mut self, value: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_string(
+            StringMatcher::create_string_eq_str(value.into()),
+        ));
         self
     }
 

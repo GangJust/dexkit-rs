@@ -1,11 +1,11 @@
 use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationMeta as FBAnnotationMeta, AnnotationMetaArrayHolder as FBAnnotationMetaArrayHolder,
     AnnotationVisibilityType as FBAnnotationVisibilityType,
-    ParametersAnnotationMetaArrayHoler as FBParametersAnnotationMetaArrayHolder,
+    ParametersAnnotationMetaArrayHoler as FBParametersAnnotationMetaArrayHoler,
 };
 use crate::result::AnnotationElementData;
 use crate::wrap::DexClass;
-use crate::{DexkitBridge, query::enums::AnnotationVisibilityType, result::base::BaseData};
+use crate::{query::enums::AnnotationVisibilityType, result::base::BaseData, DexkitBridge};
 use std::cell::OnceCell;
 use std::fmt::Debug;
 
@@ -121,7 +121,7 @@ impl<'a> AnnotationData<'a> {
         data: &'a [u8],
     ) -> Vec<Vec<AnnotationData<'a>>> {
         let parameters_annotation_meta_array_holer =
-            unsafe { flatbuffers::root_unchecked::<FBParametersAnnotationMetaArrayHolder>(data) }; // not verify data
+            unsafe { flatbuffers::root_unchecked::<FBParametersAnnotationMetaArrayHoler>(data) }; // not verify data
 
         parameters_annotation_meta_array_holer
             .annotations_array()

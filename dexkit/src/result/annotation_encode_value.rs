@@ -1,19 +1,14 @@
-use std::any::Any;
-use std::fmt::Debug;
-use std::str::{from_utf8, from_utf8_unchecked};
-
-use flatbuffers::{UOffsetT, Verifier, VerifierOptions, read_scalar_at};
-
-use crate::DexkitBridge;
 use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationEncodeValueMeta as FBAnnotationEncodeValueMeta,
-    AnnotationEncodeValueType as FBAnnotationEncodeValueType,
     EncodeValueString as FBEncodeValueString,
 };
 use crate::query::enums::AnnotationEncodeValueType;
 use crate::query::matchers::EncodeValue;
 use crate::result::{AnnotationData, AnnotationEncodeArrayData, ClassData, FieldData, MethodData};
 use crate::uitls::{MUtf8, StringUnicodeEncoderDecoder};
+use crate::DexkitBridge;
+use std::fmt::Debug;
+use std::str::from_utf8;
 
 #[derive(Debug, Clone)]
 pub enum EncodeValueData<'a> {

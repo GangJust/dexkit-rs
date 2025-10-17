@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     OpCodeMatchType as FBOpCodeMatchType, OpCodesMatcher as FBOpCodesMatcher,
     OpCodesMatcherArgs as FBOpCodesMatcherArgs,
@@ -22,11 +24,8 @@ impl Default for OpCodesMatcher {
     }
 }
 
-impl<'a> BaseQuery<'a, flatbuffers::WIPOffset<FBOpCodesMatcher<'a>>> for OpCodesMatcher {
-    fn inner_build(
-        &self,
-        fbb: &mut flatbuffers::FlatBufferBuilder<'a>,
-    ) -> flatbuffers::WIPOffset<FBOpCodesMatcher<'a>> {
+impl<'a> BaseQuery<'a, WIPOffset<FBOpCodesMatcher<'a>>> for OpCodesMatcher {
+    fn inner_build(&self, fbb: &mut FlatBufferBuilder<'a>) -> WIPOffset<FBOpCodesMatcher<'a>> {
         let op_codes = self.op_codes.as_ref().map(|codes| {
             let codes_slice: &[i16] = codes;
             fbb.create_vector(codes_slice)

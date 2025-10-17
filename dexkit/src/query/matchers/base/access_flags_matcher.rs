@@ -1,9 +1,10 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     AccessFlagsMatcher as FBAccessFlagsMatcher, AccessFlagsMatcherArgs as FBAccessFlagsMatcherArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct AccessFlagsMatcher {
     modifiers: u32,
@@ -53,6 +54,11 @@ impl AccessFlagsMatcher {
     // extend modifiers
     pub fn or_modifiers(mut self, modifiers: u32) -> Self {
         self.modifiers |= modifiers;
+        self
+    }
+
+    pub fn and_modifiers(mut self, modifiers: u32) -> Self {
+        self.modifiers &= modifiers;
         self
     }
 }

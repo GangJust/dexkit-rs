@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::AnnotationEncodeValueMatcher as FBAnnotationEncodeValueMatcher;
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::AnnotationEncodeValueType;
@@ -7,7 +9,6 @@ use crate::query::matchers::{
     EncodeValueByte, EncodeValueDouble, EncodeValueFloat, EncodeValueInt, EncodeValueLong,
     EncodeValueNull, EncodeValueShort, FieldMatcher, MethodMatcher,
 };
-use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub struct AnnotationEncodeValueMatcher {
     value: Option<Box<dyn IAnnotationEncodeValue>>,
@@ -161,9 +162,21 @@ impl AnnotationEncodeValueMatcher {
     }
 
     // extend value
-    pub fn create_string_str<S: Into<String>>(value: S) -> Self {
+    pub fn create_string_str<S>(value: S) -> Self
+    where
+        S: Into<String>,
+    {
         Self {
             value: Some(Box::new(StringMatcher::create_string_str(value))),
+            value_type: Some(AnnotationEncodeValueType::StringValue),
+        }
+    }
+    pub fn create_string_eq_str<S>(value: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            value: Some(Box::new(StringMatcher::create_string_eq_str(value))),
             value_type: Some(AnnotationEncodeValueType::StringValue),
         }
     }

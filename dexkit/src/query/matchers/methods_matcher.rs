@@ -1,12 +1,13 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     MatchType as FBMatchType, MethodsMatcher as FBMethodsMatcher,
     MethodsMatcherArgs as FBMethodsMatcherArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::MethodMatcher;
 use crate::query::matchers::base::IntRange;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
+use crate::query::matchers::MethodMatcher;
 
 pub struct MethodsMatcher {
     methods_matcher: Option<Vec<MethodMatcher>>,
@@ -73,7 +74,10 @@ impl MethodsMatcher {
         self
     }
 
-    pub fn add_method_names_strs<S: Into<String>>(self, method_name: Vec<S>) -> Self {
+    pub fn add_method_names_strs<S>(self, method_name: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<MethodMatcher> = method_name
             .into_iter()
             .map(|name| MethodMatcher::create().set_method_name_str(name))
@@ -81,7 +85,10 @@ impl MethodsMatcher {
         self.set_methods_matcher(matchers)
     }
 
-    pub fn add_method_name_str<S: Into<String>>(self, method_name: S) -> Self {
+    pub fn add_method_name_str<S>(self, method_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.add_method_matcher(MethodMatcher::create().set_method_name_str(method_name))
     }
 

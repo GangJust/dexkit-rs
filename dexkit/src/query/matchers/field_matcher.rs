@@ -1,13 +1,14 @@
+use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     FieldMatcher as FBFieldMatcher, FieldMatcherArgs as FBFieldMatcherArgs,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
-use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::base::AccessFlagsMatcher;
 use crate::query::matchers::base::StringMatcher;
+use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::{AnnotationMatcher, AnnotationsMatcher};
 use crate::query::matchers::{ClassMatcher, MethodMatcher};
-use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 pub struct FieldMatcher {
     name_matcher: Option<StringMatcher>,
@@ -118,17 +119,26 @@ impl FieldMatcher {
     }
 
     // extend name_matcher
-    pub fn set_field_name_str<S: Into<String>>(self, name: S) -> Self {
+    pub fn set_field_name_str<S>(self, name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.set_field_name_matcher(StringMatcher::create_string_str(name))
     }
 
     // extend modifiers_matcher
-    pub fn set_modifiers<U: Into<u32>>(mut self, modifiers: U) -> Self {
+    pub fn set_modifiers<U>(mut self, modifiers: U) -> Self
+    where
+        U: Into<u32>,
+    {
         self.modifiers_matcher = Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
         self
     }
 
-    pub fn or_modifiers<U: Into<u32>>(mut self, modifiers: U) -> Self {
+    pub fn or_modifiers<U>(mut self, modifiers: U) -> Self
+    where
+        U: Into<u32>,
+    {
         if self.modifiers_matcher.is_none() {
             self.modifiers_matcher =
                 Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
@@ -140,14 +150,35 @@ impl FieldMatcher {
         self
     }
 
+    pub fn and_modifiers<U>(mut self, modifiers: U) -> Self
+    where
+        U: Into<u32>,
+    {
+        if self.modifiers_matcher.is_none() {
+            self.modifiers_matcher =
+                Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
+        } else {
+            self.modifiers_matcher = self
+                .modifiers_matcher
+                .map(|mm| mm.and_modifiers(modifiers.into()));
+        }
+        self
+    }
+
     // extend class_matcher
-    pub fn set_class_name_str<S: Into<String>>(mut self, class_name: S) -> Self {
+    pub fn set_class_name_str<S>(mut self, class_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.class_matcher = Some(ClassMatcher::create().set_class_name_str(class_name));
         self
     }
 
     // extend type_matcher
-    pub fn set_type_name_str<S: Into<String>>(mut self, type_name: S) -> Self {
+    pub fn set_type_name_str<S>(mut self, type_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.type_matcher = Some(ClassMatcher::create().set_class_name_str(type_name));
         self
     }
@@ -172,7 +203,10 @@ impl FieldMatcher {
         self
     }
 
-    pub fn add_annotation_strs<S: Into<String>>(mut self, annotations: Vec<S>) -> Self {
+    pub fn add_annotation_strs<S>(mut self, annotations: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         if self.annotations_matcher.is_none() {
             self.add_annotations(
                 annotations
@@ -193,7 +227,10 @@ impl FieldMatcher {
         }
     }
 
-    pub fn add_annotation_str<S: Into<String>>(mut self, annotation: S) -> Self {
+    pub fn add_annotation_str<S>(mut self, annotation: S) -> Self
+    where
+        S: Into<String>,
+    {
         if self.annotations_matcher.is_none() {
             self.add_annotation(AnnotationMatcher::create().set_type_class_name(annotation))
         } else {

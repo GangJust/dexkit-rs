@@ -1,12 +1,13 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     InterfacesMatcher as FBInterfacesMatcher, InterfacesMatcherArgs as FBInterfacesMatcherArgs,
     MatchType as FBMatchType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::ClassMatcher;
 use crate::query::matchers::base::IntRange;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
+use crate::query::matchers::ClassMatcher;
 
 pub struct InterfacesMatcher {
     interface_matcher: Option<Vec<ClassMatcher>>,
@@ -81,7 +82,10 @@ impl InterfacesMatcher {
         self
     }
 
-    pub fn set_interface_name_strs<S: Into<String>>(mut self, names: Vec<S>) -> Self {
+    pub fn set_interface_name_strs<S>(mut self, names: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<ClassMatcher> = names
             .into_iter()
             .map(|name| ClassMatcher::create().set_class_name_str(name))
@@ -90,7 +94,10 @@ impl InterfacesMatcher {
         self
     }
 
-    pub fn add_interface_name_strs<S: Into<String>>(mut self, names: Vec<S>) -> Self {
+    pub fn add_interface_name_strs<S>(mut self, names: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<ClassMatcher> = names
             .into_iter()
             .map(|name| ClassMatcher::create().set_class_name_str(name))
@@ -101,7 +108,10 @@ impl InterfacesMatcher {
         self
     }
 
-    pub fn add_interface_name_str<S: Into<String>>(mut self, name: S) -> Self {
+    pub fn add_interface_name_str<S>(mut self, name: S) -> Self
+    where
+        S: Into<String>,
+    {
         let matcher = ClassMatcher::create().set_class_name_str(name);
         self.interface_matcher
             .get_or_insert_with(Vec::new)

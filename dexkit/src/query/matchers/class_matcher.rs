@@ -1,19 +1,20 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     ClassMatcher as FBClassMatcher, ClassMatcherArgs as FBClassMatcherArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
-use crate::query::enums::{MatchType, StringMatchType};
+use crate::query::enums::StringMatchType;
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::StringMatcher;
+use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
 use crate::query::matchers::AnnotationMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::FieldMatcher;
 use crate::query::matchers::FieldsMatcher;
 use crate::query::matchers::MethodMatcher;
 use crate::query::matchers::MethodsMatcher;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::StringMatcher;
-use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct ClassMatcher {
     source_matcher: Option<StringMatcher>,
@@ -142,12 +143,18 @@ impl ClassMatcher {
     }
 
     // extend source
-    pub fn set_source_str<S: Into<String>>(self, source: S) -> Self {
+    pub fn set_source_str<S>(self, source: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.set_source_matcher(StringMatcher::create_string_str(source))
     }
 
     // extend class_name
-    pub fn set_class_name_str<S: Into<String>>(self, class_name: S) -> Self {
+    pub fn set_class_name_str<S>(self, class_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.set_class_name_matcher(
             StringMatcher::create()
                 .set_value(class_name)
@@ -156,12 +163,18 @@ impl ClassMatcher {
     }
 
     // extend modifiers
-    pub fn set_modifiers<U: Into<u32>>(mut self, modifiers: U) -> Self {
+    pub fn set_modifiers<U>(mut self, modifiers: U) -> Self
+    where
+        U: Into<u32>,
+    {
         self.modifiers_matcher = Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
         self
     }
 
-    pub fn or_modifiers<U: Into<u32>>(mut self, modifiers: U) -> Self {
+    pub fn or_modifiers<U>(mut self, modifiers: U) -> Self
+    where
+        U: Into<u32>,
+    {
         if self.modifiers_matcher.is_none() {
             self.modifiers_matcher =
                 Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
@@ -173,8 +186,26 @@ impl ClassMatcher {
         self
     }
 
+    pub fn and_modifiers<U>(mut self, modifiers: U) -> Self
+    where
+        U: Into<u32>,
+    {
+        if self.modifiers_matcher.is_none() {
+            self.modifiers_matcher =
+                Some(AccessFlagsMatcher::create().set_modifiers(modifiers.into()));
+        } else {
+            self.modifiers_matcher = self
+                .modifiers_matcher
+                .map(|mm| mm.and_modifiers(modifiers.into()));
+        }
+        self
+    }
+
     // extend super_class_name
-    pub fn set_super_class_name_str<S: Into<String>>(self, super_class_name: S) -> Self {
+    pub fn set_super_class_name_str<S>(self, super_class_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         let matcher = ClassMatcher::create().set_class_name_str(super_class_name);
         self.set_super_class_name_matcher(matcher)
     }
@@ -204,7 +235,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_interface_strs<S: Into<String>>(mut self, interfaces: Vec<S>) -> Self {
+    pub fn add_interface_strs<S>(mut self, interfaces: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         if self.interfaces_matcher.is_none() {
             self.set_interfaces(
                 interfaces
@@ -220,7 +254,10 @@ impl ClassMatcher {
         }
     }
 
-    pub fn add_interfaces_str<S: Into<String>>(self, interface: S) -> Self {
+    pub fn add_interfaces_str<S>(self, interface: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.add_interface(ClassMatcher::create().set_class_name_str(interface))
     }
 
@@ -285,7 +322,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_annotations_strs<S: Into<String>>(mut self, annotations: Vec<S>) -> Self {
+    pub fn add_annotations_strs<S>(mut self, annotations: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         if self.annotations_matcher.is_none() {
             self.add_annotations(
                 annotations
@@ -306,7 +346,10 @@ impl ClassMatcher {
         }
     }
 
-    pub fn add_annotations_str<S: Into<String>>(mut self, annotation: S) -> Self {
+    pub fn add_annotations_str<S>(mut self, annotation: S) -> Self
+    where
+        S: Into<String>,
+    {
         if self.annotations_matcher.is_none() {
             self.add_annotation(AnnotationMatcher::create().set_type_class_name(annotation))
         } else {
@@ -365,7 +408,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_field_strs<S: Into<String>>(mut self, field_names: Vec<S>) -> Self {
+    pub fn add_field_strs<S>(mut self, field_names: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         if self.fields_matcher.is_none() {
             self.fields_matcher = Some(FieldsMatcher::create().add_field_names_strs(field_names));
         } else {
@@ -376,7 +422,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_field_str<S: Into<String>>(self, field_name: S) -> Self {
+    pub fn add_field_str<S>(self, field_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.add_field(FieldMatcher::create().set_field_name_str(field_name))
     }
 
@@ -426,7 +475,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_method_strs<S: Into<String>>(mut self, method_names: Vec<S>) -> Self {
+    pub fn add_method_strs<S>(mut self, method_names: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         if self.methods_matcher.is_none() {
             self.methods_matcher =
                 Some(MethodsMatcher::create().add_method_names_strs(method_names));
@@ -438,7 +490,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_method_str<S: Into<String>>(self, method_name: S) -> Self {
+    pub fn add_method_str<S>(self, method_name: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.add_method(MethodMatcher::create().set_method_name_str(method_name))
     }
 
@@ -503,7 +558,10 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_using_strings_strs<S: Into<String>>(mut self, using_strings: Vec<S>) -> Self {
+    pub fn add_using_strings_strs<S>(mut self, using_strings: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         let matchers: Vec<StringMatcher> = using_strings
             .into_iter()
             .map(|s| StringMatcher::create_string_str(s))
@@ -519,23 +577,21 @@ impl ClassMatcher {
         self
     }
 
-    pub fn add_using_string_str<S: Into<String>>(self, using_string: S) -> Self {
+    pub fn add_using_string_str<S>(self, using_string: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.add_using_string(StringMatcher::create_string_str(using_string))
     }
 
-    pub fn add_eq_using_string_str<S: Into<String>>(self, using_string: S) -> Self {
+    pub fn add_using_string_eq_str<S>(self, using_string: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.add_using_string(
             StringMatcher::create()
                 .set_value(using_string)
                 .set_match_type(StringMatchType::Equals),
-        )
-    }
-
-    pub fn add_contains_using_string_str<S: Into<String>>(self, using_string: S) -> Self {
-        self.add_using_string(
-            StringMatcher::create()
-                .set_value(using_string)
-                .set_match_type(StringMatchType::Contains),
         )
     }
 }

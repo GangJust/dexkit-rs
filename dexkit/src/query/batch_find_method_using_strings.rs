@@ -1,3 +1,5 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     BatchFindMethodUsingStrings as FBBatchFindMethodUsingStrings,
     BatchFindMethodUsingStringsArgs as FBBatchFindMethodUsingStringsArgs,
@@ -7,7 +9,6 @@ use crate::{
     query::{base::BaseQuery, matchers::StringMatchersGroup},
     result::{ClassData, MethodData},
 };
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct BatchFindMethodUsingStrings<'a> {
     search_packages: Option<Vec<String>>,
@@ -95,12 +96,18 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // base
-    pub fn set_search_packages<S: Into<String>>(mut self, packages: Vec<S>) -> Self {
+    pub fn set_search_packages<S>(mut self, packages: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.search_packages = Some(packages.into_iter().map(|s| s.into()).collect());
         self
     }
 
-    pub fn set_exclude_packages<S: Into<String>>(mut self, packages: Vec<S>) -> Self {
+    pub fn set_exclude_packages<S>(mut self, packages: Vec<S>) -> Self
+    where
+        S: Into<String>,
+    {
         self.exclude_packages = Some(packages.into_iter().map(|s| s.into()).collect());
         self
     }
@@ -110,12 +117,18 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
         self
     }
 
-    pub fn set_search_classes<V: Into<Vec<ClassData<'a>>>>(mut self, classes: V) -> Self {
+    pub fn set_search_classes<V>(mut self, classes: V) -> Self
+    where
+        V: Into<Vec<ClassData<'a>>>,
+    {
         self.search_classes = Some(classes.into());
         self
     }
 
-    pub fn set_search_methods<V: Into<Vec<MethodData<'a>>>>(mut self, methods: V) -> Self {
+    pub fn set_search_methods<V>(mut self, methods: V) -> Self
+    where
+        V: Into<Vec<MethodData<'a>>>,
+    {
         self.search_methods = Some(methods.into());
         self
     }
@@ -126,7 +139,10 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // extend search_packages
-    pub fn add_search_package<S: Into<String>>(mut self, package: S) -> Self {
+    pub fn add_search_package<S>(mut self, package: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.search_packages
             .get_or_insert_with(Vec::new)
             .push(package.into());
@@ -134,7 +150,10 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // extend exclude_packages
-    pub fn add_exclude_package<S: Into<String>>(mut self, package: S) -> Self {
+    pub fn add_exclude_package<S>(mut self, package: S) -> Self
+    where
+        S: Into<String>,
+    {
         self.exclude_packages
             .get_or_insert_with(Vec::new)
             .push(package.into());

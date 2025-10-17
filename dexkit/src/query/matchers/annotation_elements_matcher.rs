@@ -1,12 +1,13 @@
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
+
 use crate::gen_flatbuffers::dexkit::schema::{
     AnnotationElementsMatcher as FBAnnotationElementsMatcher,
     AnnotationElementsMatcherArgs as FBAnnotationElementsMatcherArgs, MatchType as FBMatchType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::AnnotationElementMatcher;
 use crate::query::matchers::base::IntRange;
-use flatbuffers::{FlatBufferBuilder, WIPOffset};
+use crate::query::matchers::AnnotationElementMatcher;
 
 pub struct AnnotationElementsMatcher {
     elements_matcher: Option<Vec<AnnotationElementMatcher>>,
