@@ -2,11 +2,11 @@ use crate::utils::DexSignature;
 
 #[derive(Debug, Clone)]
 pub struct DexMethod {
-    pub descriptor: String,
-    pub class_name: String,
-    pub method_name: String,
-    pub return_type: String,
-    pub parameter_type_names: Vec<String>,
+    descriptor: String,
+    class_name: String,
+    method_name: String,
+    return_type: String,
+    parameter_type_names: Vec<String>,
 }
 
 impl DexMethod {
@@ -20,8 +20,8 @@ impl DexMethod {
     /// let dex_method = DexMethod::deserialize("Lcom/example/MyClass;->myMethod(I)V").unwrap();
     /// assert_eq!(dex_method.class_name(), "com.example.MyClass");
     /// assert_eq!(dex_method.method_name(), "myMethod");
-    /// assert_eq!(dex_method.return_type(), "void");
-    /// assert_eq!(dex_method.parameter_types(), vec!["int"]);
+    /// assert_eq!(dex_method.return_type_name(), "void");
+    /// assert_eq!(dex_method.param_type_names(), vec!["int"]);
     /// assert_eq!(dex_method.descriptor(), "Lcom/example/MyClass;->myMethod(I)V");
     /// ```
     pub fn deserialize<T>(descriptor: T) -> Option<Self>

@@ -3,8 +3,7 @@ use flatbuffers::{FlatBufferBuilder, WIPOffset};
 use crate::gen_flatbuffers::dexkit::fb::{FBFieldsMatcher, FBFieldsMatcherArgs, FBMatchType};
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::FieldMatcher;
-use crate::query::matchers::base::IntRange;
+use crate::query::matchers::{FieldMatcher, IntRange};
 
 pub struct FieldsMatcher {
     fields_matcher: Option<Vec<FieldMatcher>>,

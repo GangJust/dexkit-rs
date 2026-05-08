@@ -1,1 +1,1 @@
-pub trait IQuery {}
+pub(crate) trait IQuery {}

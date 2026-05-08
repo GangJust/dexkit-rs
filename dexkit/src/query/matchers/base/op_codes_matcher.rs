@@ -5,7 +5,7 @@ use crate::gen_flatbuffers::dexkit::fb::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::OpCodeMatchType;
-use crate::query::matchers::base::IntRange;
+use crate::query::matchers::IntRange;
 
 pub struct OpCodesMatcher {
     op_codes: Option<Vec<i16>>,

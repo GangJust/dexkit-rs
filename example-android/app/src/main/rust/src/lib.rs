@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use android_logcat::Log;
 use dexkit::{
-    errors::Error,
+    Error,
     query::{matchers::StringMatchersGroup, BatchFindMethodUsingStrings},
     DexkitBridge,
 };

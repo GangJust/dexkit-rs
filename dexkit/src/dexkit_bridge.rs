@@ -34,8 +34,8 @@ impl DexkitBridge {
         S: AsRef<str>,
     {
         let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
-        let c_apk_path = CString::new(apk_path.as_ref())
-            .map_err(|e| Error::BridgeCreateError(e.to_string()))?;
+        let c_apk_path =
+            CString::new(apk_path.as_ref()).map_err(|e| Error::BridgeCreateError(e.to_string()))?;
         let added =
             unsafe { dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr(), 0) };
         if added == 0 {
@@ -59,9 +59,7 @@ impl DexkitBridge {
         };
         if added == 0 {
             unsafe { dexkit_sys::dexkit_free(dexkit_handle) };
-            return Err(Error::BridgeCreateError(
-                "Failed to add dex bytes".into(),
-            ));
+            return Err(Error::BridgeCreateError("Failed to add dex bytes".into()));
         }
 
         Ok(DexkitBridge {

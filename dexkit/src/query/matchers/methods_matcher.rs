@@ -3,8 +3,7 @@ use flatbuffers::{FlatBufferBuilder, WIPOffset};
 use crate::gen_flatbuffers::dexkit::fb::{FBMatchType, FBMethodsMatcher, FBMethodsMatcherArgs};
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::MethodMatcher;
-use crate::query::matchers::base::IntRange;
+use crate::query::matchers::{IntRange, MethodMatcher};
 
 pub struct MethodsMatcher {
     methods_matcher: Option<Vec<MethodMatcher>>,

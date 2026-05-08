@@ -5,8 +5,7 @@ use crate::gen_flatbuffers::dexkit::fb::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::AnnotationElementMatcher;
-use crate::query::matchers::base::IntRange;
+use crate::query::matchers::{AnnotationElementMatcher, IntRange};
 
 pub struct AnnotationElementsMatcher {
     elements_matcher: Option<Vec<AnnotationElementMatcher>>,

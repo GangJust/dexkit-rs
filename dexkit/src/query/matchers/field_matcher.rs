@@ -2,11 +2,10 @@ use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
 use crate::gen_flatbuffers::dexkit::fb::{FBFieldMatcher, FBFieldMatcherArgs};
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
+use crate::query::matchers::AccessFlagsMatcher;
 use crate::query::matchers::MethodsMatcher;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::{AnnotationMatcher, AnnotationsMatcher};
-use crate::query::matchers::{ClassMatcher, MethodMatcher};
+use crate::query::matchers::{ClassMatcher, MethodMatcher, StringMatcher};
 
 pub struct FieldMatcher {
     name_matcher: Option<StringMatcher>,

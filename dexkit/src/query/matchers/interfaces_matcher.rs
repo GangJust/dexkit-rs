@@ -5,8 +5,7 @@ use crate::gen_flatbuffers::dexkit::fb::{
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::ClassMatcher;
-use crate::query::matchers::base::IntRange;
+use crate::query::matchers::{ClassMatcher, IntRange};
 
 pub struct InterfacesMatcher {
     interface_matcher: Option<Vec<ClassMatcher>>,

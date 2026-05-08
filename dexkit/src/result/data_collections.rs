@@ -9,7 +9,7 @@ use crate::query::{FindClass, FindField, FindMethod};
 use crate::result::base::BaseData;
 use crate::result::{ClassData, FieldData, MethodData};
 
-pub trait BaseDataList<'a, T> {
+pub(crate) trait BaseDataList<'a, T> {
     fn size(&self) -> usize;
 
     fn single(&self) -> Option<&T>;
@@ -61,13 +61,13 @@ impl<'a> BaseDataList<'a, ClassData<'a>> for ClassDataList<'a> {
 }
 
 impl<'a> ClassDataList<'a> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             classes: Vec::new(),
         }
     }
 
-    pub fn add(&mut self, class_data: ClassData<'a>) {
+    pub(crate) fn add(&mut self, class_data: ClassData<'a>) {
         self.classes.push(class_data);
     }
 
@@ -193,13 +193,13 @@ impl<'a> BaseDataList<'a, MethodData<'a>> for MethodDataList<'a> {
 }
 
 impl<'a> MethodDataList<'a> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             methods: Vec::new(),
         }
     }
 
-    pub fn add(&mut self, method_data: MethodData<'a>) {
+    pub(crate) fn add(&mut self, method_data: MethodData<'a>) {
         self.methods.push(method_data);
     }
 
@@ -301,11 +301,11 @@ impl<'a> BaseDataList<'a, FieldData<'a>> for FieldDataList<'a> {
 }
 
 impl<'a> FieldDataList<'a> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self { fields: Vec::new() }
     }
 
-    pub fn add(&mut self, field_data: FieldData<'a>) {
+    pub(crate) fn add(&mut self, field_data: FieldData<'a>) {
         self.fields.push(field_data);
     }
 

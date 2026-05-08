@@ -4,10 +4,9 @@ use crate::gen_flatbuffers::dexkit::fb::{
     FBAnnotationElementMatcher, FBAnnotationElementMatcherArgs, FBAnnotationEncodeValueMatcher,
 };
 use crate::query::base::BaseQuery;
-use crate::query::matchers::base::AnnotationEncodeValueMatcher;
-use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::{
-    AnnotationEncodeArrayMatcher, AnnotationMatcher, ClassMatcher, FieldMatcher, MethodMatcher,
+    AnnotationEncodeArrayMatcher, AnnotationEncodeValueMatcher, AnnotationMatcher, ClassMatcher,
+    FieldMatcher, MethodMatcher, StringMatcher,
 };
 
 pub struct AnnotationElementMatcher {

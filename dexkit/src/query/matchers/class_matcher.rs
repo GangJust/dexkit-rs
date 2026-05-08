@@ -4,14 +4,14 @@ use crate::gen_flatbuffers::dexkit::fb::{FBClassMatcher, FBClassMatcherArgs};
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
 use crate::query::enums::StringMatchType;
+use crate::query::matchers::AccessFlagsMatcher;
 use crate::query::matchers::AnnotationMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::FieldMatcher;
 use crate::query::matchers::FieldsMatcher;
 use crate::query::matchers::MethodMatcher;
 use crate::query::matchers::MethodsMatcher;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::StringMatcher;
+use crate::query::matchers::StringMatcher;
 use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
 
 pub struct ClassMatcher {

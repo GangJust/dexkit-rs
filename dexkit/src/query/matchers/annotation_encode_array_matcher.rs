@@ -7,9 +7,10 @@ use crate::gen_flatbuffers::dexkit::fb::{
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::MatchType;
-use crate::query::matchers::base::IntRange;
-use crate::query::matchers::base::{AnnotationEncodeValueMatcher, StringMatcher};
-use crate::query::matchers::{ClassMatcher, FieldMatcher, MethodMatcher};
+use crate::query::matchers::{
+    AnnotationEncodeValueMatcher, ClassMatcher, FieldMatcher, IntRange, MethodMatcher,
+    StringMatcher,
+};
 
 pub struct AnnotationEncodeArrayMatcher {
     encode_values_matcher: Option<Vec<AnnotationEncodeValueMatcher>>,

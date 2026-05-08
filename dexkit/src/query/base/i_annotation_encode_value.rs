@@ -1,6 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-pub trait IAnnotationEncodeValue {
+pub(crate) trait IAnnotationEncodeValue {
     fn inner_build_annotation_union(
         &self,
         fbb: &mut FlatBufferBuilder,

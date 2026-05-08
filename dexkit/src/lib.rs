@@ -4,14 +4,15 @@ mod gen_flatbuffers {
 }
 
 #[allow(unused)]
-pub mod errors {
+mod errors {
     mod errors;
     pub use errors::*;
 }
+pub use errors::*;
 
 #[allow(unused)]
 pub mod query {
-    pub mod base {
+    pub(crate) mod base {
         mod base_query;
         pub use base_query::*;
         mod i_annotation_encode_value;
@@ -45,7 +46,7 @@ pub mod query {
     }
 
     pub mod matchers {
-        pub mod base {
+        pub(crate) mod base {
             mod access_flags_matcher;
             pub use access_flags_matcher::*;
             mod annotation_encode_value_matcher;
@@ -61,6 +62,7 @@ pub mod query {
             mod number_encode_value_matcher;
             pub use number_encode_value_matcher::*;
         }
+        pub use base::*;
 
         mod annotation_element_matcher;
         pub use annotation_element_matcher::*;
@@ -75,7 +77,7 @@ pub mod query {
         mod class_matcher;
         pub use class_matcher::*;
         mod encode_value;
-        pub use encode_value::*;
+        pub(crate) use encode_value::*;
         mod field_matcher;
         pub use field_matcher::*;
         mod fields_matcher;
@@ -110,7 +112,7 @@ pub mod query {
 
 #[allow(unused)]
 pub mod result {
-    pub mod base {
+    pub(crate) mod base {
         mod base_data;
         pub use base_data::*;
     }
@@ -138,7 +140,7 @@ pub mod result {
     pub use field_using_type::*;
 }
 
-pub mod wrap {
+mod wrap {
     mod dex_class;
     pub use dex_class::*;
     mod dex_field;
@@ -146,6 +148,7 @@ pub mod wrap {
     mod dex_method;
     pub use dex_method::*;
 }
+pub use wrap::*;
 
 #[allow(unused)]
 mod uitls {
@@ -161,9 +164,10 @@ mod uitls {
     pub use op_codes::*;
 }
 
-pub mod utils {
+pub(crate) mod utils {
     pub use super::uitls::*;
 }
+pub use utils::Modifier;
 
 mod dexkit_bridge;
 pub use dexkit_bridge::*;

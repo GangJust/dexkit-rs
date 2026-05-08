@@ -1,6 +1,6 @@
 use dexkit::query::matchers::{ClassMatcher, MethodMatcher};
 use dexkit::query::{FindClass, FindMethod};
-use dexkit::{DexkitBridge, errors::Error};
+use dexkit::{DexkitBridge, Error};
 use std::path::Path;
 
 fn main() -> Result<(), Error> {

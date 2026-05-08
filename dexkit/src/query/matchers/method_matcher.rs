@@ -4,15 +4,15 @@ use crate::gen_flatbuffers::dexkit::fb::{
     FBMethodMatcher, FBMethodMatcherArgs, FBNumber, FBNumberUnion, FBNumberUnionArgs,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
+use crate::query::matchers::AccessFlagsMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::ClassMatcher;
 use crate::query::matchers::MethodsMatcher;
+use crate::query::matchers::NumberEncodeValueMatcher;
+use crate::query::matchers::OpCodesMatcher;
 use crate::query::matchers::ParametersMatcher;
+use crate::query::matchers::StringMatcher;
 use crate::query::matchers::UsingFieldMatcher;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::NumberEncodeValueMatcher;
-use crate::query::matchers::base::OpCodesMatcher;
-use crate::query::matchers::base::StringMatcher;
 
 pub struct MethodMatcher {
     name_matcher: Option<StringMatcher>,

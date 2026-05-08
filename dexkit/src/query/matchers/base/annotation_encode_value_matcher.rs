@@ -3,11 +3,10 @@ use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 use crate::gen_flatbuffers::dexkit::fb::FBAnnotationEncodeValueMatcher;
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::AnnotationEncodeValueType;
-use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::{
     AnnotationEncodeArrayMatcher, AnnotationMatcher, ClassMatcher, EncodeValueBoolean,
     EncodeValueByte, EncodeValueDouble, EncodeValueFloat, EncodeValueInt, EncodeValueLong,
-    EncodeValueNull, EncodeValueShort, FieldMatcher, MethodMatcher,
+    EncodeValueNull, EncodeValueShort, FieldMatcher, MethodMatcher, StringMatcher,
 };
 
 pub struct AnnotationEncodeValueMatcher {
@@ -151,7 +150,7 @@ impl AnnotationEncodeValueMatcher {
     }
 
     // base
-    pub fn set_value(mut self, value: Box<dyn IAnnotationEncodeValue>) -> Self {
+    pub(crate) fn set_value(mut self, value: Box<dyn IAnnotationEncodeValue>) -> Self {
         self.value = Some(value);
         self
     }

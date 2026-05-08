@@ -21,7 +21,7 @@ impl DexField {
     /// assert_eq!(field.class_name(), "com.example.MyClass");
     /// assert_eq!(field.field_name(), "myField");
     /// assert_eq!(field.type_name(), "int");
-    /// assert_eq!(field.get_type_signature().unwrap(), "I");
+    /// assert_eq!(field.type_signature().unwrap(), "I");
     /// assert_eq!(field.descriptor(), "Lcom/example/MyClass;->myField:I");
     /// ```
     pub fn deserialize<T>(descriptor: T) -> Option<Self>

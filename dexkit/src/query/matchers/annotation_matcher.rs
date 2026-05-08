@@ -6,10 +6,10 @@ use crate::gen_flatbuffers::dexkit::fb::{
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
 use crate::query::enums::RetentionPolicyType;
-use crate::query::matchers::ClassMatcher;
-use crate::query::matchers::base::StringMatcher;
-use crate::query::matchers::base::TargetElementTypesMatcher;
-use crate::query::matchers::{AnnotationElementMatcher, AnnotationElementsMatcher};
+use crate::query::matchers::{
+    AnnotationElementMatcher, AnnotationElementsMatcher, ClassMatcher, StringMatcher,
+    TargetElementTypesMatcher,
+};
 
 pub struct AnnotationMatcher {
     type_matcher: Option<ClassMatcher>,
