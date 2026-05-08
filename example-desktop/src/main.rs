@@ -16,7 +16,7 @@ fn main() -> Result<(), Error> {
     }
     println!("Using apk: {}", apk_path.display());
     let create_time = std::time::Instant::now();
-    let bridge = DexkitBridge::create_apk_path(apk_path.to_str().unwrap())?;
+    let bridge = DexkitBridge::new(apk_path.to_str().unwrap())?;
     println!("[Rust] Create Bridge time: {:?}", create_time.elapsed());
     do_search(bridge);
     println!("[Rust] Find Use time: {:?}", create_time.elapsed());

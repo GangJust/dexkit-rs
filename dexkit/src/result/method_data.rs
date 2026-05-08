@@ -1,6 +1,6 @@
 use crate::gen_flatbuffers::dexkit::fb::FBMethodMeta;
 use crate::result::{AnnotationData, ClassData, ClassDataList, MethodDataList, UsingFieldData};
-use crate::uitls::Opcodes;
+use crate::utils::Opcodes;
 use crate::wrap::DexMethod;
 use crate::{dexkit_bridge::DexkitBridge, result::base::BaseData};
 use std::cell::OnceCell;

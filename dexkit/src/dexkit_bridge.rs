@@ -8,42 +8,113 @@ use crate::result::{
 };
 use crate::wrap::{DexClass, DexMethod};
 use std::{
+    cell::Cell,
     collections::HashMap,
     ffi::{CString, c_char, c_void},
 };
 
 #[derive(Debug)]
 pub struct DexkitBridge {
-    dexkit_handle: dexkit_sys::DexkitHandle,
+    dexkit_handle: Cell<dexkit_sys::DexkitHandle>,
 }
 
 impl DexkitBridge {
+    fn handle(&self) -> dexkit_sys::DexkitHandle {
+        let handle = self.dexkit_handle.get();
+        assert!(
+            !handle.is_null(),
+            "DexkitBridge has already been closed and cannot be used"
+        );
+        handle
+    }
+
     /// Create a new DexkitBridge instance with the given APK path.
-    /// Panics if the APK path cannot be added.
-    pub fn create_apk_path<S>(apk_path: S) -> Result<Self, Error>
+    pub fn new<S>(apk_path: S) -> Result<Self, Error>
     where
-        S: Into<String>,
+        S: AsRef<str>,
     {
         let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
-        let c_apk_path =
-            CString::new(apk_path.into()).map_err(|e| Error::BridgeCreateError(e.to_string()))?;
+        let c_apk_path = CString::new(apk_path.as_ref())
+            .map_err(|e| Error::BridgeCreateError(e.to_string()))?;
         let added =
             unsafe { dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr(), 0) };
         if added == 0 {
             return Err(Error::BridgeCreateError("Failed to add APK path".into()));
         }
 
-        Ok(DexkitBridge { dexkit_handle })
+        Ok(DexkitBridge {
+            dexkit_handle: Cell::new(dexkit_handle),
+        })
+    }
+
+    /// Create a new DexkitBridge instance from an in-memory dex image.
+    pub fn from_dex_bytes<B>(dex_bytes: B) -> Result<Self, Error>
+    where
+        B: AsRef<[u8]>,
+    {
+        let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
+        let dex_bytes = dex_bytes.as_ref();
+        let added = unsafe {
+            dexkit_sys::dexkit_add_dex_bytes(dexkit_handle, dex_bytes.as_ptr(), dex_bytes.len())
+        };
+        if added == 0 {
+            unsafe { dexkit_sys::dexkit_free(dexkit_handle) };
+            return Err(Error::BridgeCreateError(
+                "Failed to add dex bytes".into(),
+            ));
+        }
+
+        Ok(DexkitBridge {
+            dexkit_handle: Cell::new(dexkit_handle),
+        })
+    }
+
+    /// Create a new DexkitBridge instance from multiple in-memory dex images.
+    pub fn from_dex_bytes_array<I, B>(dex_bytes_array: I) -> Result<Self, Error>
+    where
+        I: IntoIterator<Item = B>,
+        B: AsRef<[u8]>,
+    {
+        let dex_bytes: Vec<Vec<u8>> = dex_bytes_array
+            .into_iter()
+            .map(|bytes| bytes.as_ref().to_vec())
+            .collect();
+        let dex_ptrs: Vec<*const u8> = dex_bytes.iter().map(|bytes| bytes.as_ptr()).collect();
+        let dex_lens: Vec<usize> = dex_bytes.iter().map(|bytes| bytes.len()).collect();
+
+        let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
+        let added = unsafe {
+            dexkit_sys::dexkit_add_dex_bytes_array(
+                dexkit_handle,
+                dex_ptrs.as_ptr(),
+                dex_lens.as_ptr(),
+                dex_ptrs.len(),
+            )
+        };
+        if added == 0 {
+            unsafe { dexkit_sys::dexkit_free(dexkit_handle) };
+            return Err(Error::BridgeCreateError(
+                "Failed to add dex bytes array".into(),
+            ));
+        }
+
+        Ok(DexkitBridge {
+            dexkit_handle: Cell::new(dexkit_handle),
+        })
     }
 
     /// Free the DexkitBridge instance and its resources.
+    /// Calling this more than once is safe.
     pub fn close(&self) {
-        unsafe { dexkit_sys::dexkit_free(self.dexkit_handle) };
+        let handle = self.dexkit_handle.replace(std::ptr::null_mut());
+        if !handle.is_null() {
+            unsafe { dexkit_sys::dexkit_free(handle) };
+        }
     }
 
     /// Initialize the full cache for faster queries.
     pub fn init_full_cache(&self) -> Result<(), Error> {
-        let res = unsafe { dexkit_sys::dexkit_init_full_cache(self.dexkit_handle) };
+        let res = unsafe { dexkit_sys::dexkit_init_full_cache(self.handle()) };
         if res == 0 {
             return Err(Error::BridgeOperationError(
                 "Failed to initialize full cache".into(),
@@ -54,12 +125,12 @@ impl DexkitBridge {
 
     /// Set the number of threads to use for operations.
     pub fn set_thread_num(&self, num_threads: i32) {
-        unsafe { dexkit_sys::dexkit_set_thread_num(self.dexkit_handle, num_threads) };
+        unsafe { dexkit_sys::dexkit_set_thread_num(self.handle(), num_threads) };
     }
 
     /// Get all parsed DEX file count.
     pub fn get_dex_num(&self) -> i32 {
-        unsafe { dexkit_sys::dexkit_get_dex_num(self.dexkit_handle) }
+        unsafe { dexkit_sys::dexkit_get_dex_num(self.handle()) }
     }
 
     /// Export all parsed DEX files to the specified output path.
@@ -67,9 +138,8 @@ impl DexkitBridge {
     pub fn export_dex_file(&self, output_path: &str) -> Result<(), Error> {
         let c_output_path =
             CString::new(output_path).map_err(|e| Error::BridgeOperationError(e.to_string()))?;
-        let success = unsafe {
-            dexkit_sys::dexkit_export_dex_file(self.dexkit_handle, c_output_path.as_ptr())
-        };
+        let success =
+            unsafe { dexkit_sys::dexkit_export_dex_file(self.handle(), c_output_path.as_ptr()) };
         if success == 0 {
             return Err(Error::BridgeOperationError(
                 "Failed to export DEX file".into(),
@@ -88,7 +158,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_batch_find_class_using_strings(
-                self.dexkit_handle,
+                self.handle(),
                 buffer.as_mut_ptr() as *mut c_void,
                 &mut out_buf,
                 &mut out_len,
@@ -116,7 +186,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_batch_find_method_using_strings(
-                self.dexkit_handle,
+                self.handle(),
                 buffer.as_mut_ptr() as *mut c_void,
                 &mut out_buf,
                 &mut out_len,
@@ -142,7 +212,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_find_class(
-                self.dexkit_handle,
+                self.handle(),
                 buffer.as_mut_ptr() as *mut c_void,
                 &mut out_buf,
                 &mut out_len,
@@ -168,7 +238,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_find_method(
-                self.dexkit_handle,
+                self.handle(),
                 buffer.as_mut_ptr() as *mut c_void,
                 &mut out_buf,
                 &mut out_len,
@@ -194,7 +264,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_find_field(
-                self.dexkit_handle,
+                self.handle(),
                 buffer.as_mut_ptr() as *mut c_void,
                 &mut out_buf,
                 &mut out_len,
@@ -234,7 +304,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_class_data(
-                self.dexkit_handle,
+                self.handle(),
                 CString::new(descriptor).unwrap().as_ptr(),
                 &mut out_buf,
                 &mut out_len,
@@ -268,7 +338,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_data(
-                self.dexkit_handle,
+                self.handle(),
                 CString::new(descriptor).unwrap().as_ptr(),
                 &mut out_buf,
                 &mut out_len,
@@ -287,7 +357,7 @@ impl DexkitBridge {
     }
 
     /// Get field data by its descriptor.
-    pub fn get_filed_data<T>(&self, descriptor: T) -> Option<FieldData<'_>>
+    pub fn get_field_data<T>(&self, descriptor: T) -> Option<FieldData<'_>>
     where
         T: AsRef<str>,
     {
@@ -297,7 +367,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_field_data(
-                self.dexkit_handle,
+                self.handle(),
                 CString::new(descriptor).unwrap().as_ptr(),
                 &mut out_buf,
                 &mut out_len,
@@ -322,7 +392,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_class_by_ids(
-                self.dexkit_handle,
+                self.handle(),
                 encode_id_array.as_ptr() as *mut c_void,
                 encode_id_array.len(),
                 &mut out_buf,
@@ -347,7 +417,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_by_ids(
-                self.dexkit_handle,
+                self.handle(),
                 encode_id_array.as_ptr() as *mut c_void,
                 encode_id_array.len(),
                 &mut out_buf,
@@ -372,7 +442,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_field_by_ids(
-                self.dexkit_handle,
+                self.handle(),
                 encode_id_array.as_ptr() as *mut c_void,
                 encode_id_array.len(),
                 &mut out_buf,
@@ -397,7 +467,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_class_annotations(
-                self.dexkit_handle,
+                self.handle(),
                 class_id,
                 &mut out_buf,
                 &mut out_len,
@@ -421,7 +491,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_field_annotations(
-                self.dexkit_handle,
+                self.handle(),
                 field_id,
                 &mut out_buf,
                 &mut out_len,
@@ -445,7 +515,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_field_get_methods(
-                self.dexkit_handle,
+                self.handle(),
                 field_id,
                 &mut out_buf,
                 &mut out_len,
@@ -469,7 +539,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_field_put_methods(
-                self.dexkit_handle,
+                self.handle(),
                 field_id,
                 &mut out_buf,
                 &mut out_len,
@@ -492,7 +562,7 @@ impl DexkitBridge {
             let mut out_len: usize = 0;
 
             dexkit_sys::dexkit_get_method_annotations(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,
@@ -515,7 +585,7 @@ impl DexkitBridge {
             let mut out_buf: *mut *mut c_char = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_parameter_names(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,
@@ -552,7 +622,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_parameter_annotations(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,
@@ -575,7 +645,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_op_codes(
-                self.dexkit_handle,
+                self.handle(),
                 encode_id,
                 &mut out_buf,
                 &mut out_len,
@@ -598,7 +668,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_call_methods(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,
@@ -622,7 +692,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_invoke_methods(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,
@@ -646,7 +716,7 @@ impl DexkitBridge {
             let mut out_buf: *mut *mut c_char = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_using_strings(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,
@@ -683,7 +753,7 @@ impl DexkitBridge {
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_using_fields(
-                self.dexkit_handle,
+                self.handle(),
                 method_id,
                 &mut out_buf,
                 &mut out_len,

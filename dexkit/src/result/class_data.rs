@@ -89,7 +89,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// get super class, None if no super class
-    pub fn supper_class(&self) -> Option<ClassData<'a>> {
+    pub fn super_class(&self) -> Option<ClassData<'a>> {
         let cls = self.super_class.get_or_init(|| {
             self.super_class_id.and_then(|id| {
                 let encode_id = Self::get_encode_id(self.dex_id, id);

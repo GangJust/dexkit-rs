@@ -3,7 +3,7 @@ use crate::gen_flatbuffers::dexkit::fb::{FBAnnotationEncodeValueMeta, FBEncodeVa
 use crate::query::enums::AnnotationEncodeValueType;
 use crate::query::matchers::EncodeValue;
 use crate::result::{AnnotationData, AnnotationEncodeArrayData, ClassData, FieldData, MethodData};
-use crate::uitls::{MUtf8, StringUnicodeEncoderDecoder};
+use crate::utils::{MUtf8, StringUnicodeEncoderDecoder};
 use std::fmt::Debug;
 use std::str::from_utf8;
 

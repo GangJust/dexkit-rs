@@ -37,7 +37,7 @@ pub extern "C" fn Java_io_github_dexkit_example_LibLoader_load<'a>(
 }
 
 fn do_search(apk_path: String) -> Result<(), Error> {
-    let bridge = DexkitBridge::create_apk_path(apk_path)?;
+    let bridge = DexkitBridge::new(apk_path)?;
 
     let result = bridge.batch_find_method_using_strings(
         BatchFindMethodUsingStrings::create()

@@ -13,6 +13,17 @@ unsafe extern "C" {
         apk_path: *const c_char,
         unzip_thread_num: c_int,
     ) -> c_int;
+    pub fn dexkit_add_dex_bytes(
+        handle: DexkitHandle,
+        dex_bytes: *const u8,
+        dex_len: usize,
+    ) -> c_int;
+    pub fn dexkit_add_dex_bytes_array(
+        handle: DexkitHandle,
+        dex_bytes_array: *const *const u8,
+        dex_len_array: *const usize,
+        dex_count: usize,
+    ) -> c_int;
 
     pub fn dexkit_set_thread_num(handle: DexkitHandle, num_threads: c_int);
 

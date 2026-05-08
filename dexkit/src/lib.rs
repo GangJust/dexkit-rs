@@ -148,7 +148,7 @@ pub mod wrap {
 }
 
 #[allow(unused)]
-pub mod uitls {
+mod uitls {
     mod modifier;
     pub use modifier::*;
     mod dex_signature;
@@ -159,6 +159,10 @@ pub mod uitls {
     pub use string_unicode_encode_decode::*;
     mod op_codes;
     pub use op_codes::*;
+}
+
+pub mod utils {
+    pub use super::uitls::*;
 }
 
 mod dexkit_bridge;

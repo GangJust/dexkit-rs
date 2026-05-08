@@ -36,6 +36,49 @@ extern "C"
         return 1; // TRUE
     }
 
+    int dexkit_add_dex_bytes(void *handle, const uint8_t *dex_bytes, size_t dex_len)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        auto dex_buf = static_cast<uint8_t *>(malloc(dex_len));
+        if (dex_buf == nullptr)
+        {
+            return 0; // FALSE
+        }
+        memcpy(dex_buf, dex_bytes, dex_len);
+        auto ret = dexkit->AddDex(dex_buf, dex_len);
+        if (ret != Error::SUCCESS)
+        {
+            free(dex_buf);
+            return 0; // FALSE
+        }
+
+        return 1; // TRUE
+    }
+
+    int dexkit_add_dex_bytes_array(void *handle, const uint8_t *const *dex_bytes_array, const size_t *dex_len_array, size_t dex_count)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        for (size_t i = 0; i < dex_count; ++i)
+        {
+            auto dex_bytes = dex_bytes_array[i];
+            auto dex_len = dex_len_array[i];
+            auto dex_buf = static_cast<uint8_t *>(malloc(dex_len));
+            if (dex_buf == nullptr)
+            {
+                return 0; // FALSE
+            }
+            memcpy(dex_buf, dex_bytes, dex_len);
+            auto ret = dexkit->AddDex(dex_buf, dex_len);
+            if (ret != Error::SUCCESS)
+            {
+                free(dex_buf);
+                return 0; // FALSE
+            }
+        }
+
+        return 1; // TRUE
+    }
+
     void dexkit_set_thread_num(void *handle, int thread_num)
     {
         auto dexkit = static_cast<DexKit *>(handle);

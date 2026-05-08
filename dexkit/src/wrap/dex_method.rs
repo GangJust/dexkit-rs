@@ -1,4 +1,4 @@
-use crate::uitls::DexSignature;
+use crate::utils::DexSignature;
 
 #[derive(Debug, Clone)]
 pub struct DexMethod {
