@@ -37,17 +37,17 @@ impl<'a> BaseQuery<'a, WIPOffset<FBParameterMatcher<'a>>> for ParameterMatcher {
 }
 
 impl<'a> ParameterMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_annotations_matcher(mut self, matcher: AnnotationsMatcher) -> Self {
+    pub fn annotations(mut self, matcher: AnnotationsMatcher) -> Self {
         self.annotations_matcher = Some(matcher);
         self
     }
 
-    pub fn set_type_matcher(mut self, matcher: ClassMatcher) -> Self {
+    pub fn parameter_type(mut self, matcher: ClassMatcher) -> Self {
         self.type_matcher = Some(matcher);
         self
     }

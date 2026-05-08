@@ -47,11 +47,11 @@ impl<'a> BaseQuery<'a, WIPOffset<FBStringMatcher<'a>>> for StringMatcher {
 }
 
 impl StringMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn create_string_str<S>(value: S) -> Self
+    pub fn contains<S>(value: S) -> Self
     where
         S: Into<String>,
     {
@@ -62,7 +62,7 @@ impl StringMatcher {
         }
     }
 
-    pub fn create_string_eq_str<S>(value: S) -> Self
+    pub fn equals<S>(value: S) -> Self
     where
         S: Into<String>,
     {
@@ -74,7 +74,7 @@ impl StringMatcher {
     }
 
     // base
-    pub fn set_value<S>(mut self, value: S) -> Self
+    pub fn value<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
@@ -82,12 +82,12 @@ impl StringMatcher {
         self
     }
 
-    pub fn set_match_type(mut self, match_type: StringMatchType) -> Self {
+    pub fn match_type(mut self, match_type: StringMatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
-    pub fn set_ignore_case(mut self, ignore_case: bool) -> Self {
+    pub fn ignore_case(mut self, ignore_case: bool) -> Self {
         self.ignore_case = ignore_case;
         self
     }

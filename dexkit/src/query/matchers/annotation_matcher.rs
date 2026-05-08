@@ -71,112 +71,105 @@ impl<'a> BaseQuery<'a, WIPOffset<FBAnnotationMatcher<'a>>> for AnnotationMatcher
 }
 
 impl AnnotationMatcher {
-    pub(crate) fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_type_matcher(mut self, matcher: ClassMatcher) -> Self {
+    pub fn annotation_type(mut self, matcher: ClassMatcher) -> Self {
         self.type_matcher = Some(matcher);
         self
     }
 
-    pub fn set_target_element_types_matcher(mut self, matcher: TargetElementTypesMatcher) -> Self {
+    pub fn target_element_types(mut self, matcher: TargetElementTypesMatcher) -> Self {
         self.target_element_types_matcher = Some(matcher);
         self
     }
 
-    pub fn set_using_strings_matcher(mut self, matcher: Vec<StringMatcher>) -> Self {
+    pub fn using_strings(mut self, matcher: Vec<StringMatcher>) -> Self {
         self.using_strings_matcher = Some(matcher);
         self
     }
 
-    pub fn set_policy(mut self, policy: RetentionPolicyType) -> Self {
+    pub fn policy(mut self, policy: RetentionPolicyType) -> Self {
         self.policy = Some(policy);
         self
     }
 
-    pub fn set_elements_matcher(mut self, matcher: AnnotationElementsMatcher) -> Self {
+    pub fn elements(mut self, matcher: AnnotationElementsMatcher) -> Self {
         self.elements_matcher = Some(matcher);
         self
     }
 
     // extend type_matcher
-    pub fn set_type_class_name<S>(mut self, class_name: S) -> Self
+    pub fn type_name_contains<S>(mut self, class_name: S) -> Self
     where
         S: Into<String>,
     {
         self.type_matcher = Some(
-            ClassMatcher::create()
-                .set_class_name_matcher(StringMatcher::create_string_str(class_name)),
+            ClassMatcher::new().class_name(StringMatcher::contains(class_name)),
         );
         self
     }
 
-    pub fn set_eq_type_class_name<S>(mut self, class_name: S) -> Self
+    pub fn type_name_equals<S>(mut self, class_name: S) -> Self
     where
         S: Into<String>,
     {
         self.type_matcher = Some(
-            ClassMatcher::create()
-                .set_class_name_matcher(StringMatcher::create_string_eq_str(class_name)),
+            ClassMatcher::new().class_name(StringMatcher::equals(class_name)),
         );
         self
     }
 
     // extend add_element_matcher
-    pub fn add_element_matcher(mut self, matcher: AnnotationElementMatcher) -> Self {
-        self.elements_matcher = if let Some(mut existing) = self.elements_matcher {
-            existing = existing.add_element_matcher(matcher);
-            Some(existing)
-        } else {
+    pub fn element(mut self, matcher: AnnotationElementMatcher) -> Self {
+        self.elements_matcher = Some(
             self.elements_matcher
-        };
+                .unwrap_or_else(AnnotationElementsMatcher::new)
+                .element(matcher),
+        );
         self
     }
 
     pub fn element_count(mut self, count: u32) -> Self {
-        self.elements_matcher = if let Some(mut existing) = self.elements_matcher {
-            existing = existing.count(count);
-            Some(existing)
-        } else {
+        self.elements_matcher = Some(
             self.elements_matcher
-        };
+                .unwrap_or_else(AnnotationElementsMatcher::new)
+                .count(count),
+        );
         self
     }
 
     pub fn element_count_range(mut self, min: u32, max: u32) -> Self {
-        self.elements_matcher = if let Some(mut existing) = self.elements_matcher {
-            existing = existing.count_range(min, max);
-            Some(existing)
-        } else {
+        self.elements_matcher = Some(
             self.elements_matcher
-        };
+                .unwrap_or_else(AnnotationElementsMatcher::new)
+                .count_range(min, max),
+        );
         self
     }
 
     pub fn element_count_min(mut self, min: u32) -> Self {
-        self.elements_matcher = if let Some(mut existing) = self.elements_matcher {
-            existing = existing.count_min(min);
-            Some(existing)
-        } else {
+        self.elements_matcher = Some(
             self.elements_matcher
-        };
+                .unwrap_or_else(AnnotationElementsMatcher::new)
+                .count_min(min),
+        );
         self
     }
 
     pub fn element_count_max(mut self, max: u32) -> Self {
-        self.elements_matcher = if let Some(mut existing) = self.elements_matcher {
-            existing = existing.count_max(max);
-            Some(existing)
-        } else {
+        self.elements_matcher = Some(
             self.elements_matcher
-        };
+                .unwrap_or_else(AnnotationElementsMatcher::new)
+                .count_max(max),
+        );
         self
     }
 
     // extend using_strings_matcher
-    pub fn add_using_string_matchers(mut self, matchers: Vec<StringMatcher>) -> Self {
+    pub fn extend_using_strings(mut self, matchers: Vec<StringMatcher>) -> Self {
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.extend(matchers);
         } else {
@@ -185,7 +178,7 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_using_string_matcher(mut self, matcher: StringMatcher) -> Self {
+    pub fn using_string(mut self, matcher: StringMatcher) -> Self {
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.push(matcher);
         } else {
@@ -194,13 +187,13 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_using_string_strs<S>(mut self, ss: Vec<S>) -> Self
+    pub fn using_string_contains_all<S>(mut self, ss: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<StringMatcher> = ss
             .into_iter()
-            .map(|s| StringMatcher::create_string_str(s))
+            .map(StringMatcher::contains)
             .collect();
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.extend(matchers);
@@ -210,13 +203,13 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_eq_using_string_strs<S>(mut self, ss: Vec<S>) -> Self
+    pub fn using_string_equals_all<S>(mut self, ss: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<StringMatcher> = ss
             .into_iter()
-            .map(|s| StringMatcher::create_string_eq_str(s))
+            .map(StringMatcher::equals)
             .collect();
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.extend(matchers);
@@ -226,11 +219,11 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_using_string_str<S>(mut self, s: S) -> Self
+    pub fn using_string_contains<S>(mut self, s: S) -> Self
     where
         S: Into<String>,
     {
-        let matcher = StringMatcher::create_string_str(s);
+        let matcher = StringMatcher::contains(s);
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.push(matcher);
         } else {
@@ -239,11 +232,11 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn add_eq_using_string_str<S>(mut self, s: S) -> Self
+    pub fn using_string_equals<S>(mut self, s: S) -> Self
     where
         S: Into<String>,
     {
-        let matcher = StringMatcher::create_string_eq_str(s);
+        let matcher = StringMatcher::equals(s);
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.push(matcher);
         } else {

@@ -147,27 +147,27 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodMatcher<'a>>> for MethodMatcher {
 }
 
 impl MethodMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         MethodMatcher::default()
     }
 
     // base
-    pub fn set_name_matcher(mut self, matcher: StringMatcher) -> Self {
+    pub fn name(mut self, matcher: StringMatcher) -> Self {
         self.name_matcher = Some(matcher);
         self
     }
 
-    pub fn set_modifiers_matcher(mut self, matcher: AccessFlagsMatcher) -> Self {
+    pub fn modifiers(mut self, matcher: AccessFlagsMatcher) -> Self {
         self.modifiers_matcher = Some(matcher);
         self
     }
 
-    pub fn set_class_matcher(mut self, matcher: ClassMatcher) -> Self {
+    pub fn class(mut self, matcher: ClassMatcher) -> Self {
         self.class_matcher = Some(matcher);
         self
     }
 
-    pub fn set_proto_shorty_matcher<S>(mut self, proto: S) -> Self
+    pub fn proto_shorty<S>(mut self, proto: S) -> Self
     where
         S: Into<String>,
     {
@@ -175,64 +175,64 @@ impl MethodMatcher {
         self
     }
 
-    pub fn set_return_type_matcher(mut self, matcher: ClassMatcher) -> Self {
+    pub fn return_type(mut self, matcher: ClassMatcher) -> Self {
         self.return_type_matcher = Some(matcher);
         self
     }
 
-    pub fn set_params_matcher(mut self, matcher: ParametersMatcher) -> Self {
+    pub fn params(mut self, matcher: ParametersMatcher) -> Self {
         self.params_matcher = Some(matcher);
         self
     }
 
-    pub fn set_annotations_matcher(mut self, matcher: AnnotationsMatcher) -> Self {
+    pub fn annotations(mut self, matcher: AnnotationsMatcher) -> Self {
         self.annotations_matcher = Some(matcher);
         self
     }
 
-    pub fn set_op_codes_matcher(mut self, matcher: OpCodesMatcher) -> Self {
+    pub fn op_codes(mut self, matcher: OpCodesMatcher) -> Self {
         self.op_codes_matcher = Some(matcher);
         self
     }
 
-    pub fn set_using_strings_matcher(mut self, matcher: Vec<StringMatcher>) -> Self {
+    pub fn using_strings(mut self, matcher: Vec<StringMatcher>) -> Self {
         self.using_strings_matcher = Some(matcher);
         self
     }
 
-    pub fn set_using_fields_matcher(mut self, matcher: Vec<UsingFieldMatcher>) -> Self {
+    pub fn using_fields(mut self, matcher: Vec<UsingFieldMatcher>) -> Self {
         self.using_fields_matcher = Some(matcher);
         self
     }
 
-    pub fn set_using_numbers_matcher(mut self, matcher: Vec<NumberEncodeValueMatcher>) -> Self {
+    pub fn using_numbers(mut self, matcher: Vec<NumberEncodeValueMatcher>) -> Self {
         self.using_numbers_matcher = Some(matcher);
         self
     }
 
-    pub fn set_invoke_methods_matcher(mut self, matcher: MethodsMatcher) -> Self {
+    pub fn invoke_methods(mut self, matcher: MethodsMatcher) -> Self {
         self.invoke_methods_matcher = Some(matcher);
         self
     }
 
-    pub fn set_caller_methods_matcher(mut self, matcher: MethodsMatcher) -> Self {
+    pub fn caller_methods(mut self, matcher: MethodsMatcher) -> Self {
         self.caller_methods_matcher = Some(matcher);
         self
     }
 
-    pub fn set_method_name_str<S>(mut self, name: S) -> Self
+    pub fn name_contains<S>(mut self, name: S) -> Self
     where
         S: Into<String>,
     {
-        self.name_matcher = Some(StringMatcher::create_string_str(name));
+        self.name_matcher = Some(StringMatcher::contains(name));
         self
     }
 
-    pub fn set_eq_method_name_str<S>(mut self, name: S) -> Self
+    pub fn name_equals<S>(mut self, name: S) -> Self
     where
         S: Into<String>,
     {
-        self.name_matcher = Some(StringMatcher::create_string_eq_str(name));
+        self.name_matcher = Some(StringMatcher::equals(name));
         self
     }
 

@@ -47,7 +47,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBBatchUsingStringsMatcher<'a>>> for StringMatc
 }
 
 impl StringMatchersGroup {
-    pub fn create<S>(group_name: S) -> Self
+    pub fn new<S>(group_name: S) -> Self
     where
         S: Into<String>,
     {
@@ -58,7 +58,7 @@ impl StringMatchersGroup {
     }
 
     // base
-    pub fn set_group_name<S>(mut self, name: S) -> Self
+    pub fn group_name<S>(mut self, name: S) -> Self
     where
         S: Into<String>,
     {
@@ -66,56 +66,48 @@ impl StringMatchersGroup {
         self
     }
 
-    pub fn set_string_matchers(mut self, matchers: Vec<StringMatcher>) -> Self {
+    pub fn string_matchers(mut self, matchers: Vec<StringMatcher>) -> Self {
         self.string_matchers = matchers;
         self
     }
 
     // extend string_matchers
-    pub fn add_string_matcher(mut self, matcher: StringMatcher) -> Self {
+    pub fn string_matcher(mut self, matcher: StringMatcher) -> Self {
         self.string_matchers.push(matcher);
         self
     }
 
-    pub fn add_string_matchers_str<S>(mut self, strings: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        self.string_matchers.extend(
-            strings
-                .into_iter()
-                .map(|m| StringMatcher::create_string_str(m)),
-        );
-        self
-    }
-
-    pub fn add_string_matcher_str<S>(mut self, string: S) -> Self
+    pub fn contains_strings<S>(mut self, strings: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         self.string_matchers
-            .push(StringMatcher::create_string_str(string));
+            .extend(strings.into_iter().map(StringMatcher::contains));
         self
     }
 
-    pub fn add_string_matcher_eq_strs<S>(mut self, strings: Vec<S>) -> Self
+    pub fn contains_string<S>(mut self, string: S) -> Self
     where
         S: Into<String>,
     {
-        self.string_matchers.extend(
-            strings
-                .into_iter()
-                .map(|m| StringMatcher::create_string_eq_str(m)),
-        );
+        self.string_matchers.push(StringMatcher::contains(string));
         self
     }
 
-    pub fn add_string_matcher_eq_str<S>(mut self, string: S) -> Self
+    pub fn equals_strings<S>(mut self, strings: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         self.string_matchers
-            .push(StringMatcher::create_string_eq_str(string));
+            .extend(strings.into_iter().map(StringMatcher::equals));
+        self
+    }
+
+    pub fn equals_string<S>(mut self, string: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.string_matchers.push(StringMatcher::equals(string));
         self
     }
 }

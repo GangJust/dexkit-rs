@@ -47,28 +47,28 @@ impl<'a> BaseQuery<'a, WIPOffset<FBAnnotationElementsMatcher<'a>>> for Annotatio
 }
 
 impl AnnotationElementsMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_elements_matcher(mut self, matcher: Vec<AnnotationElementMatcher>) -> Self {
+    pub fn elements(mut self, matcher: Vec<AnnotationElementMatcher>) -> Self {
         self.elements_matcher = Some(matcher);
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
-    pub fn set_range_matcher(mut self, range: IntRange) -> Self {
+    pub fn range(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
         self
     }
 
     // extend elements_matcher
-    pub fn add_element_matcher(mut self, matcher: AnnotationElementMatcher) -> Self {
+    pub fn element(mut self, matcher: AnnotationElementMatcher) -> Self {
         if let Some(ref mut vec) = self.elements_matcher {
             vec.push(matcher);
         } else {

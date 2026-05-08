@@ -45,60 +45,60 @@ impl<'a> BaseQuery<'a, WIPOffset<FBInterfacesMatcher<'a>>> for InterfacesMatcher
 }
 
 impl InterfacesMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_interface_name_matcher(mut self, matchers: Vec<ClassMatcher>) -> Self {
+    pub fn interfaces(mut self, matchers: Vec<ClassMatcher>) -> Self {
         self.interface_matcher = Some(matchers);
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
-    pub fn set_range_matcher(mut self, range: IntRange) -> Self {
+    pub fn range(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
         self
     }
 
     // extend interface_name_matcher
-    pub fn add_interface_name_matchers(mut self, matchers: Vec<ClassMatcher>) -> Self {
+    pub fn extend_interfaces(mut self, matchers: Vec<ClassMatcher>) -> Self {
         self.interface_matcher
             .get_or_insert_with(Vec::new)
             .extend(matchers);
         self
     }
 
-    pub fn add_interface_name_matcher(mut self, matcher: ClassMatcher) -> Self {
+    pub fn interface(mut self, matcher: ClassMatcher) -> Self {
         self.interface_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);
         self
     }
 
-    pub fn set_interface_name_strs<S>(mut self, names: Vec<S>) -> Self
+    pub fn interface_names<S>(mut self, names: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<ClassMatcher> = names
             .into_iter()
-            .map(|name| ClassMatcher::create().set_class_name_str(name))
+            .map(|name| ClassMatcher::new().class_name_equals(name))
             .collect();
         self.interface_matcher = Some(matchers);
         self
     }
 
-    pub fn add_interface_name_strs<S>(mut self, names: Vec<S>) -> Self
+    pub fn extend_interface_names<S>(mut self, names: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<ClassMatcher> = names
             .into_iter()
-            .map(|name| ClassMatcher::create().set_class_name_str(name))
+            .map(|name| ClassMatcher::new().class_name_equals(name))
             .collect();
         self.interface_matcher
             .get_or_insert_with(Vec::new)
@@ -106,11 +106,11 @@ impl InterfacesMatcher {
         self
     }
 
-    pub fn add_interface_name_str<S>(mut self, name: S) -> Self
+    pub fn interface_name<S>(mut self, name: S) -> Self
     where
         S: Into<String>,
     {
-        let matcher = ClassMatcher::create().set_class_name_str(name);
+        let matcher = ClassMatcher::new().class_name_equals(name);
         self.interface_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);

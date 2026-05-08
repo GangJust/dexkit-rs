@@ -78,7 +78,7 @@ impl<'a> ClassDataList<'a> {
 
         let first = &self.classes[0];
         let bridge = first.bridge();
-        let find_class = find_class.set_search_classes(self.clone());
+        let find_class = find_class.search_classes(self.clone());
         bridge.find_class(find_class)
     }
 
@@ -89,7 +89,7 @@ impl<'a> ClassDataList<'a> {
 
         let first = &self.classes[0];
         let bridge = first.bridge();
-        let find_method = find_method.set_search_classes(self.clone());
+        let find_method = find_method.search_classes(self.clone());
         bridge.find_method(find_method)
     }
 
@@ -100,7 +100,7 @@ impl<'a> ClassDataList<'a> {
 
         let first = &self.classes[0];
         let bridge = first.bridge();
-        let find_field = find_field.set_search_classes(self.clone());
+        let find_field = find_field.search_classes(self.clone());
         bridge.find_field(find_field)
     }
 
@@ -210,7 +210,7 @@ impl<'a> MethodDataList<'a> {
 
         let first = &self.methods[0];
         let bridge = first.bridge();
-        let find_method = find_method.set_search_methods(self.clone());
+        let find_method = find_method.search_methods(self.clone());
         bridge.find_method(find_method)
     }
 
@@ -316,7 +316,7 @@ impl<'a> FieldDataList<'a> {
 
         let first = &self.fields[0];
         let bridge = first.bridge();
-        let find_field = find_field.set_search_fields(self.clone());
+        let find_field = find_field.search_fields(self.clone());
         bridge.find_field(find_field)
     }
 

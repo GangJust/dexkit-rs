@@ -53,110 +53,110 @@ impl<'a> BaseQuery<'a, WIPOffset<FBAnnotationElementMatcher<'a>>> for Annotation
 }
 
 impl AnnotationElementMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_name_matcher(mut self, matcher: StringMatcher) -> Self {
+    pub fn name(mut self, matcher: StringMatcher) -> Self {
         self.name_matcher = Some(matcher);
         self
     }
 
-    pub fn set_value_matcher(mut self, matcher: AnnotationEncodeValueMatcher) -> Self {
+    pub fn value(mut self, matcher: AnnotationEncodeValueMatcher) -> Self {
         self.value_matcher = Some(matcher);
         self
     }
 
     // extended methods
     pub fn byte_value(mut self, value: i8) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_number_byte(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::byte(value));
         self
     }
 
     pub fn short_value(mut self, value: i16) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_number_short(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::short(value));
         self
     }
 
     pub fn int_value(mut self, value: i32) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_number_int(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::int(value));
         self
     }
 
     pub fn long_value(mut self, value: i64) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_number_long(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::long(value));
         self
     }
 
     pub fn float_value(mut self, value: f32) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_number_float(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::float(value));
         self
     }
 
     pub fn double_value(mut self, value: f64) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_number_double(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::double(value));
         self
     }
 
     pub fn string_value(mut self, value: StringMatcher) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_string(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(value));
         self
     }
 
-    pub fn string_value_str<S>(mut self, value: S) -> Self
+    pub fn string_value_contains<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_string(
-            StringMatcher::create_string_str(value.into()),
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(
+            StringMatcher::contains(value.into()),
         ));
         self
     }
 
-    pub fn string_value_eq_str<S>(mut self, value: S) -> Self
+    pub fn string_value_equals<S>(mut self, value: S) -> Self
     where
         S: Into<String>,
     {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_string(
-            StringMatcher::create_string_eq_str(value.into()),
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(
+            StringMatcher::equals(value.into()),
         ));
         self
     }
 
     pub fn class_value(mut self, value: ClassMatcher) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_class(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::class(value));
         self
     }
 
     pub fn method_value(mut self, value: MethodMatcher) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_method(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::method(value));
         self
     }
 
     pub fn enum_value(mut self, value: FieldMatcher) -> Self {
-        let enum_matcher = AnnotationEncodeValueMatcher::create_enum(value);
+        let enum_matcher = AnnotationEncodeValueMatcher::enum_value(value);
         self.value_matcher = Some(enum_matcher);
         self
     }
 
     pub fn array_value(mut self, value: AnnotationEncodeArrayMatcher) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_array(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::array(value));
         self
     }
 
     pub fn annotation_value(mut self, value: AnnotationMatcher) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_annotation(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::annotation(value));
         self
     }
 
     pub fn null_value(mut self) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_null());
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::null());
         self
     }
 
     pub fn bool_value(mut self, value: bool) -> Self {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::create_bool(value));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::bool(value));
         self
     }
 }

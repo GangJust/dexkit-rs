@@ -40,8 +40,8 @@ fn do_search(apk_path: String) -> Result<(), Error> {
     let bridge = DexkitBridge::new(apk_path)?;
 
     let result = bridge.batch_find_method_using_strings(
-        BatchFindMethodUsingStrings::create()
-            .add_group(StringMatchersGroup::create("group1").add_string_matcher_str("John")),
+        BatchFindMethodUsingStrings::new()
+            .group(StringMatchersGroup::new("group1").contains_string("John")),
     );
 
     Log::d(format!("Result: {:#?}", result));

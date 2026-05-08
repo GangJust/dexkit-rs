@@ -42,50 +42,50 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodsMatcher<'a>>> for MethodsMatcher {
 }
 
 impl MethodsMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         MethodsMatcher::default()
     }
 
     // base
-    pub fn set_methods_matcher(mut self, matchers: Vec<MethodMatcher>) -> Self {
+    pub fn methods(mut self, matchers: Vec<MethodMatcher>) -> Self {
         self.methods_matcher = Some(matchers);
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
-    pub fn set_range_matcher(mut self, range: IntRange) -> Self {
+    pub fn range(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
         self
     }
 
     // extend methods_matcher
-    pub fn add_method_matcher(mut self, matcher: MethodMatcher) -> Self {
+    pub fn method(mut self, matcher: MethodMatcher) -> Self {
         self.methods_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);
         self
     }
 
-    pub fn add_method_names_strs<S>(self, method_name: Vec<S>) -> Self
+    pub fn method_names<S>(self, method_name: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<MethodMatcher> = method_name
             .into_iter()
-            .map(|name| MethodMatcher::create().set_method_name_str(name))
+            .map(|name| MethodMatcher::new().name_contains(name))
             .collect();
-        self.set_methods_matcher(matchers)
+        self.methods(matchers)
     }
 
-    pub fn add_method_name_str<S>(self, method_name: S) -> Self
+    pub fn method_name<S>(self, method_name: S) -> Self
     where
         S: Into<String>,
     {
-        self.add_method_matcher(MethodMatcher::create().set_method_name_str(method_name))
+        self.method(MethodMatcher::new().name_contains(method_name))
     }
 
     // extend range_matcher

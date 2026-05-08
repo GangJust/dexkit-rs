@@ -24,8 +24,8 @@ fn main() -> Result<(), Error> {
 }
 
 fn do_search(bridge: DexkitBridge) {
-    let class_data_list = bridge.find_class(FindClass::create().set_matcher(
-        ClassMatcher::create().set_class_name_str("io.github.cargo.ndk.plugin.MainActivity"),
+    let class_data_list = bridge.find_class(FindClass::new().matcher(
+        ClassMatcher::new().class_name_equals("io.github.cargo.ndk.plugin.MainActivity"),
     ));
     println!("\nCLASS:");
     for class_data in class_data_list.iter() {
@@ -35,7 +35,7 @@ fn do_search(bridge: DexkitBridge) {
     }
 
     let method_data_list = class_data_list.find_method(
-        FindMethod::create().set_matcher(MethodMatcher::create().set_method_name_str("test")),
+        FindMethod::new().matcher(MethodMatcher::new().name_contains("test")),
     );
     println!("\nMETHOD:");
     for method_data in method_data_list.iter() {

@@ -44,58 +44,53 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFieldsMatcher<'a>>> for FieldsMatcher {
 }
 
 impl FieldsMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_fields_matcher(mut self, matchers: Vec<FieldMatcher>) -> Self {
+    pub fn fields(mut self, matchers: Vec<FieldMatcher>) -> Self {
         self.fields_matcher = Some(matchers);
         self
     }
 
-    pub fn add_field_matcher(mut self, matcher: FieldMatcher) -> Self {
+    pub fn field(mut self, matcher: FieldMatcher) -> Self {
         self.fields_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
-    pub fn set_range_matcher(mut self, range: IntRange) -> Self {
+    pub fn range(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
         self
     }
 
     // extend fields_matcher
-    pub fn set_fields(mut self, matchers: Vec<FieldMatcher>) -> Self {
-        self.fields_matcher = Some(matchers);
-        self
-    }
-
-    pub fn set_field_name_strs<S>(mut self, field_names: Vec<S>) -> Self
+    pub fn field_names<S>(mut self, field_names: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<FieldMatcher> = field_names
             .into_iter()
-            .map(|name| FieldMatcher::create().set_field_name_str(name))
+            .map(|name| FieldMatcher::new().name_contains(name))
             .collect();
         self.fields_matcher = Some(matchers);
         self
     }
 
-    pub fn add_field_names_strs<S>(mut self, field_names: Vec<S>) -> Self
+    pub fn extend_field_names<S>(mut self, field_names: Vec<S>) -> Self
     where
         S: Into<String>,
     {
         let matchers: Vec<FieldMatcher> = field_names
             .into_iter()
-            .map(|name| FieldMatcher::create().set_field_name_str(name))
+            .map(|name| FieldMatcher::new().name_contains(name))
             .collect();
         if self.fields_matcher.is_none() {
             self.fields_matcher = Some(matchers);
@@ -108,13 +103,13 @@ impl FieldsMatcher {
         self
     }
 
-    pub fn add_field_name_str<S>(mut self, field_name: S) -> Self
+    pub fn field_name<S>(mut self, field_name: S) -> Self
     where
         S: Into<String>,
     {
         self.fields_matcher
             .get_or_insert_with(Vec::new)
-            .push(FieldMatcher::create().set_field_name_str(field_name));
+            .push(FieldMatcher::new().name_contains(field_name));
         self
     }
 

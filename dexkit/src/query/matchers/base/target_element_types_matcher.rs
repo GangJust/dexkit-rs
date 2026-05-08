@@ -42,23 +42,23 @@ impl<'a> BaseQuery<'a, WIPOffset<FBTargetElementTypesMatcher<'a>>> for TargetEle
 }
 
 impl TargetElementTypesMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_types(mut self, types: Vec<TargetElementType>) -> Self {
+    pub fn types(mut self, types: Vec<TargetElementType>) -> Self {
         self.types = Some(types);
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
     // extend types
-    pub fn add_target_element_type(mut self, element_type: TargetElementType) -> Self {
+    pub fn target_element_type(mut self, element_type: TargetElementType) -> Self {
         if let Some(types) = &mut self.types {
             types.push(element_type);
         } else {

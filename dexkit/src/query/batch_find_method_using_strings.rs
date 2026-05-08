@@ -90,12 +90,12 @@ impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindMethodUsingStrings<'a>>>
 }
 
 impl<'a> BatchFindMethodUsingStrings<'a> {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_search_packages<S>(mut self, packages: Vec<S>) -> Self
+    pub fn search_packages<S>(mut self, packages: Vec<S>) -> Self
     where
         S: Into<String>,
     {
@@ -103,7 +103,7 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
         self
     }
 
-    pub fn set_exclude_packages<S>(mut self, packages: Vec<S>) -> Self
+    pub fn exclude_packages<S>(mut self, packages: Vec<S>) -> Self
     where
         S: Into<String>,
     {
@@ -111,12 +111,12 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
         self
     }
 
-    pub fn set_ignore_packages_case(mut self, ignore: bool) -> Self {
+    pub fn ignore_packages_case(mut self, ignore: bool) -> Self {
         self.ignore_packages_case = ignore;
         self
     }
 
-    pub fn set_search_classes<V>(mut self, classes: V) -> Self
+    pub fn search_classes<V>(mut self, classes: V) -> Self
     where
         V: Into<Vec<ClassData<'a>>>,
     {
@@ -124,7 +124,7 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
         self
     }
 
-    pub fn set_search_methods<V>(mut self, methods: V) -> Self
+    pub fn search_methods<V>(mut self, methods: V) -> Self
     where
         V: Into<Vec<MethodData<'a>>>,
     {
@@ -132,13 +132,13 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
         self
     }
 
-    pub fn set_groups(mut self, groups: Vec<StringMatchersGroup>) -> Self {
+    pub fn groups(mut self, groups: Vec<StringMatchersGroup>) -> Self {
         self.search_groups = Some(groups);
         self
     }
 
     // extend search_packages
-    pub fn add_search_package<S>(mut self, package: S) -> Self
+    pub fn search_package<S>(mut self, package: S) -> Self
     where
         S: Into<String>,
     {
@@ -149,7 +149,7 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // extend exclude_packages
-    pub fn add_exclude_package<S>(mut self, package: S) -> Self
+    pub fn exclude_package<S>(mut self, package: S) -> Self
     where
         S: Into<String>,
     {
@@ -160,13 +160,13 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // extend search_classes
-    pub fn add_search_class(mut self, class: ClassData<'a>) -> Self {
+    pub fn search_class(mut self, class: ClassData<'a>) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }
 
     // extend search_methods
-    pub fn add_search_method(mut self, method: MethodData<'a>) -> Self {
+    pub fn search_method(mut self, method: MethodData<'a>) -> Self {
         self.search_methods
             .get_or_insert_with(Vec::new)
             .push(method);
@@ -174,7 +174,7 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // extend groups
-    pub fn add_group(mut self, group: StringMatchersGroup) -> Self {
+    pub fn group(mut self, group: StringMatchersGroup) -> Self {
         self.search_groups.get_or_insert_with(Vec::new).push(group);
         self
     }

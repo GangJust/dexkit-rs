@@ -48,23 +48,23 @@ impl<'a> BaseQuery<'a, WIPOffset<FBParametersMatcher<'a>>> for ParametersMatcher
 }
 
 impl ParametersMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
     // base
-    pub fn set_params_matcher(mut self, params: Vec<Option<ParameterMatcher>>) -> Self {
+    pub fn params(mut self, params: Vec<Option<ParameterMatcher>>) -> Self {
         self.params_matcher = Some(params);
         self
     }
 
-    pub fn set_range_matcher(mut self, range: IntRange) -> Self {
+    pub fn range(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
         self
     }
 
     // extend params_matcher
-    pub fn add_param_matchers(mut self, params: Vec<Option<ParameterMatcher>>) -> Self {
+    pub fn extend_params(mut self, params: Vec<Option<ParameterMatcher>>) -> Self {
         if let Some(ref mut existing_params) = self.params_matcher {
             existing_params.extend(params);
         } else {
@@ -73,7 +73,7 @@ impl ParametersMatcher {
         self
     }
 
-    pub fn add_param_matcher(mut self, param: Option<ParameterMatcher>) -> Self {
+    pub fn param(mut self, param: Option<ParameterMatcher>) -> Self {
         if let Some(ref mut params) = self.params_matcher {
             params.push(param);
         } else {

@@ -31,41 +31,45 @@ impl<'a> BaseQuery<'a, WIPOffset<FBIntRange<'a>>> for IntRange {
 }
 
 impl IntRange {
-    pub fn create() -> Self {
-        Self::default()
+    pub fn new(min: u32, max: u32) -> Self {
+        Self { min, max }
+    }
+
+    pub fn from_value(count: u32) -> Self {
+        Self {
+            min: count,
+            max: count,
+        }
     }
 
     // base
-    pub fn set_min(mut self, min: u32) -> Self {
+    pub fn min(mut self, min: u32) -> Self {
         self.min = min;
         self
     }
 
-    pub fn set_max(mut self, max: u32) -> Self {
+    pub fn max(mut self, max: u32) -> Self {
         self.max = max;
         self
     }
 
     // extend
     pub fn exactly(count: u32) -> Self {
-        IntRange {
-            min: count,
-            max: count,
-        }
+        Self::from_value(count)
     }
 
     pub fn range(min: u32, max: u32) -> Self {
-        IntRange { min, max }
+        Self::new(min, max)
     }
 
     pub fn at_least(count: u32) -> Self {
-        IntRange {
+        Self {
             min: count,
             max: 2147483647,
         }
     }
 
     pub fn at_most(count: u32) -> Self {
-        IntRange { min: 0, max: count }
+        Self { min: 0, max: count }
     }
 }

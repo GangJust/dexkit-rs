@@ -34,17 +34,20 @@ impl<'a> BaseQuery<'a, WIPOffset<FBAccessFlagsMatcher<'a>>> for AccessFlagsMatch
 }
 
 impl AccessFlagsMatcher {
-    pub fn create() -> Self {
-        Self::default()
+    pub fn new(modifiers: u32, match_type: MatchType) -> Self {
+        Self {
+            modifiers,
+            match_type,
+        }
     }
 
     // base
-    pub fn set_modifiers(mut self, modifiers: u32) -> Self {
+    pub fn modifiers(mut self, modifiers: u32) -> Self {
         self.modifiers = modifiers;
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }

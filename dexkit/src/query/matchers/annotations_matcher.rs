@@ -47,34 +47,34 @@ impl<'a> BaseQuery<'a, WIPOffset<FBAnnotationsMatcher<'a>>> for AnnotationsMatch
 }
 
 impl AnnotationsMatcher {
-    pub fn create() -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
-    // bese
-    pub fn set_annotations_matcher(mut self, matchers: Vec<AnnotationMatcher>) -> Self {
+    // base
+    pub fn annotations(mut self, matchers: Vec<AnnotationMatcher>) -> Self {
         self.annotations_matcher = Some(matchers);
         self
     }
 
-    pub fn set_match_type(mut self, match_type: MatchType) -> Self {
+    pub fn match_type(mut self, match_type: MatchType) -> Self {
         self.match_type = match_type;
         self
     }
 
-    pub fn set_range_matcher(mut self, range: IntRange) -> Self {
+    pub fn range(mut self, range: IntRange) -> Self {
         self.range_matcher = Some(range);
         self
     }
 
     // extend annotations_matcher
-    pub fn add_annotation_matchers(mut self, matchers: Vec<AnnotationMatcher>) -> Self {
+    pub fn extend_annotations(mut self, matchers: Vec<AnnotationMatcher>) -> Self {
         let annotations = self.annotations_matcher.get_or_insert_with(Vec::new);
         annotations.extend(matchers);
         self
     }
 
-    pub fn add_annotation_matcher(mut self, matcher: AnnotationMatcher) -> Self {
+    pub fn annotation(mut self, matcher: AnnotationMatcher) -> Self {
         self.annotations_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);
