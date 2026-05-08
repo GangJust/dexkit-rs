@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::TargetElementType as FBTargetElementType;
+use crate::gen_flatbuffers::dexkit::fb::FBTargetElementType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TargetElementType {

@@ -1,12 +1,9 @@
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationEncodeValueMeta as FBAnnotationEncodeValueMeta,
-    EncodeValueString as FBEncodeValueString,
-};
+use crate::DexkitBridge;
+use crate::gen_flatbuffers::dexkit::fb::{FBAnnotationEncodeValueMeta, FBEncodeValueString};
 use crate::query::enums::AnnotationEncodeValueType;
 use crate::query::matchers::EncodeValue;
 use crate::result::{AnnotationData, AnnotationEncodeArrayData, ClassData, FieldData, MethodData};
 use crate::uitls::{MUtf8, StringUnicodeEncoderDecoder};
-use crate::DexkitBridge;
 use std::fmt::Debug;
 use std::str::from_utf8;
 

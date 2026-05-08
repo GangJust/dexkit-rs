@@ -1,8 +1,7 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationMatcher as FBAnnotationMatcher, AnnotationMatcherArgs as FBAnnotationMatcherArgs,
-    RetentionPolicyType as FBRetentionPolicyType,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBAnnotationMatcher, FBAnnotationMatcherArgs, FBRetentionPolicyType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;

@@ -1,11 +1,9 @@
 use std::collections::HashMap;
 
 use crate::DexkitBridge;
-use crate::gen_flatbuffers::dexkit::schema::{
-    BatchClassMetaArrayHolder as FBBatchClassMetaArrayHolder,
-    BatchMethodMetaArrayHolder as FBBatchMethodMetaArrayHolder,
-    ClassMetaArrayHolder as FBClassMetaArrayHolder, FieldMetaArrayHolder as FBFieldMetaArrayHolder,
-    MethodMetaArrayHolder as FBMethodMetaArrayHolder,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBBatchClassMetaArrayHolder, FBBatchMethodMetaArrayHolder, FBClassMetaArrayHolder,
+    FBFieldMetaArrayHolder, FBMethodMetaArrayHolder,
 };
 use crate::query::{FindClass, FindField, FindMethod};
 use crate::result::base::BaseData;

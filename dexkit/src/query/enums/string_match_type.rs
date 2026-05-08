@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::StringMatchType as FBStringMatchType;
+use crate::gen_flatbuffers::dexkit::fb::FBStringMatchType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StringMatchType {

@@ -1,12 +1,10 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    FindClass as FBFindClass, FindClassArgs as FBFindClassArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBFindClass, FBFindClassArgs};
 use crate::query::base::BaseQuery;
 use crate::query::matchers::ClassMatcher;
-use crate::result::base::BaseData;
 use crate::result::ClassData;
+use crate::result::base::BaseData;
 
 pub struct FindClass<'a> {
     search_packages: Option<Vec<String>>,

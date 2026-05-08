@@ -1,7 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationVisibilityType as FBSchemaAnnotationVisibilityType,
-    AnnotationVisibilityType as FBAnnotationVisibilityType,
-};
+use crate::gen_flatbuffers::dexkit::fb::FBAnnotationVisibilityType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AnnotationVisibilityType {
@@ -21,7 +18,7 @@ impl From<FBAnnotationVisibilityType> for AnnotationVisibilityType {
     }
 }
 
-impl From<AnnotationVisibilityType> for FBSchemaAnnotationVisibilityType {
+impl From<AnnotationVisibilityType> for FBAnnotationVisibilityType {
     fn from(value: AnnotationVisibilityType) -> Self {
         match value {
             AnnotationVisibilityType::Build => Self::Build,

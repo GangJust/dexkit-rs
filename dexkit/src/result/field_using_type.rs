@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::UsingType as FBUsingType;
+use crate::gen_flatbuffers::dexkit::fb::FBUsingType;
 
 #[derive(Debug, Clone)]
 pub enum FieldUsingType {

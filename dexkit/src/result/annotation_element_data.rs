@@ -1,7 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationElementMeta as FBAnnotationElementMeta,
-    AnnotationEncodeValueMeta as FBAnnotationEncodeValueMeta,
-};
+use crate::gen_flatbuffers::dexkit::fb::FBAnnotationElementMeta;
 use crate::{DexkitBridge, result::AnnotationEncodeValue};
 use std::fmt::Debug;
 

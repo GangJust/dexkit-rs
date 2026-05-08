@@ -1,6 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::AnnotationEncodeValueMatcher as FBAnnotationEncodeValueMatcher;
+use crate::gen_flatbuffers::dexkit::fb::FBAnnotationEncodeValueMatcher;
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::AnnotationEncodeValueType;
 use crate::query::matchers::base::StringMatcher;

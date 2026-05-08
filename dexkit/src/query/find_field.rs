@@ -1,8 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    FindField as FBFindField, FindFieldArgs as FBFindFieldArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBFindField, FBFindFieldArgs};
 use crate::query::base::BaseQuery;
 use crate::query::matchers::FieldMatcher;
 use crate::result::base::BaseData;

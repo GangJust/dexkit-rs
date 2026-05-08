@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::OpCodeMatchType as FBOpCodeMatchType;
+use crate::gen_flatbuffers::dexkit::fb::FBOpCodeMatchType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OpCodeMatchType {

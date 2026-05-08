@@ -1,15 +1,11 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    EncodeValueBoolean as FBEncodeValueBoolean, EncodeValueBooleanArgs as FBEncodeValueBooleanArgs,
-    EncodeValueByte as FBEncodeValueByte, EncodeValueByteArgs as FBEncodeValueByteArgs,
-    EncodeValueChar as FBEncodeValueChar, EncodeValueCharArgs as FBEncodeValueCharArgs,
-    EncodeValueDouble as FBEncodeValueDouble, EncodeValueDoubleArgs as FBEncodeValueDoubleArgs,
-    EncodeValueFloat as FBEncodeValueFloat, EncodeValueFloatArgs as FBEncodeValueFloatArgs,
-    EncodeValueInt as FBEncodeValueInt, EncodeValueIntArgs as FBEncodeValueIntArgs,
-    EncodeValueLong as FBEncodeValueLong, EncodeValueLongArgs as FBEncodeValueLongArgs,
-    EncodeValueNull as FBEncodeValueNull, EncodeValueNullArgs as FBEncodeValueNullArgs,
-    EncodeValueShort as FBEncodeValueShort, EncodeValueShortArgs as FBEncodeValueShortArgs,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBEncodeValueBoolean, FBEncodeValueBooleanArgs, FBEncodeValueByte, FBEncodeValueByteArgs,
+    FBEncodeValueChar, FBEncodeValueCharArgs, FBEncodeValueDouble, FBEncodeValueDoubleArgs,
+    FBEncodeValueFloat, FBEncodeValueFloatArgs, FBEncodeValueInt, FBEncodeValueIntArgs,
+    FBEncodeValueLong, FBEncodeValueLongArgs, FBEncodeValueNull, FBEncodeValueNullArgs,
+    FBEncodeValueShort, FBEncodeValueShortArgs,
 };
 
 use crate::query::base::IAnnotationEncodeValue;

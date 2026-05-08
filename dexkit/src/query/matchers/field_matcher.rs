@@ -1,12 +1,10 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    FieldMatcher as FBFieldMatcher, FieldMatcherArgs as FBFieldMatcherArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBFieldMatcher, FBFieldMatcherArgs};
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
+use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::base::AccessFlagsMatcher;
 use crate::query::matchers::base::StringMatcher;
-use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::{AnnotationMatcher, AnnotationsMatcher};
 use crate::query::matchers::{ClassMatcher, MethodMatcher};
 
@@ -18,6 +16,9 @@ pub struct FieldMatcher {
     annotations_matcher: Option<AnnotationsMatcher>,
     get_methods_matcher: Option<MethodsMatcher>,
     put_methods_matcher: Option<MethodsMatcher>,
+    all_of_matcher: Option<Vec<FieldMatcher>>,
+    any_of_matcher: Option<Vec<FieldMatcher>>,
+    none_of_matcher: Option<Vec<FieldMatcher>>,
 }
 
 impl Default for FieldMatcher {
@@ -30,6 +31,9 @@ impl Default for FieldMatcher {
             annotations_matcher: None,
             get_methods_matcher: None,
             put_methods_matcher: None,
+            all_of_matcher: None,
+            any_of_matcher: None,
+            none_of_matcher: None,
         }
     }
 }
@@ -61,6 +65,18 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFieldMatcher<'a>>> for FieldMatcher {
             .put_methods_matcher
             .as_ref()
             .map(|m| m.inner_build(fbb));
+        let all_of = self.all_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
+        let any_of = self.any_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
+        let none_of = self.none_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
 
         FBFieldMatcher::create(
             fbb,
@@ -72,6 +88,9 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFieldMatcher<'a>>> for FieldMatcher {
                 annotations,
                 get_methods,
                 put_methods,
+                all_of,
+                any_of,
+                none_of,
             },
         )
     }

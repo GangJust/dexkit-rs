@@ -1,8 +1,7 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    BatchFindMethodUsingStrings as FBBatchFindMethodUsingStrings,
-    BatchFindMethodUsingStringsArgs as FBBatchFindMethodUsingStringsArgs,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBBatchFindMethodUsingStrings, FBBatchFindMethodUsingStringsArgs,
 };
 use crate::result::base::BaseData;
 use crate::{

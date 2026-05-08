@@ -9,7 +9,7 @@ use crate::result::{
 use crate::wrap::{DexClass, DexMethod};
 use std::{
     collections::HashMap,
-    ffi::{c_char, c_void, CString},
+    ffi::{CString, c_char, c_void},
 };
 
 #[derive(Debug)]
@@ -27,9 +27,8 @@ impl DexkitBridge {
         let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
         let c_apk_path =
             CString::new(apk_path.into()).map_err(|e| Error::BridgeCreateError(e.to_string()))?;
-        let added = unsafe {
-            dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr() as *mut c_char, 0)
-        };
+        let added =
+            unsafe { dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr(), 0) };
         if added == 0 {
             return Err(Error::BridgeCreateError("Failed to add APK path".into()));
         }
@@ -45,7 +44,7 @@ impl DexkitBridge {
     /// Initialize the full cache for faster queries.
     pub fn init_full_cache(&self) -> Result<(), Error> {
         let res = unsafe { dexkit_sys::dexkit_init_full_cache(self.dexkit_handle) };
-        if !res {
+        if res == 0 {
             return Err(Error::BridgeOperationError(
                 "Failed to initialize full cache".into(),
             ));
@@ -69,12 +68,9 @@ impl DexkitBridge {
         let c_output_path =
             CString::new(output_path).map_err(|e| Error::BridgeOperationError(e.to_string()))?;
         let success = unsafe {
-            dexkit_sys::dexkit_export_dex_file(
-                self.dexkit_handle,
-                c_output_path.as_ptr() as *mut c_char,
-            )
+            dexkit_sys::dexkit_export_dex_file(self.dexkit_handle, c_output_path.as_ptr())
         };
-        if !success {
+        if success == 0 {
             return Err(Error::BridgeOperationError(
                 "Failed to export DEX file".into(),
             ));
@@ -239,7 +235,7 @@ impl DexkitBridge {
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_class_data(
                 self.dexkit_handle,
-                CString::new(descriptor).unwrap().as_ptr() as *mut c_char,
+                CString::new(descriptor).unwrap().as_ptr(),
                 &mut out_buf,
                 &mut out_len,
             );
@@ -273,7 +269,7 @@ impl DexkitBridge {
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_data(
                 self.dexkit_handle,
-                CString::new(descriptor).unwrap().as_ptr() as *mut c_char,
+                CString::new(descriptor).unwrap().as_ptr(),
                 &mut out_buf,
                 &mut out_len,
             );
@@ -302,7 +298,7 @@ impl DexkitBridge {
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_field_data(
                 self.dexkit_handle,
-                CString::new(descriptor).unwrap().as_ptr() as *mut c_char,
+                CString::new(descriptor).unwrap().as_ptr(),
                 &mut out_buf,
                 &mut out_len,
             );
@@ -516,7 +512,7 @@ impl DexkitBridge {
     /// Get parameter names for a method by its method ID.
     pub(crate) fn get_parameter_names(&self, method_id: i64) -> Option<Vec<Option<String>>> {
         unsafe {
-            let mut out_buf: *mut c_void = std::ptr::null_mut();
+            let mut out_buf: *mut *mut c_char = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_parameter_names(
                 self.dexkit_handle,
@@ -529,12 +525,10 @@ impl DexkitBridge {
                 return None;
             }
 
-            // cast the out_buf to char**
-            let char_ptr_array = out_buf as *mut *mut c_char;
             let mut names: Vec<Option<String>> = Vec::with_capacity(out_len);
 
             for i in 0..out_len {
-                let char_ptr = *char_ptr_array.add(i);
+                let char_ptr = *out_buf.add(i);
                 if char_ptr.is_null() {
                     names.push(None);
                 } else {
@@ -547,7 +541,7 @@ impl DexkitBridge {
                 }
             }
 
-            dexkit_sys::dexkit_get_parameter_names_free(char_ptr_array, out_len); // release the memory allocated by layer C
+            dexkit_sys::dexkit_get_parameter_names_free(out_buf, out_len); // release the memory allocated by layer C
             Some(names)
         }
     }
@@ -649,7 +643,7 @@ impl DexkitBridge {
     /// Get all string literals used in this method by method ID
     pub(crate) fn get_method_using_strings(&self, method_id: i64) -> Vec<String> {
         unsafe {
-            let mut out_buf: *mut c_void = std::ptr::null_mut();
+            let mut out_buf: *mut *mut c_char = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_get_method_using_strings(
                 self.dexkit_handle,
@@ -662,12 +656,10 @@ impl DexkitBridge {
                 return Vec::new();
             }
 
-            // cast the out_buf to char**
-            let char_ptr_array = out_buf as *mut *mut c_char;
             let mut names: Vec<String> = Vec::with_capacity(out_len);
 
             for i in 0..out_len {
-                let char_ptr = *char_ptr_array.add(i);
+                let char_ptr = *out_buf.add(i);
                 if char_ptr.is_null() {
                     continue;
                 } else {
@@ -680,7 +672,7 @@ impl DexkitBridge {
                 }
             }
 
-            dexkit_sys::dexkit_get_method_using_strings_free(char_ptr_array, out_len); // release the memory allocated by layer C
+            dexkit_sys::dexkit_get_method_using_strings_free(out_buf, out_len); // release the memory allocated by layer C
             names
         }
     }

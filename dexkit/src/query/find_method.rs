@@ -1,8 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    FindMethod as FBMethodFind, FindMethodArgs as FBMethodFindArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBFindMethod, FBFindMethodArgs};
 use crate::query::base::BaseQuery;
 use crate::query::matchers::MethodMatcher;
 use crate::result::base::BaseData;
@@ -41,11 +39,11 @@ impl<'a> From<FindMethod<'a>> for Vec<u8> {
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBMethodFind<'a>>> for FindMethod<'a> {
+impl<'a> BaseQuery<'a, WIPOffset<FBFindMethod<'a>>> for FindMethod<'a> {
     fn inner_build(
         &self,
         fbb: &mut flatbuffers::FlatBufferBuilder<'a>,
-    ) -> WIPOffset<FBMethodFind<'a>> {
+    ) -> WIPOffset<FBFindMethod<'a>> {
         let search_packages = self.search_packages.as_ref().map(|packages| {
             let packages_offsets: Vec<_> = packages.iter().map(|p| fbb.create_string(p)).collect();
             fbb.create_vector(&packages_offsets)
@@ -70,9 +68,9 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodFind<'a>>> for FindMethod<'a> {
         });
         let matcher = self.matcher.as_ref().map(|m| m.inner_build(fbb));
 
-        FBMethodFind::create(
+        FBFindMethod::create(
             fbb,
-            &FBMethodFindArgs {
+            &FBFindMethodArgs {
                 search_packages,
                 exclude_packages,
                 ignore_packages_case: self.ignore_packages_case,

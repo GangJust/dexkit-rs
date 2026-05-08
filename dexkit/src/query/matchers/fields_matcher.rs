@@ -1,13 +1,10 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    FieldsMatcher as FBFieldsMatcher, FieldsMatcherArgs as FBFieldsMatcherArgs,
-    MatchType as FBMatchType,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBFieldsMatcher, FBFieldsMatcherArgs, FBMatchType};
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::base::IntRange;
 use crate::query::matchers::FieldMatcher;
+use crate::query::matchers::base::IntRange;
 
 pub struct FieldsMatcher {
     fields_matcher: Option<Vec<FieldMatcher>>,
@@ -29,7 +26,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFieldsMatcher<'a>>> for FieldsMatcher {
     fn inner_build(&self, fbb: &mut FlatBufferBuilder<'a>) -> WIPOffset<FBFieldsMatcher<'a>> {
         let fields = self.fields_matcher.as_ref().map(|matchers| {
             let fb_field_matchers: Vec<
-                WIPOffset<crate::gen_flatbuffers::dexkit::schema::FieldMatcher>,
+                WIPOffset<crate::gen_flatbuffers::dexkit::fb::FBFieldMatcher>,
             > = matchers.iter().map(|m| m.inner_build(fbb)).collect();
             fbb.create_vector(&fb_field_matchers)
         });

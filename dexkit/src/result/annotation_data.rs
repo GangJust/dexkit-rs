@@ -1,11 +1,10 @@
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationMeta as FBAnnotationMeta, AnnotationMetaArrayHolder as FBAnnotationMetaArrayHolder,
-    AnnotationVisibilityType as FBAnnotationVisibilityType,
-    ParametersAnnotationMetaArrayHoler as FBParametersAnnotationMetaArrayHoler,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBAnnotationMeta, FBAnnotationMetaArrayHolder, FBAnnotationVisibilityType,
+    FBParametersAnnotationMetaArrayHoler,
 };
 use crate::result::AnnotationElementData;
 use crate::wrap::DexClass;
-use crate::{query::enums::AnnotationVisibilityType, result::base::BaseData, DexkitBridge};
+use crate::{DexkitBridge, query::enums::AnnotationVisibilityType, result::base::BaseData};
 use std::cell::OnceCell;
 use std::fmt::Debug;
 

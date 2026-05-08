@@ -1,6 +1,5 @@
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationEncodeValueMatcher as FBAnnotationEncodeValueMatcher,
-    AnnotationEncodeValueType as FBAnnotationEncodeValueType,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBAnnotationEncodeValueMatcher, FBAnnotationEncodeValueType,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

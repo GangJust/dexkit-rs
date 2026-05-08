@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::RetentionPolicyType as FBRetentionPolicyType;
+use crate::gen_flatbuffers::dexkit::fb::FBRetentionPolicyType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RetentionPolicyType {

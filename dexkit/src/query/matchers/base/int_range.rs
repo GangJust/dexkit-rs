@@ -1,8 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    IntRange as FBIntRange, IntRangeArgs as FBIntRangeArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBIntRange, FBIntRangeArgs};
 use crate::query::base::BaseQuery;
 
 pub struct IntRange {

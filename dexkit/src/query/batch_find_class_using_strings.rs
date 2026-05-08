@@ -1,12 +1,11 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    BatchFindClassUsingStrings as FBBatchFindClassUsingStrings,
-    BatchFindClassUsingStringsArgs as FBBatchFindClassUsingStringsArgs,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBBatchFindClassUsingStrings, FBBatchFindClassUsingStringsArgs,
 };
 use crate::{
     query::{base::BaseQuery, matchers::StringMatchersGroup},
-    result::{base::BaseData, ClassData},
+    result::{ClassData, base::BaseData},
 };
 
 pub struct BatchFindClassUsingStrings<'a> {

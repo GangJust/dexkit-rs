@@ -1,13 +1,12 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    InterfacesMatcher as FBInterfacesMatcher, InterfacesMatcherArgs as FBInterfacesMatcherArgs,
-    MatchType as FBMatchType,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBInterfacesMatcher, FBInterfacesMatcherArgs, FBMatchType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
-use crate::query::matchers::base::IntRange;
 use crate::query::matchers::ClassMatcher;
+use crate::query::matchers::base::IntRange;
 
 pub struct InterfacesMatcher {
     interface_matcher: Option<Vec<ClassMatcher>>,

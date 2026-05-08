@@ -1,20 +1,18 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    ClassMatcher as FBClassMatcher, ClassMatcherArgs as FBClassMatcherArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBClassMatcher, FBClassMatcherArgs};
 use crate::query::base::BaseQuery;
 use crate::query::base::IAnnotationEncodeValue;
 use crate::query::enums::StringMatchType;
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::StringMatcher;
-use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
 use crate::query::matchers::AnnotationMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::FieldMatcher;
 use crate::query::matchers::FieldsMatcher;
 use crate::query::matchers::MethodMatcher;
 use crate::query::matchers::MethodsMatcher;
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::StringMatcher;
+use crate::query::matchers::interfaces_matcher::InterfacesMatcher;
 
 pub struct ClassMatcher {
     source_matcher: Option<StringMatcher>,
@@ -26,6 +24,9 @@ pub struct ClassMatcher {
     fields_matcher: Option<FieldsMatcher>,
     methods_matcher: Option<MethodsMatcher>,
     using_strings_matcher: Option<Vec<StringMatcher>>,
+    all_of_matcher: Option<Vec<ClassMatcher>>,
+    any_of_matcher: Option<Vec<ClassMatcher>>,
+    none_of_matcher: Option<Vec<ClassMatcher>>,
 }
 
 impl Default for ClassMatcher {
@@ -40,6 +41,9 @@ impl Default for ClassMatcher {
             fields_matcher: None,
             methods_matcher: None,
             using_strings_matcher: None,
+            all_of_matcher: None,
+            any_of_matcher: None,
+            none_of_matcher: None,
         }
     }
 }
@@ -73,6 +77,18 @@ impl<'a> BaseQuery<'a, WIPOffset<FBClassMatcher<'a>>> for ClassMatcher {
             let vec: Vec<_> = v.iter().map(|m| m.inner_build(fbb)).collect();
             fbb.create_vector(&vec)
         });
+        let all_of = self.all_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
+        let any_of = self.any_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
+        let none_of = self.none_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
 
         FBClassMatcher::create(
             fbb,
@@ -86,6 +102,9 @@ impl<'a> BaseQuery<'a, WIPOffset<FBClassMatcher<'a>>> for ClassMatcher {
                 fields,
                 methods,
                 using_strings,
+                all_of,
+                any_of,
+                none_of,
             },
         )
     }

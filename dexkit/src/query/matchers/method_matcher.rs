@@ -1,19 +1,18 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    MethodMatcher as FBMethodMatcher, MethodMatcherArgs as FBMethodMatcherArgs, Number as FBNumber,
-    NumberWrapper as FBNumberWrapper, NumberWrapperArgs as FBNumberWrapperArgs,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBMethodMatcher, FBMethodMatcherArgs, FBNumber, FBNumberUnion, FBNumberUnionArgs,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
-use crate::query::matchers::base::AccessFlagsMatcher;
-use crate::query::matchers::base::NumberEncodeValueMatcher;
-use crate::query::matchers::base::OpCodesMatcher;
-use crate::query::matchers::base::StringMatcher;
 use crate::query::matchers::AnnotationsMatcher;
 use crate::query::matchers::ClassMatcher;
 use crate::query::matchers::MethodsMatcher;
 use crate::query::matchers::ParametersMatcher;
 use crate::query::matchers::UsingFieldMatcher;
+use crate::query::matchers::base::AccessFlagsMatcher;
+use crate::query::matchers::base::NumberEncodeValueMatcher;
+use crate::query::matchers::base::OpCodesMatcher;
+use crate::query::matchers::base::StringMatcher;
 
 pub struct MethodMatcher {
     name_matcher: Option<StringMatcher>,
@@ -29,6 +28,9 @@ pub struct MethodMatcher {
     using_numbers_matcher: Option<Vec<NumberEncodeValueMatcher>>,
     invoke_methods_matcher: Option<MethodsMatcher>,
     caller_methods_matcher: Option<MethodsMatcher>,
+    all_of_matcher: Option<Vec<MethodMatcher>>,
+    any_of_matcher: Option<Vec<MethodMatcher>>,
+    none_of_matcher: Option<Vec<MethodMatcher>>,
 }
 
 impl Default for MethodMatcher {
@@ -47,6 +49,9 @@ impl Default for MethodMatcher {
             using_numbers_matcher: None,
             invoke_methods_matcher: None,
             caller_methods_matcher: None,
+            all_of_matcher: None,
+            any_of_matcher: None,
+            none_of_matcher: None,
         }
     }
 }
@@ -87,14 +92,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodMatcher<'a>>> for MethodMatcher {
             let vec = vec.iter().map(|n| {
                 let value_type: FBNumber = n.into();
                 let value = n.inner_build(fbb);
-                FBNumberWrapper::create(
-                    fbb,
-                    &FBNumberWrapperArgs {
-                        value_type,
-                        value,
-                        ..FBNumberWrapperArgs::default()
-                    },
-                )
+                FBNumberUnion::create(fbb, &FBNumberUnionArgs { value_type, value })
             });
             let built_vec: Vec<_> = vec.collect();
             fbb.create_vector(&built_vec)
@@ -107,6 +105,18 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodMatcher<'a>>> for MethodMatcher {
             .caller_methods_matcher
             .as_ref()
             .map(|m| m.inner_build(fbb));
+        let all_of = self.all_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
+        let any_of = self.any_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
+        let none_of = self.none_of_matcher.as_ref().map(|vec| {
+            let built_vec: Vec<_> = vec.iter().map(|m| m.inner_build(fbb)).collect();
+            fbb.create_vector(&built_vec)
+        });
         let proto_shorty = self
             .proto_shorty_matcher
             .as_ref()
@@ -128,6 +138,9 @@ impl<'a> BaseQuery<'a, WIPOffset<FBMethodMatcher<'a>>> for MethodMatcher {
                 invoking_methods,
                 method_callers,
                 proto_shorty,
+                all_of,
+                any_of,
+                none_of,
             },
         )
     }

@@ -1,8 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    AccessFlagsMatcher as FBAccessFlagsMatcher, AccessFlagsMatcherArgs as FBAccessFlagsMatcherArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBAccessFlagsMatcher, FBAccessFlagsMatcherArgs};
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;
 
@@ -22,7 +20,7 @@ impl Default for AccessFlagsMatcher {
 
 impl<'a> BaseQuery<'a, WIPOffset<FBAccessFlagsMatcher<'a>>> for AccessFlagsMatcher {
     fn inner_build(&self, fbb: &mut FlatBufferBuilder<'a>) -> WIPOffset<FBAccessFlagsMatcher<'a>> {
-        let match_type: crate::gen_flatbuffers::dexkit::schema::MatchType = self.match_type.into();
+        let match_type: crate::gen_flatbuffers::dexkit::fb::FBMatchType = self.match_type.into();
         let flags = self.modifiers;
 
         if flags == 0 {

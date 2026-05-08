@@ -1,9 +1,7 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    MatchType as FBMatchType, TargetElementType as FBTargetElementType,
-    TargetElementTypesMatcher as FBTargetElementTypesMatcher,
-    TargetElementTypesMatcherArgs as FBTargetElementTypesMatcherArgs,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBMatchType, FBTargetElementType, FBTargetElementTypesMatcher, FBTargetElementTypesMatcherArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::MatchType;

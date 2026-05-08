@@ -1,11 +1,9 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    ParametersMatcher as FBParametersMatcher, ParametersMatcherArgs as FBParametersMatcherArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBParametersMatcher, FBParametersMatcherArgs};
 use crate::query::base::BaseQuery;
-use crate::query::matchers::base::IntRange;
 use crate::query::matchers::ParameterMatcher;
+use crate::query::matchers::base::IntRange;
 
 pub struct ParametersMatcher {
     params_matcher: Option<Vec<Option<ParameterMatcher>>>,

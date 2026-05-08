@@ -1,7 +1,7 @@
-use crate::gen_flatbuffers::dexkit::schema::ClassMeta as FBClassMeta;
+use crate::gen_flatbuffers::dexkit::fb::FBClassMeta;
 use crate::result::{AnnotationData, ClassDataList, FieldDataList, MethodDataList};
 use crate::wrap::DexClass;
-use crate::{result::base::BaseData, DexkitBridge};
+use crate::{DexkitBridge, result::base::BaseData};
 use std::cell::OnceCell;
 use std::fmt::Debug;
 

@@ -1,6 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::Number as FBNumber;
+use crate::gen_flatbuffers::dexkit::fb::FBNumber;
 use crate::query::base::{BaseQuery, INumberEncodeValue};
 use crate::query::enums::NumberEncodeValueType;
 

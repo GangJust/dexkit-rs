@@ -1,7 +1,5 @@
 use crate::DexkitBridge;
-use crate::gen_flatbuffers::dexkit::schema::{
-    UsingFieldMeta as FBUsingFieldMeta, UsingFieldMetaArrayHolder as FBUsingFieldMetaArrayHolder,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBUsingFieldMeta, FBUsingFieldMetaArrayHolder};
 use crate::result::{FieldData, FieldUsingType};
 
 #[derive(Debug, Clone)]

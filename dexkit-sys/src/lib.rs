@@ -10,17 +10,17 @@ unsafe extern "C" {
 
     pub fn dexkit_add_zip_path(
         handle: DexkitHandle,
-        apk_path: *mut c_char,
+        apk_path: *const c_char,
         unzip_thread_num: c_int,
     ) -> c_int;
 
     pub fn dexkit_set_thread_num(handle: DexkitHandle, num_threads: c_int);
 
-    pub fn dexkit_init_full_cache(handle: DexkitHandle) -> bool;
+    pub fn dexkit_init_full_cache(handle: DexkitHandle) -> c_int;
 
     pub fn dexkit_get_dex_num(handle: DexkitHandle) -> c_int;
 
-    pub fn dexkit_export_dex_file(handle: DexkitHandle, output_path: *mut c_char) -> bool;
+    pub fn dexkit_export_dex_file(handle: DexkitHandle, output_path: *const c_char) -> c_int;
 
     pub fn dexkit_find_class(
         handle: *mut c_void,
@@ -108,7 +108,7 @@ unsafe extern "C" {
     pub fn dexkit_get_parameter_names(
         handle: *mut c_void,
         method_id: i64,
-        out_buf: *mut *mut c_void,
+        out_buf: *mut *mut *mut c_char,
         out_len: *mut usize,
     );
     pub fn dexkit_get_parameter_names_free(buf: *mut *mut c_char, len: usize);
@@ -155,8 +155,8 @@ unsafe extern "C" {
 
     pub fn dexkit_get_method_using_strings(
         handle: *mut c_void,
-        string_id: i64,
-        out_buf: *mut *mut c_void,
+        method_id: i64,
+        out_buf: *mut *mut *mut c_char,
         out_len: *mut usize,
     );
     pub fn dexkit_get_method_using_strings_free(out_buf: *mut *mut c_char, len: usize);
@@ -171,7 +171,7 @@ unsafe extern "C" {
 
     pub fn dexkit_get_class_data(
         handle: *mut c_void,
-        dex_descriptor: *mut c_char,
+        dex_descriptor: *const c_char,
         out_buf: *mut *mut c_void,
         out_len: *mut usize,
     );
@@ -179,7 +179,7 @@ unsafe extern "C" {
 
     pub fn dexkit_get_method_data(
         handle: *mut c_void,
-        dex_descriptor: *mut c_char,
+        dex_descriptor: *const c_char,
         out_buf: *mut *mut c_void,
         out_len: *mut usize,
     );
@@ -187,7 +187,7 @@ unsafe extern "C" {
 
     pub fn dexkit_get_field_data(
         handle: *mut c_void,
-        dex_descriptor: *mut c_char,
+        dex_descriptor: *const c_char,
         out_buf: *mut *mut c_void,
         out_len: *mut usize,
     );

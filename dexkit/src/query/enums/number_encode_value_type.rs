@@ -1,6 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::{
-    Number as FBNumber,
-};
+use crate::gen_flatbuffers::dexkit::fb::FBNumber;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NumberEncodeValueType {

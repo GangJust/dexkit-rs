@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::FieldMeta as FBFieldMeta;
+use crate::gen_flatbuffers::dexkit::fb::FBFieldMeta;
 use crate::result::{AnnotationData, ClassData, MethodDataList};
 use crate::wrap::DexField;
 use crate::{DexkitBridge, result::base::BaseData};

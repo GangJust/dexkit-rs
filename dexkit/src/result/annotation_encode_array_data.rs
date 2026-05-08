@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::AnnotationEncodeArray as FBAnnotationEncodeArray;
+use crate::gen_flatbuffers::dexkit::fb::FBAnnotationEncodeArray;
 use crate::{DexkitBridge, result::AnnotationEncodeValue};
 use std::fmt::Debug;
 

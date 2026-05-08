@@ -1,12 +1,9 @@
 use flatbuffers::{FlatBufferBuilder, UnionWIPOffset, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    AnnotationEncodeArrayMatcher as FBAnnotationEncodeArrayMatcher,
-    AnnotationEncodeArrayMatcherArgs as FBAnnotationEncodeArrayMatcherArgs,
-    AnnotationEncodeValueMatcher as FBAnnotationEncodeValueMatcher,
-    AnnotationEncodeValueMatcherWrapper,
-    AnnotationEncodeValueMatcherWrapperArgs as FBAnnotationEncodeValueMatcherWrapperArgs,
-    MatchType as FBMatchType,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBAnnotationEncodeArrayMatcher, FBAnnotationEncodeArrayMatcherArgs,
+    FBAnnotationEncodeValueMatcher, FBAnnotationEncodeValueMatcherUnion,
+    FBAnnotationEncodeValueMatcherUnionArgs, FBMatchType,
 };
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::MatchType;
@@ -52,9 +49,9 @@ impl<'a> BaseQuery<'a, WIPOffset<FBAnnotationEncodeArrayMatcher<'a>>>
                 .map(|m| {
                     let value_type: FBAnnotationEncodeValueMatcher = m.into();
                     let value = m.inner_build(fbb);
-                    AnnotationEncodeValueMatcherWrapper::create(
+                    FBAnnotationEncodeValueMatcherUnion::create(
                         fbb,
-                        &FBAnnotationEncodeValueMatcherWrapperArgs { value_type, value },
+                        &FBAnnotationEncodeValueMatcherUnionArgs { value_type, value },
                     )
                 })
                 .collect();

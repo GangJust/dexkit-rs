@@ -1,4 +1,4 @@
-use crate::gen_flatbuffers::dexkit::schema::MethodMeta as FBMethodMeta;
+use crate::gen_flatbuffers::dexkit::fb::FBMethodMeta;
 use crate::result::{AnnotationData, ClassData, ClassDataList, MethodDataList, UsingFieldData};
 use crate::uitls::Opcodes;
 use crate::wrap::DexMethod;

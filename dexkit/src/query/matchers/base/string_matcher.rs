@@ -1,9 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    StringMatchType as FBSchemaStringMatchType, StringMatcher as FBStringMatcher,
-    StringMatcherArgs as FBStringMatcherArgs,
-};
+use crate::gen_flatbuffers::dexkit::fb::{FBStringMatchType, FBStringMatcher, FBStringMatcherArgs};
 use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::StringMatchType;
 
@@ -35,7 +32,7 @@ impl IAnnotationEncodeValue for StringMatcher {
 impl<'a> BaseQuery<'a, WIPOffset<FBStringMatcher<'a>>> for StringMatcher {
     fn inner_build(&self, fbb: &mut FlatBufferBuilder<'a>) -> WIPOffset<FBStringMatcher<'a>> {
         let value = self.value.as_ref().map(|v| fbb.create_string(v));
-        let match_type: FBSchemaStringMatchType = self.match_type.into();
+        let match_type: FBStringMatchType = self.match_type.into();
 
         let root = FBStringMatcher::create(
             fbb,

@@ -1,8 +1,7 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    UsingFieldMatcher as FBUsingFieldMatcher, UsingFieldMatcherArgs as FBUsingFieldMatcherArgs,
-    UsingType as FBUsingType,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBUsingFieldMatcher, FBUsingFieldMatcherArgs, FBUsingType,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::UsingType;

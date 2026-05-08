@@ -1,8 +1,7 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
-use crate::gen_flatbuffers::dexkit::schema::{
-    OpCodeMatchType as FBOpCodeMatchType, OpCodesMatcher as FBOpCodesMatcher,
-    OpCodesMatcherArgs as FBOpCodesMatcherArgs,
+use crate::gen_flatbuffers::dexkit::fb::{
+    FBOpCodeMatchType, FBOpCodesMatcher, FBOpCodesMatcherArgs,
 };
 use crate::query::base::BaseQuery;
 use crate::query::enums::OpCodeMatchType;
