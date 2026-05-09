@@ -64,33 +64,33 @@ impl FieldData {
     }
 
     /// field type signature, e.g. "I"
-    pub fn type_signature(&self) -> Option<String> {
+    pub fn type_signature(&self) -> Option<&str> {
         self.get_dex_field()
             .map(|f| f.type_signature().unwrap_or_default())
     }
 
     /// field class name, e.g. "com.example.MyClass"
-    pub fn class_name(&self) -> Option<String> {
+    pub fn class_name(&self) -> Option<&str> {
         self.get_dex_field().map(|f| f.class_name())
     }
 
     /// field name, e.g. "com.example.MyClass"
-    pub fn declared_class_name(&self) -> Option<String> {
+    pub fn declared_class_name(&self) -> Option<&str> {
         self.class_name()
     }
 
     /// field name, e.g. "myField"
-    pub fn field_name(&self) -> Option<String> {
+    pub fn field_name(&self) -> Option<&str> {
         self.get_dex_field().map(|f| f.field_name())
     }
 
     /// field name, e.g. "myField"
-    pub fn name(&self) -> Option<String> {
+    pub fn name(&self) -> Option<&str> {
         self.field_name()
     }
 
     /// field type name, e.g. "int"
-    pub fn type_name(&self) -> Option<String> {
+    pub fn type_name(&self) -> Option<&str> {
         self.get_dex_field().map(|f| f.type_name())
     }
 

@@ -59,7 +59,7 @@ impl AnnotationData {
     }
 
     /// get type descriptor
-    pub fn type_name(&self) -> Option<String> {
+    pub fn type_name(&self) -> Option<&str> {
         self.get_dex_class().map(|dex_class| dex_class.type_name())
     }
 

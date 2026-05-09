@@ -32,26 +32,25 @@ impl DexClass {
     }
 
     /// Get the original class descriptor. e.g. "Lcom/example/MyClass;"
-    pub fn descriptor(&self) -> String {
-        self.descriptor.clone()
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
     /// Get the full type name. e.g. "com.example.MyClass"
-    pub fn type_name(&self) -> String {
-        self.type_name.clone()
+    pub fn type_name(&self) -> &str {
+        &self.type_name
     }
 
     /// Get the class name. e.g. "com.example.MyClass"
-    pub fn class_name(&self) -> String {
-        self.type_name.clone()
+    pub fn class_name(&self) -> &str {
+        &self.type_name
     }
 
     /// Get the simple class name. e.g. "MyClass"
-    pub fn simple_name(&self) -> String {
+    pub fn simple_name(&self) -> &str {
         self.type_name
             .rsplit('.')
             .next()
-            .map(|s| s.to_string())
             .unwrap_or_default()
     }
 

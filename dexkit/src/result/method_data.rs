@@ -73,32 +73,32 @@ impl MethodData {
     }
 
     /// method signature, e.g. "myMethod(ILjava/lang/String;)V"
-    pub fn method_signature(&self) -> Option<String> {
+    pub fn method_signature(&self) -> Option<&str> {
         self.get_dex_method().map(|m| m.method_signature())
     }
 
     /// method class name, e.g. "com.example.MyClass"
-    pub fn class_name(&self) -> Option<String> {
+    pub fn class_name(&self) -> Option<&str> {
         self.get_dex_method().map(|m| m.class_name())
     }
 
     /// method class name, e.g. "com.example.MyClass"
-    pub fn declared_class_name(&self) -> Option<String> {
+    pub fn declared_class_name(&self) -> Option<&str> {
         self.class_name()
     }
 
     /// method name, e.g. "myMethod"
-    pub fn method_name(&self) -> Option<String> {
+    pub fn method_name(&self) -> Option<&str> {
         self.get_dex_method().map(|m| m.method_name())
     }
 
     /// method name, e.g. "myMethod"
-    pub fn name(&self) -> Option<String> {
+    pub fn name(&self) -> Option<&str> {
         self.method_name()
     }
 
     /// parameter type names, e.g. vec!["int", "java.lang.String"]
-    pub fn param_type_names(&self) -> Option<Vec<String>> {
+    pub fn param_type_names(&self) -> Option<&[String]> {
         self.get_dex_method().map(|m| m.param_type_names())
     }
 
@@ -108,7 +108,7 @@ impl MethodData {
     }
 
     /// return type name, e.g. "void"
-    pub fn return_type_name(&self) -> Option<String> {
+    pub fn return_type_name(&self) -> Option<&str> {
         self.get_dex_method().map(|m| m.return_type_name())
     }
 

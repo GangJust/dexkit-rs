@@ -75,12 +75,12 @@ impl ClassData {
     }
 
     /// class name, e.g. "com.example.MyClass"
-    pub fn name(&self) -> Option<String> {
+    pub fn name(&self) -> Option<&str> {
         self.get_dex_class().map(|dc| dc.type_name())
     }
 
     /// simple class name, e.g. "MyClass"
-    pub fn simple_name(&self) -> Option<String> {
+    pub fn simple_name(&self) -> Option<&str> {
         self.get_dex_class().map(|dc| dc.simple_name())
     }
 

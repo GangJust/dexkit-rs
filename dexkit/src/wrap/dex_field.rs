@@ -1,4 +1,5 @@
 use crate::utils::DexSignature;
+use std::cell::OnceCell;
 
 #[derive(Debug, Clone)]
 pub struct DexField {
@@ -6,6 +7,8 @@ pub struct DexField {
     class_name: String,
     field_name: String,
     type_name: String,
+    // Lazy loaded fields
+    type_signature: OnceCell<Option<String>>,
 }
 
 impl DexField {
@@ -44,37 +47,40 @@ impl DexField {
             class_name,
             field_name,
             type_name,
+            type_signature: OnceCell::new(),
         })
     }
 
     /// Get the original field descriptor string.
-    pub fn descriptor(&self) -> String {
-        self.descriptor.clone()
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
     /// Get the class name where the field is declared.
-    pub fn class_name(&self) -> String {
-        self.class_name.clone()
+    pub fn class_name(&self) -> &str {
+        &self.class_name
     }
 
     /// Get the field name.
-    pub fn field_name(&self) -> String {
-        self.field_name.clone()
+    pub fn field_name(&self) -> &str {
+        &self.field_name
     }
 
     /// Get the type name of the field.
-    pub fn type_name(&self) -> String {
-        self.type_name.clone()
+    pub fn type_name(&self) -> &str {
+        &self.type_name
     }
 
     /// Get the class name where the field is declared.
-    pub fn declared_class_name(&self) -> String {
-        self.class_name.clone()
+    pub fn declared_class_name(&self) -> &str {
+        &self.class_name
     }
 
     /// Get the type signature of the field. e.g. "int" -> "I"
-    pub fn type_signature(&self) -> Option<String> {
-        DexSignature::get_type_signature(&self.type_name)
+    pub fn type_signature(&self) -> Option<&str> {
+        self.type_signature
+            .get_or_init(|| DexSignature::get_type_signature(&self.type_name))
+            .as_deref()
     }
 }
 

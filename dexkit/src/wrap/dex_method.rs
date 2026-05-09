@@ -1,4 +1,5 @@
 use crate::utils::DexSignature;
+use std::cell::OnceCell;
 
 #[derive(Debug, Clone)]
 pub struct DexMethod {
@@ -7,6 +8,8 @@ pub struct DexMethod {
     method_name: String,
     return_type: String,
     parameter_type_names: Vec<String>,
+    // Lazy loaded fields
+    method_signature: OnceCell<String>,
 }
 
 impl DexMethod {
@@ -45,52 +48,53 @@ impl DexMethod {
             method_name,
             return_type,
             parameter_type_names: parameter_types,
+            method_signature: OnceCell::new(),
         })
     }
 
     /// Get the original method descriptor. e.g. "Lcom/example/MyClass;->myMethod(I)V"
-    pub fn descriptor(&self) -> String {
-        self.descriptor.clone()
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
     /// method class name, e.g. "com.example.MyClass"
-    pub fn class_name(&self) -> String {
-        self.class_name.clone()
+    pub fn class_name(&self) -> &str {
+        &self.class_name
     }
 
     /// method class name, e.g. "com.example.MyClass"
-    pub fn declared_class_name(&self) -> String {
+    pub fn declared_class_name(&self) -> &str {
         self.class_name()
     }
 
     /// method name, e.g. "myMethod"
-    pub fn method_name(&self) -> String {
-        self.method_name.clone()
+    pub fn method_name(&self) -> &str {
+        &self.method_name
     }
 
     /// method name, e.g. "myMethod"
-    pub fn name(&self) -> String {
+    pub fn name(&self) -> &str {
         self.method_name()
     }
 
     /// parameter type names, e.g. vec!["int", "java.lang.String"]
-    pub fn param_type_names(&self) -> Vec<String> {
-        self.parameter_type_names.clone()
+    pub fn param_type_names(&self) -> &[String] {
+        &self.parameter_type_names
     }
 
     /// return type name, e.g. "void"
-    pub fn return_type_name(&self) -> String {
-        self.return_type.clone()
+    pub fn return_type_name(&self) -> &str {
+        &self.return_type
     }
 
     /// is constructor method
     pub fn is_constructor(&self) -> bool {
-        self.name() == "<init>"
+        self.method_name == "<init>"
     }
 
     /// is static initializer method
     pub fn is_static_initializer(&self) -> bool {
-        self.name() == "<clinit>"
+        self.method_name == "<clinit>"
     }
 
     /// is method
@@ -99,15 +103,20 @@ impl DexMethod {
     }
 
     /// Get the method signature. e.g. "myMethod(ILjava/lang/String;)V"
-    pub fn method_signature(&self) -> String {
-        let params = self
-            .parameter_type_names
-            .iter()
-            .map(|m| DexSignature::get_type_signature(m).unwrap_or_default())
-            .collect::<Vec<String>>()
-            .join("");
-        let return_type = DexSignature::get_type_signature(&self.return_type).unwrap_or_default();
-        format!("{}({}){}", self.method_name, params, return_type)
+    pub fn method_signature(&self) -> &str {
+        self.method_signature
+            .get_or_init(|| {
+                let params = self
+                    .parameter_type_names
+                    .iter()
+                    .map(|m| DexSignature::get_type_signature(m).unwrap_or_default())
+                    .collect::<Vec<String>>()
+                    .join("");
+                let return_type =
+                    DexSignature::get_type_signature(&self.return_type).unwrap_or_default();
+                format!("{}({}){}", self.method_name, params, return_type)
+            })
+            .as_str()
     }
 }
 
