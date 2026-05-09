@@ -277,7 +277,7 @@ impl Opcodes {
         if let Some(&opcode) = OP_NAME_MAP.get(op_name) {
             Ok(opcode)
         } else {
-            Err(Error::OpcodeError(format!(
+            Err(Error::Opcode(format!(
                 "Invalid opcode name: {}",
                 op_name
             )))
@@ -289,7 +289,7 @@ impl Opcodes {
         if (opcode as usize) < OP_FORMAT.len() {
             Ok(OP_FORMAT[opcode as usize].to_string())
         } else {
-            Err(Error::OpcodeError(format!(
+            Err(Error::Opcode(format!(
                 "Invalid opcode: 0x{:X} is out of range",
                 opcode
             )))

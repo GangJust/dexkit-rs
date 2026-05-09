@@ -9,14 +9,14 @@ fn main() -> Result<(), Error> {
     println!("Current dir: {}", cargo_manifest_dir.display());
     let apk_path = cargo_manifest_dir.join("apk").join("demo.apk");
     if !apk_path.exists() {
-        return Err(Error::BridgeCreateError(format!(
-            "apk not found: {}",
-            apk_path.display()
-        )));
+        return Err(Error::InvalidInput(format!("apk not found: {}", apk_path.display())));
     }
     println!("Using apk: {}", apk_path.display());
     let create_time = std::time::Instant::now();
-    let bridge = DexkitBridge::new(apk_path.to_str().unwrap())?;
+    let apk_path = apk_path
+        .to_str()
+        .ok_or_else(|| Error::InvalidInput(format!("invalid apk path: {}", apk_path.display())))?;
+    let bridge = DexkitBridge::new(apk_path)?;
     println!("[Rust] Create Bridge time: {:?}", create_time.elapsed());
     do_search(bridge);
     println!("[Rust] Find Use time: {:?}", create_time.elapsed());

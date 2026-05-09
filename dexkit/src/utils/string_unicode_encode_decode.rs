@@ -1,3 +1,5 @@
+use crate::errors::Error;
+
 /// This struct provides Unicode conversion utility methods that allow to convert
 /// a string into Unicode sequence and vice-versa.
 ///
@@ -69,7 +71,7 @@ impl StringUnicodeEncoderDecoder {
     /// Returns an error if input String is in invalid format, for example
     /// if any code is not in hexadecimal format or the code is not a valid
     /// Unicode code (not valid code point).
-    pub fn decode_unicode_sequence_to_string(unicode_sequence: &str) -> Result<String, String> {
+    pub fn decode_unicode_sequence_to_string(unicode_sequence: &str) -> Result<String, Error> {
         let mut result = String::new();
 
         if unicode_sequence.is_empty() {
@@ -80,7 +82,9 @@ impl StringUnicodeEncoderDecoder {
         let trimmed = processed_sequence.trim();
 
         if !trimmed.starts_with(Self::UNICODE_PREFIX) {
-            return Err("Unicode sequence must start with \\u prefix".to_string());
+            return Err(Error::UnicodeDecode(
+                "Unicode sequence must start with \\u prefix".to_string(),
+            ));
         }
 
         // Split by \u and process each part
@@ -96,9 +100,19 @@ impl StringUnicodeEncoderDecoder {
             match u32::from_str_radix(trimmed_code, 16) {
                 Ok(code_point) => match char::from_u32(code_point) {
                     Some(ch) => result.push(ch),
-                    None => return Err(format!("Invalid Unicode code point: {}", code_point)),
+                    None => {
+                        return Err(Error::UnicodeDecode(format!(
+                            "Invalid Unicode code point: {}",
+                            code_point
+                        )));
+                    }
                 },
-                Err(_) => return Err(format!("Invalid hexadecimal format: {}", trimmed_code)),
+                Err(_) => {
+                    return Err(Error::UnicodeDecode(format!(
+                        "Invalid hexadecimal format: {}",
+                        trimmed_code
+                    )));
+                }
             }
         }
 

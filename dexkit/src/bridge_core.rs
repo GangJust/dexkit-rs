@@ -67,13 +67,12 @@ impl BridgeCore {
         S: AsRef<str>,
     {
         let dexkit_handle = unsafe { dexkit_sys::dexkit_new() };
-        let c_apk_path =
-            CString::new(apk_path.as_ref()).map_err(|e| Error::BridgeCreateError(e.to_string()))?;
+        let c_apk_path = CString::new(apk_path.as_ref())?;
         let added =
             unsafe { dexkit_sys::dexkit_add_zip_path(dexkit_handle, c_apk_path.as_ptr(), 0) };
         if added == 0 {
             unsafe { dexkit_sys::dexkit_free(dexkit_handle) };
-            return Err(Error::BridgeCreateError("Failed to add APK path".into()));
+            return Err(Error::BridgeCreate("failed to add APK path"));
         }
 
         Ok(Self::from_raw_handle(dexkit_handle))
@@ -90,7 +89,7 @@ impl BridgeCore {
         };
         if added == 0 {
             unsafe { dexkit_sys::dexkit_free(dexkit_handle) };
-            return Err(Error::BridgeCreateError("Failed to add dex bytes".into()));
+            return Err(Error::BridgeCreate("failed to add dex bytes"));
         }
 
         Ok(Self::from_raw_handle(dexkit_handle))
@@ -119,9 +118,7 @@ impl BridgeCore {
         };
         if added == 0 {
             unsafe { dexkit_sys::dexkit_free(dexkit_handle) };
-            return Err(Error::BridgeCreateError(
-                "Failed to add dex bytes array".into(),
-            ));
+            return Err(Error::BridgeCreate("failed to add dex bytes array"));
         }
 
         Ok(Self::from_raw_handle(dexkit_handle))
@@ -138,9 +135,7 @@ impl BridgeCore {
     pub(crate) fn init_full_cache(&self) -> Result<(), Error> {
         let res = unsafe { dexkit_sys::dexkit_init_full_cache(self.handle()) };
         if res == 0 {
-            return Err(Error::BridgeOperationError(
-                "Failed to initialize full cache".into(),
-            ));
+            return Err(Error::BridgeOperation("failed to initialize full cache"));
         }
         Ok(())
     }
@@ -154,14 +149,11 @@ impl BridgeCore {
     }
 
     pub(crate) fn export_dex_file(&self, output_path: &str) -> Result<(), Error> {
-        let c_output_path =
-            CString::new(output_path).map_err(|e| Error::BridgeOperationError(e.to_string()))?;
+        let c_output_path = CString::new(output_path)?;
         let success =
             unsafe { dexkit_sys::dexkit_export_dex_file(self.handle(), c_output_path.as_ptr()) };
         if success == 0 {
-            return Err(Error::BridgeOperationError(
-                "Failed to export DEX file".into(),
-            ));
+            return Err(Error::BridgeOperation("failed to export DEX file"));
         }
         Ok(())
     }

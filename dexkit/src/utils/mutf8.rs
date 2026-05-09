@@ -29,36 +29,32 @@ impl MUtf8 {
             } else if (a & 0xe0) == 0xc0 {
                 // if two byte character
                 if i + 1 >= bytes.len() {
-                    return Err(Error::MUtf8DecodeError("bad second byte".to_string()));
+                    return Err(Error::MUtf8Decode("bad second byte"));
                 }
 
                 let b = bytes[i + 1] as u8;
                 if (b & 0xc0) != 0x80 {
-                    return Err(Error::MUtf8DecodeError("bad second byte".to_string()));
+                    return Err(Error::MUtf8Decode("bad second byte"));
                 }
 
                 let code_point = ((a & 0x1f) as u16) << 6 | ((b & 0x3f) as u16);
                 if let Some(ch) = char::from_u32(code_point as u32) {
                     result.push(ch);
                 } else {
-                    return Err(Error::MUtf8DecodeError("bad byte".to_string()));
+                    return Err(Error::MUtf8Decode("bad byte"));
                 }
                 i += 2;
             } else if (a & 0xf0) == 0xe0 {
                 // if three byte character
                 if i + 2 >= bytes.len() {
-                    return Err(Error::MUtf8DecodeError(
-                        "bad second or third byte".to_string(),
-                    ));
+                    return Err(Error::MUtf8Decode("bad second or third byte"));
                 }
 
                 let b = bytes[i + 1] as u8;
                 let c = bytes[i + 2] as u8;
 
                 if (b & 0xc0) != 0x80 || (c & 0xc0) != 0x80 {
-                    return Err(Error::MUtf8DecodeError(
-                        "bad second or third byte".to_string(),
-                    ));
+                    return Err(Error::MUtf8Decode("bad second or third byte"));
                 }
 
                 let code_point =
@@ -66,11 +62,11 @@ impl MUtf8 {
                 if let Some(ch) = char::from_u32(code_point as u32) {
                     result.push(ch);
                 } else {
-                    return Err(Error::MUtf8DecodeError("bad byte".to_string()));
+                    return Err(Error::MUtf8Decode("bad byte"));
                 }
                 i += 3;
             } else {
-                return Err(Error::MUtf8DecodeError("bad byte".to_string()));
+                return Err(Error::MUtf8Decode("bad byte"));
             }
         }
 
@@ -100,9 +96,7 @@ impl MUtf8 {
             }
 
             if short_length && result > 65535 {
-                return Err(Error::MUtf8DecodeError(
-                    "String more than 65535 UTF bytes long".to_string(),
-                ));
+                return Err(Error::MUtf8Decode("String more than 65535 UTF bytes long"));
             }
         }
 
