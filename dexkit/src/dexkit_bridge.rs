@@ -56,6 +56,11 @@ impl DexkitBridge {
         self.core.set_thread_num(num_threads);
     }
 
+    pub fn set_max_concurrent_queries(&self, max_concurrent_queries: u32) {
+        self.core
+            .set_max_concurrent_queries(max_concurrent_queries);
+    }
+
     pub fn get_dex_num(&self) -> i32 {
         self.core.get_dex_num()
     }

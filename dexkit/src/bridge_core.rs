@@ -145,6 +145,12 @@ impl BridgeCore {
         unsafe { dexkit_sys::dexkit_set_thread_num(self.handle(), num_threads) };
     }
 
+    pub(crate) fn set_max_concurrent_queries(&self, max_concurrent_queries: u32) {
+        unsafe {
+            dexkit_sys::dexkit_set_max_concurrent_queries(self.handle(), max_concurrent_queries)
+        };
+    }
+
     pub(crate) fn get_dex_num(&self) -> i32 {
         unsafe { dexkit_sys::dexkit_get_dex_num(self.handle()) }
     }

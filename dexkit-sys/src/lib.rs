@@ -1,4 +1,4 @@
-use std::ffi::{c_char, c_int, c_void};
+use std::ffi::{c_char, c_int, c_uint, c_void};
 
 pub type DexkitHandle = *mut c_void;
 
@@ -26,6 +26,11 @@ unsafe extern "C" {
     ) -> c_int;
 
     pub fn dexkit_set_thread_num(handle: DexkitHandle, num_threads: c_int);
+
+    pub fn dexkit_set_max_concurrent_queries(
+        handle: DexkitHandle,
+        max_concurrent_queries: c_uint,
+    );
 
     pub fn dexkit_init_full_cache(handle: DexkitHandle) -> c_int;
 

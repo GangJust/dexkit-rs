@@ -85,6 +85,12 @@ extern "C"
         dexkit->SetThreadNum(thread_num);
     }
 
+    void dexkit_set_max_concurrent_queries(void *handle, uint32_t max_concurrent_queries)
+    {
+        auto dexkit = static_cast<DexKit *>(handle);
+        dexkit->SetMaxConcurrentQueries(max_concurrent_queries);
+    }
+
     int dexkit_init_full_cache(void *handle)
     {
         auto dexkit = static_cast<DexKit *>(handle);
