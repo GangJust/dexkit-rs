@@ -37,6 +37,30 @@ impl From<ClassDataList> for Vec<ClassData> {
     }
 }
 
+impl AsRef<[ClassData]> for ClassDataList {
+    fn as_ref(&self) -> &[ClassData] {
+        &self.classes
+    }
+}
+
+impl IntoIterator for ClassDataList {
+    type Item = ClassData;
+    type IntoIter = std::vec::IntoIter<ClassData>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.classes.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a ClassDataList {
+    type Item = &'a ClassData;
+    type IntoIter = std::slice::Iter<'a, ClassData>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.classes.iter()
+    }
+}
+
 impl BaseDataList<ClassData> for ClassDataList {
     fn size(&self) -> usize {
         self.classes.len()
@@ -69,6 +93,26 @@ impl ClassDataList {
 
     pub(crate) fn add(&mut self, class_data: ClassData) {
         self.classes.push(class_data);
+    }
+
+    pub fn len(&self) -> usize {
+        self.classes.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.classes.is_empty()
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, ClassData> {
+        self.classes.iter()
+    }
+
+    pub fn single(&self) -> Option<&ClassData> {
+        BaseDataList::single(self)
+    }
+
+    pub fn single_where(&self, predicate: impl Fn(&ClassData) -> bool) -> Option<&ClassData> {
+        BaseDataList::single_where(self, predicate)
     }
 
     pub fn find_class(&self, find_class: FindClass) -> ClassDataList {
@@ -168,6 +212,30 @@ impl From<MethodDataList> for Vec<MethodData> {
     }
 }
 
+impl AsRef<[MethodData]> for MethodDataList {
+    fn as_ref(&self) -> &[MethodData] {
+        &self.methods
+    }
+}
+
+impl IntoIterator for MethodDataList {
+    type Item = MethodData;
+    type IntoIter = std::vec::IntoIter<MethodData>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.methods.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a MethodDataList {
+    type Item = &'a MethodData;
+    type IntoIter = std::slice::Iter<'a, MethodData>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.methods.iter()
+    }
+}
+
 impl BaseDataList<MethodData> for MethodDataList {
     fn size(&self) -> usize {
         self.methods.len()
@@ -201,6 +269,26 @@ impl MethodDataList {
 
     pub(crate) fn add(&mut self, method_data: MethodData) {
         self.methods.push(method_data);
+    }
+
+    pub fn len(&self) -> usize {
+        self.methods.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.methods.is_empty()
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, MethodData> {
+        self.methods.iter()
+    }
+
+    pub fn single(&self) -> Option<&MethodData> {
+        BaseDataList::single(self)
+    }
+
+    pub fn single_where(&self, predicate: impl Fn(&MethodData) -> bool) -> Option<&MethodData> {
+        BaseDataList::single_where(self, predicate)
     }
 
     pub fn find_method(&self, find_method: FindMethod) -> MethodDataList {
@@ -277,6 +365,30 @@ impl From<FieldDataList> for Vec<FieldData> {
     }
 }
 
+impl AsRef<[FieldData]> for FieldDataList {
+    fn as_ref(&self) -> &[FieldData] {
+        &self.fields
+    }
+}
+
+impl IntoIterator for FieldDataList {
+    type Item = FieldData;
+    type IntoIter = std::vec::IntoIter<FieldData>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.fields.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a FieldDataList {
+    type Item = &'a FieldData;
+    type IntoIter = std::slice::Iter<'a, FieldData>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.fields.iter()
+    }
+}
+
 impl BaseDataList<FieldData> for FieldDataList {
     fn size(&self) -> usize {
         self.fields.len()
@@ -307,6 +419,26 @@ impl FieldDataList {
 
     pub(crate) fn add(&mut self, field_data: FieldData) {
         self.fields.push(field_data);
+    }
+
+    pub fn len(&self) -> usize {
+        self.fields.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.fields.is_empty()
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, FieldData> {
+        self.fields.iter()
+    }
+
+    pub fn single(&self) -> Option<&FieldData> {
+        BaseDataList::single(self)
+    }
+
+    pub fn single_where(&self, predicate: impl Fn(&FieldData) -> bool) -> Option<&FieldData> {
+        BaseDataList::single_where(self, predicate)
     }
 
     pub fn find_field(&self, find_field: FindField) -> FieldDataList {

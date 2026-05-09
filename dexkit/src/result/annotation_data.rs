@@ -54,7 +54,7 @@ impl AnnotationData {
     }
 
     /// get elements
-    pub fn elements(&self) -> &Vec<AnnotationElementData> {
+    pub fn elements(&self) -> &[AnnotationElementData] {
         &self.elements
     }
 

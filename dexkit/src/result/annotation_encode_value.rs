@@ -125,41 +125,41 @@ impl AnnotationEncodeValue {
     }
 
     /// If the encoded value is of type `Type`, return the class data; otherwise, return `None`.
-    pub fn type_value(&self) -> Option<ClassData> {
+    pub fn type_value(&self) -> Option<&ClassData> {
         match &self.value {
-            EncodeValueData::Type(t) => Some(t.clone()),
+            EncodeValueData::Type(t) => Some(t),
             _ => None,
         }
     }
 
     /// If the encoded value is of type `Method`, return the method data; otherwise, return `None`.
-    pub fn method_value(&self) -> Option<MethodData> {
+    pub fn method_value(&self) -> Option<&MethodData> {
         match &self.value {
-            EncodeValueData::Method(m) => Some(m.clone()),
+            EncodeValueData::Method(m) => Some(m),
             _ => None,
         }
     }
 
     /// If the encoded value is of type `Enum`, return the field data; otherwise, return `None`.
-    pub fn enum_value(&self) -> Option<FieldData> {
+    pub fn enum_value(&self) -> Option<&FieldData> {
         match &self.value {
-            EncodeValueData::Enum(e) => Some(e.clone()),
+            EncodeValueData::Enum(e) => Some(e),
             _ => None,
         }
     }
 
     /// If the encoded value is of type `Array`, return the annotation encode array data; otherwise, return `None`.
-    pub fn array_value(&self) -> Option<AnnotationEncodeArrayData> {
+    pub fn array_value(&self) -> Option<&AnnotationEncodeArrayData> {
         match &self.value {
-            EncodeValueData::Array(a) => Some(a.clone()),
+            EncodeValueData::Array(a) => Some(a),
             _ => None,
         }
     }
 
     /// If the encoded value is of type `Annotation`, return the annotation data; otherwise, return `None`.
-    pub fn annotation_value(&self) -> Option<AnnotationData> {
+    pub fn annotation_value(&self) -> Option<&AnnotationData> {
         match &self.value {
-            EncodeValueData::Annotation(a) => Some(a.clone()),
+            EncodeValueData::Annotation(a) => Some(a),
             _ => None,
         }
     }

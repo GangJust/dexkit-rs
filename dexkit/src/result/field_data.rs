@@ -59,8 +59,8 @@ impl FieldData {
     }
 
     /// field descriptor, e.g. "Lcom/example/MyClass;->myField:I"
-    pub fn descriptor(&self) -> String {
-        self.descriptor.to_string()
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
     /// field type signature, e.g. "I"
@@ -95,7 +95,7 @@ impl FieldData {
     }
 
     /// get the class where the field is declared
-    pub fn declared_class(&self) -> Option<ClassData> {
+    pub fn declared_class(&self) -> Option<&ClassData> {
         let cls = self.declared_class.get_or_init(|| {
             let encode_id = Self::get_encode_id(self.dex_id, self.class_id);
             self.bridge
@@ -104,11 +104,11 @@ impl FieldData {
                 .cloned()
                 .map(Box::new)
         });
-        cls.as_deref().cloned()
+        cls.as_deref()
     }
 
     /// get the class of the field type
-    pub fn type_class(&self) -> Option<ClassData> {
+    pub fn type_class(&self) -> Option<&ClassData> {
         let cls = self.type_class.get_or_init(|| {
             let encode_id = Self::get_encode_id(self.dex_id, self.type_id);
             self.bridge
@@ -117,37 +117,37 @@ impl FieldData {
                 .cloned()
                 .map(Box::new)
         });
-        cls.as_deref().cloned()
+        cls.as_deref()
     }
 
     /// get annotations of this class
-    pub fn annotations(&self) -> Vec<AnnotationData> {
+    pub fn annotations(&self) -> &[AnnotationData] {
         self.annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_field_annotations(encode_id)
             })
-            .clone()
+            .as_slice()
     }
 
     /// using smali `iput-*`、`sput-*` instructions to read this field's methods
-    pub fn readers(&self) -> MethodDataList {
+    pub fn readers(&self) -> &MethodDataList {
         self.readers
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.read_field_methods(encode_id)
             })
-            .clone()
+            
     }
 
     /// using smali `iget-*`、`sget-*` instructions to write this field's methods
-    pub fn writers(&self) -> MethodDataList {
+    pub fn writers(&self) -> &MethodDataList {
         self.writers
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.write_field_methods(encode_id)
             })
-            .clone()
+            
     }
 
     /// get the wrapped DexField

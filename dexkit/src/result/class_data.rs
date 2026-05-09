@@ -60,8 +60,8 @@ impl BaseData for ClassData {
 
 impl ClassData {
     /// source file name, e.g. "MyClass.java"
-    pub fn source_file(&self) -> String {
-        self.source_file.to_string()
+    pub fn source_file(&self) -> &str {
+        &self.source_file
     }
 
     /// modifiers bitmask, see `Modifier`
@@ -70,8 +70,8 @@ impl ClassData {
     }
 
     /// class descriptor, e.g. "Lcom/example/MyClass;"
-    pub fn descriptor(&self) -> String {
-        self.descriptor.to_string()
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
     /// class name, e.g. "com.example.MyClass"
@@ -90,7 +90,7 @@ impl ClassData {
     }
 
     /// get super class, None if no super class
-    pub fn super_class(&self) -> Option<ClassData> {
+    pub fn super_class(&self) -> Option<&ClassData> {
         let cls = self.super_class.get_or_init(|| {
             self.super_class_id.and_then(|id| {
                 let encode_id = Self::get_encode_id(self.dex_id, id);
@@ -101,11 +101,11 @@ impl ClassData {
                     .map(Box::new)
             })
         });
-        cls.as_deref().cloned()
+        cls.as_deref()
     }
 
     /// get implemented interfaces of this class
-    pub fn interfaces(&self) -> ClassDataList {
+    pub fn interfaces(&self) -> &ClassDataList {
         self.interfaces
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -115,7 +115,7 @@ impl ClassData {
                     .collect();
                 self.bridge.get_type_by_ids(&encode_ids)
             })
-            .clone()
+            
     }
 
     /// get declared interfaces count
@@ -124,7 +124,7 @@ impl ClassData {
     }
 
     /// get methods of this class
-    pub fn methods(&self) -> MethodDataList {
+    pub fn methods(&self) -> &MethodDataList {
         self.methods
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -134,7 +134,7 @@ impl ClassData {
                     .collect();
                 self.bridge.get_method_by_ids(&encode_ids)
             })
-            .clone()
+            
     }
 
     /// get declared methods count
@@ -143,7 +143,7 @@ impl ClassData {
     }
 
     /// get fields of this class
-    pub fn fields(&self) -> FieldDataList {
+    pub fn fields(&self) -> &FieldDataList {
         self.fields
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -153,7 +153,7 @@ impl ClassData {
                     .collect();
                 self.bridge.get_field_by_ids(&encode_ids)
             })
-            .clone()
+            
     }
 
     /// get declared fields count
@@ -162,13 +162,13 @@ impl ClassData {
     }
 
     /// get annotations of this class
-    pub fn annotations(&self) -> Vec<AnnotationData> {
+    pub fn annotations(&self) -> &[AnnotationData] {
         self.annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_class_annotations(encode_id)
             })
-            .clone()
+            .as_slice()
     }
 
     /// convert to `DexClass`, None if parse failed

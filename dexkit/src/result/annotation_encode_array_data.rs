@@ -18,6 +18,11 @@ impl Debug for AnnotationEncodeArrayData {
 }
 
 impl AnnotationEncodeArrayData {
+    /// get values
+    pub fn values(&self) -> &[AnnotationEncodeValue] {
+        &self.values
+    }
+
     pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBAnnotationEncodeArray<'_>) -> Self {
         let values = match meta.values() {
             None => Vec::new(),

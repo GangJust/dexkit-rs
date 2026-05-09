@@ -68,8 +68,8 @@ impl MethodData {
     }
 
     /// field descriptor, e.g. "Lcom/example/MyClass;->myMethod(I)V"
-    pub fn descriptor(&self) -> String {
-        self.descriptor.to_string()
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
     /// method signature, e.g. "myMethod(ILjava/lang/String;)V"
@@ -128,7 +128,7 @@ impl MethodData {
     }
 
     /// get the class where the method is declared
-    pub fn declared_class(&self) -> Option<ClassData> {
+    pub fn declared_class(&self) -> Option<&ClassData> {
         self.declared_class
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.class_id);
@@ -137,11 +137,11 @@ impl MethodData {
                     .get(0)
                     .cloned()
             })
-            .clone()
+            .as_ref()
     }
 
     /// get the class of the return type
-    pub fn return_type_class(&self) -> Option<ClassData> {
+    pub fn return_type_class(&self) -> Option<&ClassData> {
         self.return_type_class
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.return_type_id);
@@ -150,11 +150,11 @@ impl MethodData {
                     .get(0)
                     .cloned()
             })
-            .clone()
+            .as_ref()
     }
 
     /// get the classes of the parameter types
-    pub fn param_types(&self) -> Option<ClassDataList> {
+    pub fn param_types(&self) -> Option<&ClassDataList> {
         self.param_types
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -168,47 +168,47 @@ impl MethodData {
                 let types = self.bridge.get_type_by_ids(&encode_ids);
                 if types.is_empty() { None } else { Some(types) }
             })
-            .clone()
+            .as_ref()
     }
 
     /// get the parameter names, may be None if not available
-    pub fn param_names(&self) -> Option<Vec<Option<String>>> {
+    pub fn param_names(&self) -> Option<&[Option<String>]> {
         self.param_names
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_parameter_names(encode_id)
             })
-            .clone()
+            .as_deref()
     }
 
     /// get annotations of this class
-    pub fn annotations(&self) -> Vec<AnnotationData> {
+    pub fn annotations(&self) -> &[AnnotationData] {
         self.annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_method_annotations(encode_id)
             })
-            .clone()
+            .as_slice()
     }
 
     /// get parameter annotations of this method
-    pub fn param_annotations(&self) -> Vec<Vec<AnnotationData>> {
+    pub fn param_annotations(&self) -> &[Vec<AnnotationData>] {
         self.param_annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_parameter_annotations(encode_id)
             })
-            .clone()
+            .as_slice()
     }
 
     /// get the op codes of this method, range 0~255, may be None if not available
-    pub fn op_codes(&self) -> Option<Vec<u8>> {
+    pub fn op_codes(&self) -> Option<&[u8]> {
         self.op_codes
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_method_op_codes(encode_id)
             })
-            .clone()
+            .as_deref()
     }
 
     /// get the op code names of this method, may be None if not available
@@ -222,43 +222,43 @@ impl MethodData {
     }
 
     /// get the method that calls this method
-    pub fn callers(&self) -> MethodDataList {
+    pub fn callers(&self) -> &MethodDataList {
         self.callers
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_call_methods(encode_id)
             })
-            .clone()
+            
     }
 
     /// get the methods that this method invokes
-    pub fn invokes(&self) -> MethodDataList {
+    pub fn invokes(&self) -> &MethodDataList {
         self.invokes
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_invoke_methods(encode_id)
             })
-            .clone()
+            
     }
 
     /// get the string literals used in this method
-    pub fn using_strings(&self) -> Vec<String> {
+    pub fn using_strings(&self) -> &[String] {
         self.using_strings
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_method_using_strings(encode_id)
             })
-            .clone()
+            .as_slice()
     }
 
     /// get the fields used in this method
-    pub fn using_fields(&self) -> Vec<UsingFieldData> {
+    pub fn using_fields(&self) -> &[UsingFieldData] {
         self.using_fields
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
                 self.bridge.get_method_using_fields(encode_id)
             })
-            .clone()
+            .as_slice()
     }
 
     /// get the wrapped DexMethod

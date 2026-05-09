@@ -20,6 +20,11 @@ impl Debug for AnnotationElementData {
 }
 
 impl AnnotationElementData {
+    /// get name
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     /// get value
     pub fn value(&self) -> &AnnotationEncodeValue {
         &self.value

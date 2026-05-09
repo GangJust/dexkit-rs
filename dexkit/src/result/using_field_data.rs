@@ -10,8 +10,8 @@ pub struct UsingFieldData {
 
 impl UsingFieldData {
     /// The field being used
-    pub fn field(&self) -> FieldData {
-        self.field.clone()
+    pub fn field(&self) -> &FieldData {
+        &self.field
     }
 
     /// The type of usage (read or write)
