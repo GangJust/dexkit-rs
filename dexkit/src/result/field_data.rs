@@ -1,4 +1,5 @@
 use crate::BridgeCore;
+use crate::fb_codec::parse_fb_root;
 use crate::gen_flatbuffers::dexkit::fb::FBFieldMeta;
 use crate::result::{AnnotationData, ClassData, MethodDataList};
 use crate::wrap::DexField;
@@ -132,22 +133,18 @@ impl FieldData {
 
     /// using smali `iput-*`、`sput-*` instructions to read this field's methods
     pub fn readers(&self) -> &MethodDataList {
-        self.readers
-            .get_or_init(|| {
-                let encode_id = Self::get_encode_id(self.dex_id, self.id);
-                self.bridge.read_field_methods(encode_id)
-            })
-            
+        self.readers.get_or_init(|| {
+            let encode_id = Self::get_encode_id(self.dex_id, self.id);
+            self.bridge.read_field_methods(encode_id)
+        })
     }
 
     /// using smali `iget-*`、`sget-*` instructions to write this field's methods
     pub fn writers(&self) -> &MethodDataList {
-        self.writers
-            .get_or_init(|| {
-                let encode_id = Self::get_encode_id(self.dex_id, self.id);
-                self.bridge.write_field_methods(encode_id)
-            })
-            
+        self.writers.get_or_init(|| {
+            let encode_id = Self::get_encode_id(self.dex_id, self.id);
+            self.bridge.write_field_methods(encode_id)
+        })
     }
 
     /// get the wrapped DexField
@@ -190,7 +187,7 @@ impl FieldData {
 
     /// ...
     pub(crate) fn with_meta_raw(bridge: &DexkitBridge, data: &[u8]) -> Option<Self> {
-        flatbuffers::root::<FBFieldMeta<'_>>(data)
+        parse_fb_root::<FBFieldMeta<'_>>(data)
             .map(|meta| Self::with_meta(bridge, meta))
             .ok()
     }

@@ -1,4 +1,6 @@
+use crate::DexkitBridge;
 use crate::errors::Error;
+use crate::fb_codec::ToFbBytes;
 use crate::query::{
     BatchFindClassUsingStrings, BatchFindMethodUsingStrings, FindClass, FindField, FindMethod,
 };
@@ -7,7 +9,6 @@ use crate::result::{
     UsingFieldData,
 };
 use crate::wrap::{DexClass, DexMethod};
-use crate::DexkitBridge;
 use std::{
     cell::Cell,
     collections::HashMap,
@@ -163,7 +164,7 @@ impl BridgeCore {
         batch_find: BatchFindClassUsingStrings,
     ) -> HashMap<String, ClassDataList> {
         unsafe {
-            let mut buffer: Vec<u8> = batch_find.into();
+            let mut buffer = batch_find.to_fb_bytes();
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_batch_find_class_using_strings(
@@ -191,7 +192,7 @@ impl BridgeCore {
         batch_find: BatchFindMethodUsingStrings,
     ) -> HashMap<String, MethodDataList> {
         unsafe {
-            let mut buffer: Vec<u8> = batch_find.into();
+            let mut buffer = batch_find.to_fb_bytes();
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_batch_find_method_using_strings(
@@ -216,7 +217,7 @@ impl BridgeCore {
 
     pub(crate) fn find_class(&self, find_class: FindClass) -> ClassDataList {
         unsafe {
-            let mut buffer: Vec<u8> = find_class.into();
+            let mut buffer = find_class.to_fb_bytes();
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_find_class(
@@ -241,7 +242,7 @@ impl BridgeCore {
 
     pub(crate) fn find_method(&self, find_method: FindMethod) -> MethodDataList {
         unsafe {
-            let mut buffer: Vec<u8> = find_method.into();
+            let mut buffer = find_method.to_fb_bytes();
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_find_method(
@@ -266,7 +267,7 @@ impl BridgeCore {
 
     pub(crate) fn find_field(&self, find_field: FindField) -> FieldDataList {
         unsafe {
-            let mut buffer: Vec<u8> = find_field.into();
+            let mut buffer = find_field.to_fb_bytes();
             let mut out_buf: *mut c_void = std::ptr::null_mut();
             let mut out_len: usize = 0;
             dexkit_sys::dexkit_find_field(

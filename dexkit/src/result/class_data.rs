@@ -1,4 +1,5 @@
 use crate::BridgeCore;
+use crate::fb_codec::parse_fb_root;
 use crate::gen_flatbuffers::dexkit::fb::FBClassMeta;
 use crate::result::{AnnotationData, ClassDataList, FieldDataList, MethodDataList};
 use crate::wrap::DexClass;
@@ -106,16 +107,14 @@ impl ClassData {
 
     /// get implemented interfaces of this class
     pub fn interfaces(&self) -> &ClassDataList {
-        self.interfaces
-            .get_or_init(|| {
-                let encode_ids: Vec<i64> = self
-                    .interface_ids
-                    .iter()
-                    .map(|&id| Self::get_encode_id(self.dex_id, id as u32))
-                    .collect();
-                self.bridge.get_type_by_ids(&encode_ids)
-            })
-            
+        self.interfaces.get_or_init(|| {
+            let encode_ids: Vec<i64> = self
+                .interface_ids
+                .iter()
+                .map(|&id| Self::get_encode_id(self.dex_id, id as u32))
+                .collect();
+            self.bridge.get_type_by_ids(&encode_ids)
+        })
     }
 
     /// get declared interfaces count
@@ -125,16 +124,14 @@ impl ClassData {
 
     /// get methods of this class
     pub fn methods(&self) -> &MethodDataList {
-        self.methods
-            .get_or_init(|| {
-                let encode_ids: Vec<i64> = self
-                    .method_ids
-                    .iter()
-                    .map(|&id| Self::get_encode_id(self.dex_id, id as u32))
-                    .collect();
-                self.bridge.get_method_by_ids(&encode_ids)
-            })
-            
+        self.methods.get_or_init(|| {
+            let encode_ids: Vec<i64> = self
+                .method_ids
+                .iter()
+                .map(|&id| Self::get_encode_id(self.dex_id, id as u32))
+                .collect();
+            self.bridge.get_method_by_ids(&encode_ids)
+        })
     }
 
     /// get declared methods count
@@ -144,16 +141,14 @@ impl ClassData {
 
     /// get fields of this class
     pub fn fields(&self) -> &FieldDataList {
-        self.fields
-            .get_or_init(|| {
-                let encode_ids: Vec<i64> = self
-                    .field_ids
-                    .iter()
-                    .map(|&id| Self::get_encode_id(self.dex_id, id as u32))
-                    .collect();
-                self.bridge.get_field_by_ids(&encode_ids)
-            })
-            
+        self.fields.get_or_init(|| {
+            let encode_ids: Vec<i64> = self
+                .field_ids
+                .iter()
+                .map(|&id| Self::get_encode_id(self.dex_id, id as u32))
+                .collect();
+            self.bridge.get_field_by_ids(&encode_ids)
+        })
     }
 
     /// get declared fields count
@@ -224,7 +219,7 @@ impl ClassData {
 
     /// ...
     pub(crate) fn with_meta_raw(bridge: &DexkitBridge, data: &[u8]) -> Option<Self> {
-        flatbuffers::root::<FBClassMeta<'_>>(data)
+        parse_fb_root::<FBClassMeta<'_>>(data)
             .map(|meta| Self::with_meta(bridge, meta))
             .ok()
     }

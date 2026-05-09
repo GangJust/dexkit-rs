@@ -3,6 +3,13 @@ mod gen_flatbuffers {
     include!(concat!(env!("OUT_DIR"), "/flatbuffers/mod.rs"));
 }
 
+mod fb_codec {
+    mod build;
+    pub(crate) use build::*;
+    mod parse;
+    pub(crate) use parse::*;
+}
+
 #[allow(unused)]
 mod errors {
     mod errors;

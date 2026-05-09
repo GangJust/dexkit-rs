@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::DexkitBridge;
+use crate::fb_codec::parse_fb_root;
 use crate::gen_flatbuffers::dexkit::fb::{
     FBBatchClassMetaArrayHolder, FBBatchMethodMetaArrayHolder, FBClassMetaArrayHolder,
     FBFieldMetaArrayHolder, FBMethodMetaArrayHolder,
@@ -151,7 +152,7 @@ impl ClassDataList {
     /// ...
     pub(crate) fn from_data(bridge: &DexkitBridge, data: &[u8]) -> ClassDataList {
         // println!("Class data list vector of length: {}", data.len());
-        let class_meta_list = flatbuffers::root::<FBClassMetaArrayHolder>(&data).unwrap();
+        let class_meta_list = parse_fb_root::<FBClassMetaArrayHolder<'_>>(data).unwrap();
         // println!("Class meta list: {:#?}", class_meta_list);
 
         let mut class_data_list = Self::new();
@@ -169,8 +170,7 @@ impl ClassDataList {
         data: &[u8],
     ) -> HashMap<String, ClassDataList> {
         // println!("Batch class data list vector of length: {}", data.len());
-        let batch_class_meta_list =
-            flatbuffers::root::<FBBatchClassMetaArrayHolder>(&data).unwrap();
+        let batch_class_meta_list = parse_fb_root::<FBBatchClassMetaArrayHolder<'_>>(data).unwrap();
         // println!("Batch class meta list: {:#?}", batch_class_meta_list);
 
         batch_class_meta_list
@@ -250,8 +250,7 @@ impl BaseDataList<MethodData> for MethodDataList {
     }
 
     fn single_where(&self, predicate: impl Fn(&MethodData) -> bool) -> Option<&MethodData> {
-        let filtered: Vec<&MethodData> =
-            self.methods.iter().filter(|&c| predicate(c)).collect();
+        let filtered: Vec<&MethodData> = self.methods.iter().filter(|&c| predicate(c)).collect();
         if filtered.len() == 1 {
             Some(filtered[0])
         } else {
@@ -304,7 +303,7 @@ impl MethodDataList {
 
     pub(crate) fn form_data(bridge: &DexkitBridge, vec: &[u8]) -> MethodDataList {
         // println!("Method data list vector of length: {}", vec.len());
-        let method_meta_array = flatbuffers::root::<FBMethodMetaArrayHolder>(&vec).unwrap();
+        let method_meta_array = parse_fb_root::<FBMethodMetaArrayHolder<'_>>(vec).unwrap();
         // println!("Method meta array: {:#?}", method_meta_array);
 
         let mut method_data_list = Self::new();
@@ -323,7 +322,7 @@ impl MethodDataList {
     ) -> HashMap<String, MethodDataList> {
         // println!("Batch method data list vector of length: {}", data.len());
         let batch_method_meta_list =
-            flatbuffers::root::<FBBatchMethodMetaArrayHolder>(&data).unwrap();
+            parse_fb_root::<FBBatchMethodMetaArrayHolder<'_>>(data).unwrap();
         // println!("Batch method meta list: {:#?}", batch_method_meta_list);
 
         batch_method_meta_list
@@ -454,7 +453,7 @@ impl FieldDataList {
 
     pub(crate) fn form_data(dexkit_bridge: &DexkitBridge, vec: &[u8]) -> FieldDataList {
         // println!("Field data list vector of length: {}", vec.len());
-        let field_meta_array = flatbuffers::root::<FBFieldMetaArrayHolder>(&vec).unwrap();
+        let field_meta_array = parse_fb_root::<FBFieldMetaArrayHolder<'_>>(vec).unwrap();
         // println!("Field meta array: {:#?}", field_meta_array);
 
         let mut field_data_list = Self::new();

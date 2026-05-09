@@ -1,5 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
+use crate::fb_codec::{ToFbBytes, finish_fb_bytes};
 use crate::gen_flatbuffers::dexkit::fb::{
     FBBatchFindMethodUsingStrings, FBBatchFindMethodUsingStringsArgs,
 };
@@ -31,16 +32,16 @@ impl Default for BatchFindMethodUsingStrings {
     }
 }
 
-impl From<BatchFindMethodUsingStrings> for Vec<u8> {
-    fn from(value: BatchFindMethodUsingStrings) -> Self {
+impl ToFbBytes for BatchFindMethodUsingStrings {
+    fn to_fb_bytes(&self) -> Vec<u8> {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
-        let root = value.inner_build(&mut fbb);
-        fbb.finish(root, None);
-        fbb.finished_data().to_vec()
+        let root = self.inner_build(&mut fbb);
+        finish_fb_bytes(fbb, root)
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindMethodUsingStrings<'a>>> for BatchFindMethodUsingStrings
+impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindMethodUsingStrings<'a>>>
+    for BatchFindMethodUsingStrings
 {
     fn inner_build(
         &self,

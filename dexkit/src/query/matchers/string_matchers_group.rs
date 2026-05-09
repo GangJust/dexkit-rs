@@ -1,5 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
+use crate::fb_codec::{ToFbBytes, finish_fb_bytes};
 use crate::gen_flatbuffers::dexkit::fb::{
     FBBatchUsingStringsMatcher, FBBatchUsingStringsMatcherArgs,
 };
@@ -10,12 +11,11 @@ pub struct StringMatchersGroup {
     string_matchers: Vec<StringMatcher>,
 }
 
-impl From<StringMatchersGroup> for Vec<u8> {
-    fn from(value: StringMatchersGroup) -> Self {
+impl ToFbBytes for StringMatchersGroup {
+    fn to_fb_bytes(&self) -> Vec<u8> {
         let mut fbb = FlatBufferBuilder::with_capacity(256);
-        let root = value.inner_build(&mut fbb);
-        fbb.finish(root, None);
-        fbb.finished_data().to_vec()
+        let root = self.inner_build(&mut fbb);
+        finish_fb_bytes(fbb, root)
     }
 }
 

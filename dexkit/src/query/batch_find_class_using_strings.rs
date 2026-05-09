@@ -1,5 +1,6 @@
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
+use crate::fb_codec::{ToFbBytes, finish_fb_bytes};
 use crate::gen_flatbuffers::dexkit::fb::{
     FBBatchFindClassUsingStrings, FBBatchFindClassUsingStringsArgs,
 };
@@ -28,12 +29,11 @@ impl Default for BatchFindClassUsingStrings {
     }
 }
 
-impl From<BatchFindClassUsingStrings> for Vec<u8> {
-    fn from(value: BatchFindClassUsingStrings) -> Self {
+impl ToFbBytes for BatchFindClassUsingStrings {
+    fn to_fb_bytes(&self) -> Vec<u8> {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
-        let root = value.inner_build(&mut fbb);
-        fbb.finish(root, None);
-        fbb.finished_data().to_vec()
+        let root = self.inner_build(&mut fbb);
+        finish_fb_bytes(fbb, root)
     }
 }
 

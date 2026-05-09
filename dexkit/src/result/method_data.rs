@@ -1,4 +1,5 @@
 use crate::BridgeCore;
+use crate::fb_codec::parse_fb_root;
 use crate::gen_flatbuffers::dexkit::fb::FBMethodMeta;
 use crate::result::{AnnotationData, ClassData, ClassDataList, MethodDataList, UsingFieldData};
 use crate::utils::Opcodes;
@@ -223,22 +224,18 @@ impl MethodData {
 
     /// get the method that calls this method
     pub fn callers(&self) -> &MethodDataList {
-        self.callers
-            .get_or_init(|| {
-                let encode_id = Self::get_encode_id(self.dex_id, self.id);
-                self.bridge.get_call_methods(encode_id)
-            })
-            
+        self.callers.get_or_init(|| {
+            let encode_id = Self::get_encode_id(self.dex_id, self.id);
+            self.bridge.get_call_methods(encode_id)
+        })
     }
 
     /// get the methods that this method invokes
     pub fn invokes(&self) -> &MethodDataList {
-        self.invokes
-            .get_or_init(|| {
-                let encode_id = Self::get_encode_id(self.dex_id, self.id);
-                self.bridge.get_invoke_methods(encode_id)
-            })
-            
+        self.invokes.get_or_init(|| {
+            let encode_id = Self::get_encode_id(self.dex_id, self.id);
+            self.bridge.get_invoke_methods(encode_id)
+        })
     }
 
     /// get the string literals used in this method
@@ -311,7 +308,7 @@ impl MethodData {
 
     /// ...
     pub(crate) fn from_meta_raw(bridge: &DexkitBridge, data: &[u8]) -> Option<Self> {
-        flatbuffers::root::<FBMethodMeta<'_>>(data)
+        parse_fb_root::<FBMethodMeta<'_>>(data)
             .map(|meta| Self::with_meta(bridge, meta))
             .ok()
     }

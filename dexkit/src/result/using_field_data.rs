@@ -1,4 +1,5 @@
 use crate::DexkitBridge;
+use crate::fb_codec::parse_fb_root;
 use crate::gen_flatbuffers::dexkit::fb::{FBUsingFieldMeta, FBUsingFieldMetaArrayHolder};
 use crate::result::{FieldData, FieldUsingType};
 
@@ -31,11 +32,8 @@ impl UsingFieldData {
     }
 
     /// ...
-    pub(crate) fn with_using_field_meta_array_raw(
-        bridge: &DexkitBridge,
-        data: &[u8],
-    ) -> Vec<Self> {
-        flatbuffers::root::<FBUsingFieldMetaArrayHolder<'_>>(data)
+    pub(crate) fn with_using_field_meta_array_raw(bridge: &DexkitBridge, data: &[u8]) -> Vec<Self> {
+        parse_fb_root::<FBUsingFieldMetaArrayHolder<'_>>(data)
             .map(|array| Self::with_using_field_meta_array(bridge, array))
             .unwrap_or_default()
     }

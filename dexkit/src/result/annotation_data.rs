@@ -1,4 +1,5 @@
 use crate::BridgeCore;
+use crate::fb_codec::parse_fb_root_unchecked;
 use crate::gen_flatbuffers::dexkit::fb::{
     FBAnnotationMeta, FBAnnotationMetaArrayHolder, FBAnnotationVisibilityType,
     FBParametersAnnotationMetaArrayHoler,
@@ -107,7 +108,7 @@ impl AnnotationData {
         data: &[u8],
     ) -> Vec<AnnotationData> {
         let annotation_meta_array_holder =
-            unsafe { flatbuffers::root_unchecked::<FBAnnotationMetaArrayHolder>(data) }; // not verify data
+            unsafe { parse_fb_root_unchecked::<FBAnnotationMetaArrayHolder<'_>>(data) }; // not verify data
 
         Self::with_annotation_meta_array(bridge, annotation_meta_array_holder)
     }
@@ -118,7 +119,7 @@ impl AnnotationData {
         data: &[u8],
     ) -> Vec<Vec<AnnotationData>> {
         let parameters_annotation_meta_array_holer =
-            unsafe { flatbuffers::root_unchecked::<FBParametersAnnotationMetaArrayHoler>(data) }; // not verify data
+            unsafe { parse_fb_root_unchecked::<FBParametersAnnotationMetaArrayHoler<'_>>(data) }; // not verify data
 
         parameters_annotation_meta_array_holer
             .annotations_array()
