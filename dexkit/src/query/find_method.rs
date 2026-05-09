@@ -6,17 +6,17 @@ use crate::query::matchers::MethodMatcher;
 use crate::result::base::BaseData;
 use crate::result::{ClassData, MethodData};
 
-pub struct FindMethod<'a> {
+pub struct FindMethod {
     search_packages: Option<Vec<String>>,
     exclude_packages: Option<Vec<String>>,
     ignore_packages_case: bool,
-    search_classes: Option<Vec<ClassData<'a>>>,
-    search_methods: Option<Vec<MethodData<'a>>>,
+    search_classes: Option<Vec<ClassData>>,
+    search_methods: Option<Vec<MethodData>>,
     find_first: bool,
     matcher: Option<MethodMatcher>,
 }
 
-impl<'a> Default for FindMethod<'a> {
+impl Default for FindMethod {
     fn default() -> Self {
         Self {
             search_packages: None,
@@ -30,7 +30,7 @@ impl<'a> Default for FindMethod<'a> {
     }
 }
 
-impl<'a> From<FindMethod<'a>> for Vec<u8> {
+impl From<FindMethod> for Vec<u8> {
     fn from(value: FindMethod) -> Self {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
         let root = value.inner_build(&mut fbb);
@@ -39,7 +39,7 @@ impl<'a> From<FindMethod<'a>> for Vec<u8> {
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBFindMethod<'a>>> for FindMethod<'a> {
+impl<'a> BaseQuery<'a, WIPOffset<FBFindMethod<'a>>> for FindMethod {
     fn inner_build(
         &self,
         fbb: &mut flatbuffers::FlatBufferBuilder<'a>,
@@ -83,7 +83,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFindMethod<'a>>> for FindMethod<'a> {
     }
 }
 
-impl<'a> FindMethod<'a> {
+impl FindMethod {
     pub fn new() -> Self {
         Self::default()
     }
@@ -112,7 +112,7 @@ impl<'a> FindMethod<'a> {
 
     pub fn search_classes<V>(mut self, classes: V) -> Self
     where
-        V: Into<Vec<ClassData<'a>>>,
+        V: Into<Vec<ClassData>>,
     {
         self.search_classes = Some(classes.into());
         self
@@ -120,7 +120,7 @@ impl<'a> FindMethod<'a> {
 
     pub fn search_methods<V>(mut self, methods: V) -> Self
     where
-        V: Into<Vec<MethodData<'a>>>,
+        V: Into<Vec<MethodData>>,
     {
         self.search_methods = Some(methods.into());
         self
@@ -159,13 +159,13 @@ impl<'a> FindMethod<'a> {
     }
 
     // extend search_classes
-    pub fn search_class(mut self, class: ClassData<'a>) -> Self {
+    pub fn search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }
 
     // extend search_fields
-    pub fn search_method(mut self, method: MethodData<'a>) -> Self {
+    pub fn search_method(mut self, method: MethodData) -> Self {
         self.search_methods
             .get_or_insert_with(Vec::new)
             .push(method);

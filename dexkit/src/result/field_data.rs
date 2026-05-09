@@ -1,3 +1,4 @@
+use crate::BridgeCore;
 use crate::gen_flatbuffers::dexkit::fb::FBFieldMeta;
 use crate::result::{AnnotationData, ClassData, MethodDataList};
 use crate::wrap::DexField;
@@ -7,8 +8,8 @@ use std::fmt::Debug;
 
 #[allow(unused)]
 #[derive(Clone)]
-pub struct FieldData<'a> {
-    bridge: &'a DexkitBridge,
+pub struct FieldData {
+    bridge: BridgeCore,
     id: u32,
     dex_id: u32,
     class_id: u32,
@@ -17,14 +18,14 @@ pub struct FieldData<'a> {
     type_id: u32,
     // Lazy loaded fields
     dex_field: OnceCell<Option<DexField>>,
-    declared_class: OnceCell<Option<Box<ClassData<'a>>>>,
-    type_class: OnceCell<Option<Box<ClassData<'a>>>>,
-    annotations: OnceCell<Vec<AnnotationData<'a>>>,
-    readers: OnceCell<MethodDataList<'a>>,
-    writers: OnceCell<MethodDataList<'a>>,
+    declared_class: OnceCell<Option<Box<ClassData>>>,
+    type_class: OnceCell<Option<Box<ClassData>>>,
+    annotations: OnceCell<Vec<AnnotationData>>,
+    readers: OnceCell<MethodDataList>,
+    writers: OnceCell<MethodDataList>,
 }
 
-impl<'a> Debug for FieldData<'a> {
+impl Debug for FieldData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("FieldData")
             .field("id", &self.id)
@@ -37,9 +38,9 @@ impl<'a> Debug for FieldData<'a> {
     }
 }
 
-impl<'a> BaseData for FieldData<'a> {
-    fn bridge(&self) -> &DexkitBridge {
-        self.bridge
+impl BaseData for FieldData {
+    fn bridge(&self) -> &BridgeCore {
+        &self.bridge
     }
 
     fn dex_id(&self) -> u32 {
@@ -51,7 +52,7 @@ impl<'a> BaseData for FieldData<'a> {
     }
 }
 
-impl<'a> FieldData<'a> {
+impl FieldData {
     /// modifiers bitmask, see `Modifier`
     pub fn modifiers(&self) -> u32 {
         self.modifiers
@@ -94,7 +95,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// get the class where the field is declared
-    pub fn declared_class(&self) -> Option<ClassData<'a>> {
+    pub fn declared_class(&self) -> Option<ClassData> {
         let cls = self.declared_class.get_or_init(|| {
             let encode_id = Self::get_encode_id(self.dex_id, self.class_id);
             self.bridge
@@ -107,7 +108,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// get the class of the field type
-    pub fn type_class(&self) -> Option<ClassData<'a>> {
+    pub fn type_class(&self) -> Option<ClassData> {
         let cls = self.type_class.get_or_init(|| {
             let encode_id = Self::get_encode_id(self.dex_id, self.type_id);
             self.bridge
@@ -120,7 +121,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// get annotations of this class
-    pub fn annotations(&self) -> Vec<AnnotationData<'a>> {
+    pub fn annotations(&self) -> Vec<AnnotationData> {
         self.annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -130,7 +131,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// using smali `iput-*`、`sput-*` instructions to read this field's methods
-    pub fn readers(&self) -> MethodDataList<'a> {
+    pub fn readers(&self) -> MethodDataList {
         self.readers
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -140,7 +141,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// using smali `iget-*`、`sget-*` instructions to write this field's methods
-    pub fn writers(&self) -> MethodDataList<'a> {
+    pub fn writers(&self) -> MethodDataList {
         self.writers
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -162,7 +163,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(bridge: &'a DexkitBridge, meta: FBFieldMeta<'a>) -> Self {
+    pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBFieldMeta<'_>) -> Self {
         let id = meta.id();
         let dex_id = meta.dex_id();
         let class_id = meta.class_id();
@@ -171,7 +172,7 @@ impl<'a> FieldData<'a> {
         let type_id = meta.type_id();
 
         Self {
-            bridge,
+            bridge: bridge.core_clone(),
             id,
             dex_id,
             class_id,
@@ -188,7 +189,7 @@ impl<'a> FieldData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta_raw(bridge: &'a DexkitBridge, data: &'a [u8]) -> Option<Self> {
+    pub(crate) fn with_meta_raw(bridge: &DexkitBridge, data: &[u8]) -> Option<Self> {
         flatbuffers::root::<FBFieldMeta<'_>>(data)
             .map(|meta| Self::with_meta(bridge, meta))
             .ok()

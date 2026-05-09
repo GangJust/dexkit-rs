@@ -6,16 +6,16 @@ use crate::query::matchers::ClassMatcher;
 use crate::result::ClassData;
 use crate::result::base::BaseData;
 
-pub struct FindClass<'a> {
+pub struct FindClass {
     search_packages: Option<Vec<String>>,
     exclude_packages: Option<Vec<String>>,
     ignore_packages_case: bool,
-    search_classes: Option<Vec<ClassData<'a>>>,
+    search_classes: Option<Vec<ClassData>>,
     find_first: bool,
     matcher: Option<ClassMatcher>,
 }
 
-impl<'a> Default for FindClass<'a> {
+impl Default for FindClass {
     fn default() -> Self {
         Self {
             search_packages: None,
@@ -28,7 +28,7 @@ impl<'a> Default for FindClass<'a> {
     }
 }
 
-impl<'a> From<FindClass<'a>> for Vec<u8> {
+impl From<FindClass> for Vec<u8> {
     fn from(value: FindClass) -> Self {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
         let root = value.inner_build(&mut fbb);
@@ -37,7 +37,7 @@ impl<'a> From<FindClass<'a>> for Vec<u8> {
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBFindClass<'a>>> for FindClass<'a> {
+impl<'a> BaseQuery<'a, WIPOffset<FBFindClass<'a>>> for FindClass {
     fn inner_build(&self, fbb: &mut FlatBufferBuilder<'a>) -> WIPOffset<FBFindClass<'a>> {
         let search_packages = self.search_packages.as_ref().map(|packages| {
             let packages_offsets: Vec<_> = packages.iter().map(|p| fbb.create_string(p)).collect();
@@ -70,7 +70,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFindClass<'a>>> for FindClass<'a> {
     }
 }
 
-impl<'a> FindClass<'a> {
+impl FindClass {
     pub fn new() -> Self {
         Self::default()
     }
@@ -99,7 +99,7 @@ impl<'a> FindClass<'a> {
 
     pub fn search_classes<V>(mut self, classes: V) -> Self
     where
-        V: Into<Vec<ClassData<'a>>>,
+        V: Into<Vec<ClassData>>,
     {
         self.search_classes = Some(classes.into());
         self
@@ -138,7 +138,7 @@ impl<'a> FindClass<'a> {
     }
 
     // extend search_classes
-    pub fn search_class(mut self, class: ClassData<'a>) -> Self {
+    pub fn search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }

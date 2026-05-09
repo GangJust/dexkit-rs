@@ -1,14 +1,15 @@
+use crate::BridgeCore;
 use crate::gen_flatbuffers::dexkit::fb::FBAnnotationEncodeArray;
 use crate::{DexkitBridge, result::AnnotationEncodeValue};
 use std::fmt::Debug;
 
 #[derive(Clone)]
-pub struct AnnotationEncodeArrayData<'a> {
-    bridge: &'a DexkitBridge,
-    values: Vec<AnnotationEncodeValue<'a>>,
+pub struct AnnotationEncodeArrayData {
+    bridge: BridgeCore,
+    values: Vec<AnnotationEncodeValue>,
 }
 
-impl<'a> Debug for AnnotationEncodeArrayData<'a> {
+impl Debug for AnnotationEncodeArrayData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("AnnotationEncodeArrayData")
             .field("values", &self.values)
@@ -16,11 +17,8 @@ impl<'a> Debug for AnnotationEncodeArrayData<'a> {
     }
 }
 
-impl<'a> AnnotationEncodeArrayData<'a> {
-    pub(crate) fn with_meta(
-        bridge: &'a DexkitBridge,
-        meta: FBAnnotationEncodeArray<'a>,
-    ) -> AnnotationEncodeArrayData<'a> {
+impl AnnotationEncodeArrayData {
+    pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBAnnotationEncodeArray<'_>) -> Self {
         let values = match meta.values() {
             None => Vec::new(),
             Some(vs) => vs
@@ -29,6 +27,9 @@ impl<'a> AnnotationEncodeArrayData<'a> {
                 .collect(),
         };
 
-        Self { bridge, values }
+        Self {
+            bridge: bridge.core_clone(),
+            values,
+        }
     }
 }

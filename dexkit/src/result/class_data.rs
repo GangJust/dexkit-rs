@@ -1,3 +1,4 @@
+use crate::BridgeCore;
 use crate::gen_flatbuffers::dexkit::fb::FBClassMeta;
 use crate::result::{AnnotationData, ClassDataList, FieldDataList, MethodDataList};
 use crate::wrap::DexClass;
@@ -7,8 +8,8 @@ use std::fmt::Debug;
 
 #[allow(unused)]
 #[derive(Clone)]
-pub struct ClassData<'a> {
-    bridge: &'a DexkitBridge,
+pub struct ClassData {
+    bridge: BridgeCore,
     id: u32,
     dex_id: u32,
     source_file: String,
@@ -20,14 +21,14 @@ pub struct ClassData<'a> {
     field_ids: Vec<i32>,
     // Lazy loaded fields
     dex_class: OnceCell<Option<DexClass>>,
-    super_class: OnceCell<Option<Box<ClassData<'a>>>>,
-    interfaces: OnceCell<ClassDataList<'a>>,
-    methods: OnceCell<MethodDataList<'a>>,
-    fields: OnceCell<FieldDataList<'a>>,
-    annotations: OnceCell<Vec<AnnotationData<'a>>>,
+    super_class: OnceCell<Option<Box<ClassData>>>,
+    interfaces: OnceCell<ClassDataList>,
+    methods: OnceCell<MethodDataList>,
+    fields: OnceCell<FieldDataList>,
+    annotations: OnceCell<Vec<AnnotationData>>,
 }
 
-impl Debug for ClassData<'_> {
+impl Debug for ClassData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ClassData")
             .field("id", &self.id)
@@ -43,9 +44,9 @@ impl Debug for ClassData<'_> {
     }
 }
 
-impl<'a> BaseData for ClassData<'a> {
-    fn bridge(&self) -> &DexkitBridge {
-        self.bridge
+impl BaseData for ClassData {
+    fn bridge(&self) -> &BridgeCore {
+        &self.bridge
     }
 
     fn dex_id(&self) -> u32 {
@@ -57,7 +58,7 @@ impl<'a> BaseData for ClassData<'a> {
     }
 }
 
-impl<'a> ClassData<'a> {
+impl ClassData {
     /// source file name, e.g. "MyClass.java"
     pub fn source_file(&self) -> String {
         self.source_file.to_string()
@@ -89,7 +90,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// get super class, None if no super class
-    pub fn super_class(&self) -> Option<ClassData<'a>> {
+    pub fn super_class(&self) -> Option<ClassData> {
         let cls = self.super_class.get_or_init(|| {
             self.super_class_id.and_then(|id| {
                 let encode_id = Self::get_encode_id(self.dex_id, id);
@@ -104,7 +105,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// get implemented interfaces of this class
-    pub fn interfaces(&self) -> ClassDataList<'a> {
+    pub fn interfaces(&self) -> ClassDataList {
         self.interfaces
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -123,7 +124,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// get methods of this class
-    pub fn methods(&self) -> MethodDataList<'a> {
+    pub fn methods(&self) -> MethodDataList {
         self.methods
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -142,7 +143,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// get fields of this class
-    pub fn fields(&self) -> FieldDataList<'a> {
+    pub fn fields(&self) -> FieldDataList {
         self.fields
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -161,7 +162,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// get annotations of this class
-    pub fn annotations(&self) -> Vec<AnnotationData<'a>> {
+    pub fn annotations(&self) -> Vec<AnnotationData> {
         self.annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -183,7 +184,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(bridge: &'a DexkitBridge, meta: FBClassMeta<'a>) -> Self {
+    pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBClassMeta<'_>) -> Self {
         let id = meta.id();
         let dex_id = meta.dex_id();
         let source_file = meta.source_file().unwrap_or_default().to_string();
@@ -201,7 +202,7 @@ impl<'a> ClassData<'a> {
         let field_ids = meta.fields().map_or(vec![], |flds| flds.iter().collect());
 
         Self {
-            bridge,
+            bridge: bridge.core_clone(),
             id,
             dex_id,
             source_file,
@@ -222,7 +223,7 @@ impl<'a> ClassData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta_raw(bridge: &'a DexkitBridge, data: &'a [u8]) -> Option<Self> {
+    pub(crate) fn with_meta_raw(bridge: &DexkitBridge, data: &[u8]) -> Option<Self> {
         flatbuffers::root::<FBClassMeta<'_>>(data)
             .map(|meta| Self::with_meta(bridge, meta))
             .ok()

@@ -8,15 +8,15 @@ use crate::{
     result::{ClassData, base::BaseData},
 };
 
-pub struct BatchFindClassUsingStrings<'a> {
+pub struct BatchFindClassUsingStrings {
     search_packages: Option<Vec<String>>,
     exclude_packages: Option<Vec<String>>,
     ignore_packages_case: bool,
-    search_classes: Option<Vec<ClassData<'a>>>,
+    search_classes: Option<Vec<ClassData>>,
     search_groups: Option<Vec<StringMatchersGroup>>,
 }
 
-impl<'a> Default for BatchFindClassUsingStrings<'a> {
+impl Default for BatchFindClassUsingStrings {
     fn default() -> Self {
         Self {
             search_packages: None,
@@ -28,7 +28,7 @@ impl<'a> Default for BatchFindClassUsingStrings<'a> {
     }
 }
 
-impl<'a> From<BatchFindClassUsingStrings<'a>> for Vec<u8> {
+impl From<BatchFindClassUsingStrings> for Vec<u8> {
     fn from(value: BatchFindClassUsingStrings) -> Self {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
         let root = value.inner_build(&mut fbb);
@@ -37,9 +37,7 @@ impl<'a> From<BatchFindClassUsingStrings<'a>> for Vec<u8> {
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindClassUsingStrings<'a>>>
-    for BatchFindClassUsingStrings<'a>
-{
+impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindClassUsingStrings<'a>>> for BatchFindClassUsingStrings {
     fn inner_build(
         &self,
         fbb: &mut FlatBufferBuilder<'a>,
@@ -78,7 +76,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindClassUsingStrings<'a>>>
     }
 }
 
-impl<'a> BatchFindClassUsingStrings<'a> {
+impl BatchFindClassUsingStrings {
     pub fn new() -> Self {
         Self::default()
     }
@@ -107,7 +105,7 @@ impl<'a> BatchFindClassUsingStrings<'a> {
 
     pub fn search_classes<V>(mut self, classes: V) -> Self
     where
-        V: Into<Vec<ClassData<'a>>>,
+        V: Into<Vec<ClassData>>,
     {
         self.search_classes = Some(classes.into());
         self
@@ -141,7 +139,7 @@ impl<'a> BatchFindClassUsingStrings<'a> {
     }
 
     // extend search_classes
-    pub fn search_class(mut self, class: ClassData<'a>) -> Self {
+    pub fn search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }

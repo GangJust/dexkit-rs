@@ -3,14 +3,14 @@ use crate::gen_flatbuffers::dexkit::fb::{FBUsingFieldMeta, FBUsingFieldMetaArray
 use crate::result::{FieldData, FieldUsingType};
 
 #[derive(Debug, Clone)]
-pub struct UsingFieldData<'a> {
-    field: FieldData<'a>,
+pub struct UsingFieldData {
+    field: FieldData,
     using_type: FieldUsingType,
 }
 
-impl<'a> UsingFieldData<'a> {
+impl UsingFieldData {
     /// The field being used
-    pub fn field(&self) -> FieldData<'a> {
+    pub fn field(&self) -> FieldData {
         self.field.clone()
     }
 
@@ -20,7 +20,7 @@ impl<'a> UsingFieldData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(bridge: &'a DexkitBridge, meta: FBUsingFieldMeta<'a>) -> Self {
+    pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBUsingFieldMeta<'_>) -> Self {
         let field = meta
             .field()
             .map(|f| FieldData::with_meta(bridge, f))
@@ -32,18 +32,18 @@ impl<'a> UsingFieldData<'a> {
 
     /// ...
     pub(crate) fn with_using_field_meta_array_raw(
-        bridge: &'a DexkitBridge,
-        data: &'a [u8],
+        bridge: &DexkitBridge,
+        data: &[u8],
     ) -> Vec<Self> {
-        flatbuffers::root::<FBUsingFieldMetaArrayHolder<'a>>(data)
+        flatbuffers::root::<FBUsingFieldMetaArrayHolder<'_>>(data)
             .map(|array| Self::with_using_field_meta_array(bridge, array))
             .unwrap_or_default()
     }
 
     /// ...
     pub(crate) fn with_using_field_meta_array(
-        bridge: &'a DexkitBridge,
-        array: FBUsingFieldMetaArrayHolder<'a>,
+        bridge: &DexkitBridge,
+        array: FBUsingFieldMetaArrayHolder<'_>,
     ) -> Vec<Self> {
         array
             .items()

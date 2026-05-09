@@ -9,7 +9,7 @@ use crate::query::{FindClass, FindField, FindMethod};
 use crate::result::base::BaseData;
 use crate::result::{ClassData, FieldData, MethodData};
 
-pub(crate) trait BaseDataList<'a, T> {
+pub(crate) trait BaseDataList<T> {
     fn size(&self) -> usize;
 
     fn single(&self) -> Option<&T>;
@@ -19,30 +19,30 @@ pub(crate) trait BaseDataList<'a, T> {
 
 /// ClassDataList represents a collection of ClassData objects.
 #[derive(Debug, Clone)]
-pub struct ClassDataList<'a> {
-    classes: Vec<ClassData<'a>>,
+pub struct ClassDataList {
+    classes: Vec<ClassData>,
 }
 
-impl<'a> std::ops::Deref for ClassDataList<'a> {
-    type Target = Vec<ClassData<'a>>;
+impl std::ops::Deref for ClassDataList {
+    type Target = Vec<ClassData>;
 
     fn deref(&self) -> &Self::Target {
         &self.classes
     }
 }
 
-impl<'a> From<ClassDataList<'a>> for Vec<ClassData<'a>> {
-    fn from(value: ClassDataList<'a>) -> Self {
+impl From<ClassDataList> for Vec<ClassData> {
+    fn from(value: ClassDataList) -> Self {
         value.classes
     }
 }
 
-impl<'a> BaseDataList<'a, ClassData<'a>> for ClassDataList<'a> {
+impl BaseDataList<ClassData> for ClassDataList {
     fn size(&self) -> usize {
         self.classes.len()
     }
 
-    fn single(&self) -> Option<&ClassData<'a>> {
+    fn single(&self) -> Option<&ClassData> {
         if self.classes.len() == 1 {
             Some(&self.classes[0])
         } else {
@@ -50,8 +50,8 @@ impl<'a> BaseDataList<'a, ClassData<'a>> for ClassDataList<'a> {
         }
     }
 
-    fn single_where(&self, predicate: impl Fn(&ClassData<'a>) -> bool) -> Option<&ClassData<'a>> {
-        let filtered: Vec<&ClassData<'a>> = self.classes.iter().filter(|&c| predicate(c)).collect();
+    fn single_where(&self, predicate: impl Fn(&ClassData) -> bool) -> Option<&ClassData> {
+        let filtered: Vec<&ClassData> = self.classes.iter().filter(|&c| predicate(c)).collect();
         if filtered.len() == 1 {
             Some(filtered[0])
         } else {
@@ -60,18 +60,18 @@ impl<'a> BaseDataList<'a, ClassData<'a>> for ClassDataList<'a> {
     }
 }
 
-impl<'a> ClassDataList<'a> {
+impl ClassDataList {
     pub(crate) fn new() -> Self {
         Self {
             classes: Vec::new(),
         }
     }
 
-    pub(crate) fn add(&mut self, class_data: ClassData<'a>) {
+    pub(crate) fn add(&mut self, class_data: ClassData) {
         self.classes.push(class_data);
     }
 
-    pub fn find_class(&self, find_class: FindClass<'a>) -> ClassDataList<'_> {
+    pub fn find_class(&self, find_class: FindClass) -> ClassDataList {
         if self.classes.is_empty() {
             return ClassDataList::new();
         }
@@ -82,7 +82,7 @@ impl<'a> ClassDataList<'a> {
         bridge.find_class(find_class)
     }
 
-    pub fn find_method(&self, find_method: FindMethod<'a>) -> MethodDataList<'_> {
+    pub fn find_method(&self, find_method: FindMethod) -> MethodDataList {
         if self.classes.is_empty() {
             return MethodDataList::new();
         }
@@ -93,7 +93,7 @@ impl<'a> ClassDataList<'a> {
         bridge.find_method(find_method)
     }
 
-    pub fn find_field(&self, find_field: FindField<'a>) -> FieldDataList<'_> {
+    pub fn find_field(&self, find_field: FindField) -> FieldDataList {
         if self.classes.is_empty() {
             return FieldDataList::new();
         }
@@ -105,7 +105,7 @@ impl<'a> ClassDataList<'a> {
     }
 
     /// ...
-    pub(crate) fn from_data(bridge: &'a DexkitBridge, data: &'a [u8]) -> ClassDataList<'a> {
+    pub(crate) fn from_data(bridge: &DexkitBridge, data: &[u8]) -> ClassDataList {
         // println!("Class data list vector of length: {}", data.len());
         let class_meta_list = flatbuffers::root::<FBClassMetaArrayHolder>(&data).unwrap();
         // println!("Class meta list: {:#?}", class_meta_list);
@@ -121,9 +121,9 @@ impl<'a> ClassDataList<'a> {
 
     /// ...
     pub(crate) fn from_batch_data(
-        bridge: &'a DexkitBridge,
-        data: &'a [u8],
-    ) -> HashMap<String, ClassDataList<'a>> {
+        bridge: &DexkitBridge,
+        data: &[u8],
+    ) -> HashMap<String, ClassDataList> {
         // println!("Batch class data list vector of length: {}", data.len());
         let batch_class_meta_list =
             flatbuffers::root::<FBBatchClassMetaArrayHolder>(&data).unwrap();
@@ -150,30 +150,30 @@ impl<'a> ClassDataList<'a> {
 
 /// MethodDataList represents a collection of MethodData objects.
 #[derive(Debug, Clone)]
-pub struct MethodDataList<'a> {
-    methods: Vec<MethodData<'a>>,
+pub struct MethodDataList {
+    methods: Vec<MethodData>,
 }
 
-impl<'a> std::ops::Deref for MethodDataList<'a> {
-    type Target = Vec<MethodData<'a>>;
+impl std::ops::Deref for MethodDataList {
+    type Target = Vec<MethodData>;
 
     fn deref(&self) -> &Self::Target {
         &self.methods
     }
 }
 
-impl<'a> From<MethodDataList<'a>> for Vec<MethodData<'a>> {
-    fn from(value: MethodDataList<'a>) -> Self {
+impl From<MethodDataList> for Vec<MethodData> {
+    fn from(value: MethodDataList) -> Self {
         value.methods
     }
 }
 
-impl<'a> BaseDataList<'a, MethodData<'a>> for MethodDataList<'a> {
+impl BaseDataList<MethodData> for MethodDataList {
     fn size(&self) -> usize {
         self.methods.len()
     }
 
-    fn single(&self) -> Option<&MethodData<'a>> {
+    fn single(&self) -> Option<&MethodData> {
         if self.methods.len() == 1 {
             Some(&self.methods[0])
         } else {
@@ -181,8 +181,8 @@ impl<'a> BaseDataList<'a, MethodData<'a>> for MethodDataList<'a> {
         }
     }
 
-    fn single_where(&self, predicate: impl Fn(&MethodData<'a>) -> bool) -> Option<&MethodData<'a>> {
-        let filtered: Vec<&MethodData<'a>> =
+    fn single_where(&self, predicate: impl Fn(&MethodData) -> bool) -> Option<&MethodData> {
+        let filtered: Vec<&MethodData> =
             self.methods.iter().filter(|&c| predicate(c)).collect();
         if filtered.len() == 1 {
             Some(filtered[0])
@@ -192,18 +192,18 @@ impl<'a> BaseDataList<'a, MethodData<'a>> for MethodDataList<'a> {
     }
 }
 
-impl<'a> MethodDataList<'a> {
+impl MethodDataList {
     pub(crate) fn new() -> Self {
         Self {
             methods: Vec::new(),
         }
     }
 
-    pub(crate) fn add(&mut self, method_data: MethodData<'a>) {
+    pub(crate) fn add(&mut self, method_data: MethodData) {
         self.methods.push(method_data);
     }
 
-    pub fn find_method(&self, find_method: FindMethod<'a>) -> MethodDataList<'_> {
+    pub fn find_method(&self, find_method: FindMethod) -> MethodDataList {
         if self.methods.is_empty() {
             return MethodDataList::new();
         }
@@ -214,7 +214,7 @@ impl<'a> MethodDataList<'a> {
         bridge.find_method(find_method)
     }
 
-    pub(crate) fn form_data(bridge: &'a DexkitBridge, vec: &'a [u8]) -> MethodDataList<'a> {
+    pub(crate) fn form_data(bridge: &DexkitBridge, vec: &[u8]) -> MethodDataList {
         // println!("Method data list vector of length: {}", vec.len());
         let method_meta_array = flatbuffers::root::<FBMethodMetaArrayHolder>(&vec).unwrap();
         // println!("Method meta array: {:#?}", method_meta_array);
@@ -230,9 +230,9 @@ impl<'a> MethodDataList<'a> {
     }
 
     pub(crate) fn from_batch_data(
-        bridge: &'a DexkitBridge,
-        data: &'a [u8],
-    ) -> HashMap<String, MethodDataList<'a>> {
+        bridge: &DexkitBridge,
+        data: &[u8],
+    ) -> HashMap<String, MethodDataList> {
         // println!("Batch method data list vector of length: {}", data.len());
         let batch_method_meta_list =
             flatbuffers::root::<FBBatchMethodMetaArrayHolder>(&data).unwrap();
@@ -259,30 +259,30 @@ impl<'a> MethodDataList<'a> {
 
 /// FieldDataList represents a collection of FieldData objects.
 #[derive(Debug, Clone)]
-pub struct FieldDataList<'a> {
-    fields: Vec<FieldData<'a>>,
+pub struct FieldDataList {
+    fields: Vec<FieldData>,
 }
 
-impl<'a> std::ops::Deref for FieldDataList<'a> {
-    type Target = Vec<FieldData<'a>>;
+impl std::ops::Deref for FieldDataList {
+    type Target = Vec<FieldData>;
 
     fn deref(&self) -> &Self::Target {
         &self.fields
     }
 }
 
-impl<'a> From<FieldDataList<'a>> for Vec<FieldData<'a>> {
-    fn from(value: FieldDataList<'a>) -> Self {
+impl From<FieldDataList> for Vec<FieldData> {
+    fn from(value: FieldDataList) -> Self {
         value.fields
     }
 }
 
-impl<'a> BaseDataList<'a, FieldData<'a>> for FieldDataList<'a> {
+impl BaseDataList<FieldData> for FieldDataList {
     fn size(&self) -> usize {
         self.fields.len()
     }
 
-    fn single(&self) -> Option<&FieldData<'a>> {
+    fn single(&self) -> Option<&FieldData> {
         if self.fields.len() == 1 {
             Some(&self.fields[0])
         } else {
@@ -290,8 +290,8 @@ impl<'a> BaseDataList<'a, FieldData<'a>> for FieldDataList<'a> {
         }
     }
 
-    fn single_where(&self, predicate: impl Fn(&FieldData<'a>) -> bool) -> Option<&FieldData<'a>> {
-        let filtered: Vec<&FieldData<'a>> = self.fields.iter().filter(|&c| predicate(c)).collect();
+    fn single_where(&self, predicate: impl Fn(&FieldData) -> bool) -> Option<&FieldData> {
+        let filtered: Vec<&FieldData> = self.fields.iter().filter(|&c| predicate(c)).collect();
         if filtered.len() == 1 {
             Some(filtered[0])
         } else {
@@ -300,16 +300,16 @@ impl<'a> BaseDataList<'a, FieldData<'a>> for FieldDataList<'a> {
     }
 }
 
-impl<'a> FieldDataList<'a> {
+impl FieldDataList {
     pub(crate) fn new() -> Self {
         Self { fields: Vec::new() }
     }
 
-    pub(crate) fn add(&mut self, field_data: FieldData<'a>) {
+    pub(crate) fn add(&mut self, field_data: FieldData) {
         self.fields.push(field_data);
     }
 
-    pub fn find_field(&self, find_field: FindField<'a>) -> FieldDataList<'_> {
+    pub fn find_field(&self, find_field: FindField) -> FieldDataList {
         if self.fields.is_empty() {
             return FieldDataList::new();
         }
@@ -320,7 +320,7 @@ impl<'a> FieldDataList<'a> {
         bridge.find_field(find_field)
     }
 
-    pub(crate) fn form_data(dexkit_bridge: &'a DexkitBridge, vec: &'a [u8]) -> FieldDataList<'a> {
+    pub(crate) fn form_data(dexkit_bridge: &DexkitBridge, vec: &[u8]) -> FieldDataList {
         // println!("Field data list vector of length: {}", vec.len());
         let field_meta_array = flatbuffers::root::<FBFieldMetaArrayHolder>(&vec).unwrap();
         // println!("Field meta array: {:#?}", field_meta_array);

@@ -6,17 +6,17 @@ use crate::query::matchers::FieldMatcher;
 use crate::result::base::BaseData;
 use crate::result::{ClassData, FieldData};
 
-pub struct FindField<'a> {
+pub struct FindField {
     search_packages: Option<Vec<String>>,
     exclude_packages: Option<Vec<String>>,
     ignore_packages_case: bool,
-    search_classes: Option<Vec<ClassData<'a>>>,
-    search_fields: Option<Vec<FieldData<'a>>>,
+    search_classes: Option<Vec<ClassData>>,
+    search_fields: Option<Vec<FieldData>>,
     find_first: bool,
     matcher: Option<FieldMatcher>,
 }
 
-impl<'a> Default for FindField<'a> {
+impl Default for FindField {
     fn default() -> Self {
         Self {
             search_packages: None,
@@ -30,7 +30,7 @@ impl<'a> Default for FindField<'a> {
     }
 }
 
-impl<'a> From<FindField<'a>> for Vec<u8> {
+impl From<FindField> for Vec<u8> {
     fn from(value: FindField) -> Self {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
         let root = value.inner_build(&mut fbb);
@@ -39,7 +39,7 @@ impl<'a> From<FindField<'a>> for Vec<u8> {
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBFindField<'a>>> for FindField<'a> {
+impl<'a> BaseQuery<'a, WIPOffset<FBFindField<'a>>> for FindField {
     fn inner_build(
         &self,
         fbb: &mut flatbuffers::FlatBufferBuilder<'a>,
@@ -85,7 +85,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBFindField<'a>>> for FindField<'a> {
     }
 }
 
-impl<'a> FindField<'a> {
+impl FindField {
     pub fn new() -> Self {
         Self::default()
     }
@@ -114,7 +114,7 @@ impl<'a> FindField<'a> {
 
     pub fn search_classes<V>(mut self, classes: V) -> Self
     where
-        V: Into<Vec<ClassData<'a>>>,
+        V: Into<Vec<ClassData>>,
     {
         self.search_classes = Some(classes.into());
         self
@@ -122,7 +122,7 @@ impl<'a> FindField<'a> {
 
     pub fn search_fields<V>(mut self, fields: V) -> Self
     where
-        V: Into<Vec<FieldData<'a>>>,
+        V: Into<Vec<FieldData>>,
     {
         self.search_fields = Some(fields.into());
         self
@@ -161,13 +161,13 @@ impl<'a> FindField<'a> {
     }
 
     // extend search_classes
-    pub fn search_class(mut self, class: ClassData<'a>) -> Self {
+    pub fn search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }
 
     // extend search_fields
-    pub fn search_field(mut self, field: FieldData<'a>) -> Self {
+    pub fn search_field(mut self, field: FieldData) -> Self {
         self.search_fields.get_or_insert_with(Vec::new).push(field);
         self
     }

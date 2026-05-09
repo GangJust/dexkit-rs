@@ -1,15 +1,16 @@
+use crate::BridgeCore;
 use crate::gen_flatbuffers::dexkit::fb::FBAnnotationElementMeta;
 use crate::{DexkitBridge, result::AnnotationEncodeValue};
 use std::fmt::Debug;
 
 #[derive(Clone)]
-pub struct AnnotationElementData<'a> {
-    bridge: &'a DexkitBridge,
+pub struct AnnotationElementData {
+    bridge: BridgeCore,
     name: String,
-    value: AnnotationEncodeValue<'a>,
+    value: AnnotationEncodeValue,
 }
 
-impl<'a> Debug for AnnotationElementData<'a> {
+impl Debug for AnnotationElementData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("AnnotationElementData")
             .field("name", &self.name)
@@ -18,17 +19,17 @@ impl<'a> Debug for AnnotationElementData<'a> {
     }
 }
 
-impl<'a> AnnotationElementData<'a> {
+impl AnnotationElementData {
     /// get value
-    pub fn value(&self) -> &AnnotationEncodeValue<'a> {
+    pub fn value(&self) -> &AnnotationEncodeValue {
         &self.value
     }
 
     /// ...
     pub(crate) fn with_meta(
-        bridge: &'a DexkitBridge,
-        meta: FBAnnotationElementMeta<'a>,
-    ) -> AnnotationElementData<'a> {
+        bridge: &DexkitBridge,
+        meta: FBAnnotationElementMeta<'_>,
+    ) -> AnnotationElementData {
         let name = meta.name().unwrap_or("").to_string();
         let value = match meta.value() {
             None => AnnotationEncodeValue::default(),
@@ -36,7 +37,7 @@ impl<'a> AnnotationElementData<'a> {
         };
 
         Self {
-            bridge,
+            bridge: bridge.core_clone(),
             name,
             value,
         }

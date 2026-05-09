@@ -7,7 +7,7 @@ use std::fmt::Debug;
 use std::str::from_utf8;
 
 #[derive(Debug, Clone)]
-pub enum EncodeValueData<'a> {
+pub enum EncodeValueData {
     Byte(i8),
     Short(i16),
     Char(char),
@@ -16,22 +16,22 @@ pub enum EncodeValueData<'a> {
     Float(f32),
     Double(f64),
     String(String),
-    Type(ClassData<'a>),
-    Method(MethodData<'a>),
-    Enum(FieldData<'a>),
-    Array(AnnotationEncodeArrayData<'a>),
-    Annotation(AnnotationData<'a>),
+    Type(ClassData),
+    Method(MethodData),
+    Enum(FieldData),
+    Array(AnnotationEncodeArrayData),
+    Annotation(AnnotationData),
     Null,
     Bool(bool),
 }
 
 #[derive(Clone)]
-pub struct AnnotationEncodeValue<'a> {
-    value: EncodeValueData<'a>,
+pub struct AnnotationEncodeValue {
+    value: EncodeValueData,
     value_type: AnnotationEncodeValueType,
 }
 
-impl<'a> Debug for AnnotationEncodeValue<'a> {
+impl Debug for AnnotationEncodeValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("AnnotationEncodeValue")
             .field("value_type", &self.value_type)
@@ -40,7 +40,7 @@ impl<'a> Debug for AnnotationEncodeValue<'a> {
     }
 }
 
-impl<'a> Default for AnnotationEncodeValue<'a> {
+impl Default for AnnotationEncodeValue {
     fn default() -> Self {
         Self {
             value: EncodeValueData::Null,
@@ -49,14 +49,14 @@ impl<'a> Default for AnnotationEncodeValue<'a> {
     }
 }
 
-impl<'a> AnnotationEncodeValue<'a> {
+impl AnnotationEncodeValue {
     /// Get the type of the encoded value.
     pub fn value_type(&self) -> AnnotationEncodeValueType {
         self.value_type
     }
 
     /// Get the encoded value.
-    pub fn value(&self) -> &EncodeValueData<'a> {
+    pub fn value(&self) -> &EncodeValueData {
         &self.value
     }
 
@@ -125,7 +125,7 @@ impl<'a> AnnotationEncodeValue<'a> {
     }
 
     /// If the encoded value is of type `Type`, return the class data; otherwise, return `None`.
-    pub fn type_value(&self) -> Option<ClassData<'a>> {
+    pub fn type_value(&self) -> Option<ClassData> {
         match &self.value {
             EncodeValueData::Type(t) => Some(t.clone()),
             _ => None,
@@ -133,7 +133,7 @@ impl<'a> AnnotationEncodeValue<'a> {
     }
 
     /// If the encoded value is of type `Method`, return the method data; otherwise, return `None`.
-    pub fn method_value(&self) -> Option<MethodData<'a>> {
+    pub fn method_value(&self) -> Option<MethodData> {
         match &self.value {
             EncodeValueData::Method(m) => Some(m.clone()),
             _ => None,
@@ -141,7 +141,7 @@ impl<'a> AnnotationEncodeValue<'a> {
     }
 
     /// If the encoded value is of type `Enum`, return the field data; otherwise, return `None`.
-    pub fn enum_value(&self) -> Option<FieldData<'a>> {
+    pub fn enum_value(&self) -> Option<FieldData> {
         match &self.value {
             EncodeValueData::Enum(e) => Some(e.clone()),
             _ => None,
@@ -149,7 +149,7 @@ impl<'a> AnnotationEncodeValue<'a> {
     }
 
     /// If the encoded value is of type `Array`, return the annotation encode array data; otherwise, return `None`.
-    pub fn array_value(&self) -> Option<AnnotationEncodeArrayData<'a>> {
+    pub fn array_value(&self) -> Option<AnnotationEncodeArrayData> {
         match &self.value {
             EncodeValueData::Array(a) => Some(a.clone()),
             _ => None,
@@ -157,7 +157,7 @@ impl<'a> AnnotationEncodeValue<'a> {
     }
 
     /// If the encoded value is of type `Annotation`, return the annotation data; otherwise, return `None`.
-    pub fn annotation_value(&self) -> Option<AnnotationData<'a>> {
+    pub fn annotation_value(&self) -> Option<AnnotationData> {
         match &self.value {
             EncodeValueData::Annotation(a) => Some(a.clone()),
             _ => None,
@@ -179,9 +179,9 @@ impl<'a> AnnotationEncodeValue<'a> {
 
     /// ...
     pub(crate) fn with_meta(
-        bridge: &'a DexkitBridge,
-        meta: FBAnnotationEncodeValueMeta<'a>,
-    ) -> AnnotationEncodeValue<'a> {
+        bridge: &DexkitBridge,
+        meta: FBAnnotationEncodeValueMeta<'_>,
+    ) -> AnnotationEncodeValue {
         let meta_value_tpye: AnnotationEncodeValueType = meta.type_().into();
         let value = match meta_value_tpye {
             AnnotationEncodeValueType::ByteValue => {

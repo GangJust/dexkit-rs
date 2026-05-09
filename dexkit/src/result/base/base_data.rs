@@ -1,7 +1,7 @@
-use crate::DexkitBridge;
+use crate::BridgeCore;
 
 pub(crate) trait BaseData {
-    fn bridge(&self) -> &DexkitBridge;
+    fn bridge(&self) -> &BridgeCore;
 
     fn dex_id(&self) -> u32;
 

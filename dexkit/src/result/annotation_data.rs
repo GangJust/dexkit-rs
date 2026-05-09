@@ -1,3 +1,4 @@
+use crate::BridgeCore;
 use crate::gen_flatbuffers::dexkit::fb::{
     FBAnnotationMeta, FBAnnotationMetaArrayHolder, FBAnnotationVisibilityType,
     FBParametersAnnotationMetaArrayHoler,
@@ -9,18 +10,18 @@ use std::cell::OnceCell;
 use std::fmt::Debug;
 
 #[derive(Clone)]
-pub struct AnnotationData<'a> {
-    bridge: &'a DexkitBridge,
+pub struct AnnotationData {
+    bridge: BridgeCore,
     dex_id: u32,
     type_id: u32,
     type_descriptor: String,
     visibility: Option<AnnotationVisibilityType>,
-    elements: Vec<AnnotationElementData<'a>>,
+    elements: Vec<AnnotationElementData>,
     // Lazy loaded fields
     dex_class: OnceCell<Option<DexClass>>,
 }
 
-impl<'a> Debug for AnnotationData<'a> {
+impl Debug for AnnotationData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("AnnotationData")
             .field("dex_id", &self.dex_id)
@@ -32,9 +33,9 @@ impl<'a> Debug for AnnotationData<'a> {
     }
 }
 
-impl<'a> BaseData for AnnotationData<'a> {
-    fn bridge(&self) -> &DexkitBridge {
-        self.bridge
+impl BaseData for AnnotationData {
+    fn bridge(&self) -> &BridgeCore {
+        &self.bridge
     }
 
     fn dex_id(&self) -> u32 {
@@ -46,14 +47,14 @@ impl<'a> BaseData for AnnotationData<'a> {
     }
 }
 
-impl<'a> AnnotationData<'a> {
+impl AnnotationData {
     /// get visibility
     pub fn visibility(&self) -> Option<AnnotationVisibilityType> {
         self.visibility
     }
 
     /// get elements
-    pub fn elements(&self) -> &Vec<AnnotationElementData<'a>> {
+    pub fn elements(&self) -> &Vec<AnnotationElementData> {
         &self.elements
     }
 
@@ -70,10 +71,7 @@ impl<'a> AnnotationData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(
-        bridge: &'a DexkitBridge,
-        meta: FBAnnotationMeta<'a>,
-    ) -> AnnotationData<'a> {
+    pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBAnnotationMeta<'_>) -> AnnotationData {
         let dex_id = meta.dex_id();
         let type_id = meta.type_id();
         let type_descriptor = meta.type_descriptor().unwrap_or("").to_string();
@@ -92,7 +90,7 @@ impl<'a> AnnotationData<'a> {
         };
 
         Self {
-            bridge,
+            bridge: bridge.core_clone(),
             dex_id,
             type_id,
             type_descriptor,
@@ -105,9 +103,9 @@ impl<'a> AnnotationData<'a> {
 
     /// ...
     pub(crate) fn with_annotation_meta_array_raw(
-        bridge: &'a DexkitBridge,
-        data: &'a [u8],
-    ) -> Vec<AnnotationData<'a>> {
+        bridge: &DexkitBridge,
+        data: &[u8],
+    ) -> Vec<AnnotationData> {
         let annotation_meta_array_holder =
             unsafe { flatbuffers::root_unchecked::<FBAnnotationMetaArrayHolder>(data) }; // not verify data
 
@@ -116,9 +114,9 @@ impl<'a> AnnotationData<'a> {
 
     /// ...
     pub(crate) fn with_parameters_annotation_meta_array_raw(
-        bridge: &'a DexkitBridge,
-        data: &'a [u8],
-    ) -> Vec<Vec<AnnotationData<'a>>> {
+        bridge: &DexkitBridge,
+        data: &[u8],
+    ) -> Vec<Vec<AnnotationData>> {
         let parameters_annotation_meta_array_holer =
             unsafe { flatbuffers::root_unchecked::<FBParametersAnnotationMetaArrayHoler>(data) }; // not verify data
 
@@ -138,9 +136,9 @@ impl<'a> AnnotationData<'a> {
 
     /// ...
     pub(crate) fn with_annotation_meta_array(
-        bridge: &'a DexkitBridge,
-        array: FBAnnotationMetaArrayHolder<'a>,
-    ) -> Vec<AnnotationData<'a>> {
+        bridge: &DexkitBridge,
+        array: FBAnnotationMetaArrayHolder<'_>,
+    ) -> Vec<AnnotationData> {
         array.annotations().iter().next().map_or(vec![], |array| {
             array
                 .iter()

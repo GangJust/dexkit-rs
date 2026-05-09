@@ -151,23 +151,21 @@ mod wrap {
 pub use wrap::*;
 
 #[allow(unused)]
-mod uitls {
+pub mod utils {
     mod modifier;
     pub use modifier::*;
     mod dex_signature;
-    pub use dex_signature::*;
+    pub(crate) use dex_signature::*;
     mod mutf8;
-    pub use mutf8::*;
+    pub(crate) use mutf8::*;
     mod string_unicode_encode_decode;
-    pub use string_unicode_encode_decode::*;
+    pub(crate) use string_unicode_encode_decode::*;
     mod op_codes;
-    pub use op_codes::*;
+    pub(crate) use op_codes::*;
 }
 
-pub(crate) mod utils {
-    pub use super::uitls::*;
-}
-pub use utils::Modifier;
+mod bridge_core;
+pub(crate) use bridge_core::BridgeCore;
 
 mod dexkit_bridge;
 pub use dexkit_bridge::*;

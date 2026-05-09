@@ -1,3 +1,4 @@
+use crate::BridgeCore;
 use crate::gen_flatbuffers::dexkit::fb::FBMethodMeta;
 use crate::result::{AnnotationData, ClassData, ClassDataList, MethodDataList, UsingFieldData};
 use crate::utils::Opcodes;
@@ -8,8 +9,8 @@ use std::fmt::Debug;
 
 #[allow(unused)]
 #[derive(Clone)]
-pub struct MethodData<'a> {
-    bridge: &'a DexkitBridge,
+pub struct MethodData {
+    bridge: BridgeCore,
     id: u32,
     dex_id: u32,
     class_id: u32,
@@ -19,20 +20,20 @@ pub struct MethodData<'a> {
     param_type_ids: Vec<i32>,
     // Lazy loaded fields
     dex_method: OnceCell<Option<DexMethod>>,
-    declared_class: OnceCell<Option<ClassData<'a>>>,
-    return_type_class: OnceCell<Option<ClassData<'a>>>,
-    param_types: OnceCell<Option<ClassDataList<'a>>>,
+    declared_class: OnceCell<Option<ClassData>>,
+    return_type_class: OnceCell<Option<ClassData>>,
+    param_types: OnceCell<Option<ClassDataList>>,
     param_names: OnceCell<Option<Vec<Option<String>>>>,
-    annotations: OnceCell<Vec<AnnotationData<'a>>>,
-    param_annotations: OnceCell<Vec<Vec<AnnotationData<'a>>>>,
+    annotations: OnceCell<Vec<AnnotationData>>,
+    param_annotations: OnceCell<Vec<Vec<AnnotationData>>>,
     op_codes: OnceCell<Option<Vec<u8>>>,
-    callers: OnceCell<MethodDataList<'a>>,
-    invokes: OnceCell<MethodDataList<'a>>,
+    callers: OnceCell<MethodDataList>,
+    invokes: OnceCell<MethodDataList>,
     using_strings: OnceCell<Vec<String>>,
-    using_fields: OnceCell<Vec<UsingFieldData<'a>>>,
+    using_fields: OnceCell<Vec<UsingFieldData>>,
 }
 
-impl<'a> Debug for MethodData<'a> {
+impl Debug for MethodData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("MethodData")
             .field("id", &self.id)
@@ -46,9 +47,9 @@ impl<'a> Debug for MethodData<'a> {
     }
 }
 
-impl<'a> BaseData for MethodData<'a> {
-    fn bridge(&self) -> &DexkitBridge {
-        self.bridge
+impl BaseData for MethodData {
+    fn bridge(&self) -> &BridgeCore {
+        &self.bridge
     }
 
     fn dex_id(&self) -> u32 {
@@ -60,7 +61,7 @@ impl<'a> BaseData for MethodData<'a> {
     }
 }
 
-impl<'a> MethodData<'a> {
+impl MethodData {
     /// modifiers bitmask, see `Modifier`
     pub fn modifiers(&self) -> u32 {
         self.modifiers
@@ -127,7 +128,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get the class where the method is declared
-    pub fn declared_class(&self) -> Option<ClassData<'a>> {
+    pub fn declared_class(&self) -> Option<ClassData> {
         self.declared_class
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.class_id);
@@ -140,7 +141,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get the class of the return type
-    pub fn return_type_class(&self) -> Option<ClassData<'a>> {
+    pub fn return_type_class(&self) -> Option<ClassData> {
         self.return_type_class
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.return_type_id);
@@ -153,7 +154,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get the classes of the parameter types
-    pub fn param_types(&self) -> Option<ClassDataList<'a>> {
+    pub fn param_types(&self) -> Option<ClassDataList> {
         self.param_types
             .get_or_init(|| {
                 let encode_ids: Vec<i64> = self
@@ -181,7 +182,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get annotations of this class
-    pub fn annotations(&self) -> Vec<AnnotationData<'a>> {
+    pub fn annotations(&self) -> Vec<AnnotationData> {
         self.annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -191,7 +192,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get parameter annotations of this method
-    pub fn param_annotations(&self) -> Vec<Vec<AnnotationData<'a>>> {
+    pub fn param_annotations(&self) -> Vec<Vec<AnnotationData>> {
         self.param_annotations
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -221,7 +222,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get the method that calls this method
-    pub fn callers(&self) -> MethodDataList<'a> {
+    pub fn callers(&self) -> MethodDataList {
         self.callers
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -231,7 +232,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get the methods that this method invokes
-    pub fn invokes(&self) -> MethodDataList<'a> {
+    pub fn invokes(&self) -> MethodDataList {
         self.invokes
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -251,7 +252,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// get the fields used in this method
-    pub fn using_fields(&self) -> Vec<UsingFieldData<'a>> {
+    pub fn using_fields(&self) -> Vec<UsingFieldData> {
         self.using_fields
             .get_or_init(|| {
                 let encode_id = Self::get_encode_id(self.dex_id, self.id);
@@ -273,7 +274,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// ...
-    pub(crate) fn with_meta(bridge: &'a DexkitBridge, meta: FBMethodMeta<'a>) -> Self {
+    pub(crate) fn with_meta(bridge: &DexkitBridge, meta: FBMethodMeta<'_>) -> Self {
         let id = meta.id();
         let dex_id = meta.dex_id();
         let class_id = meta.class_id();
@@ -285,7 +286,7 @@ impl<'a> MethodData<'a> {
             .map_or(vec![], |params| params.iter().collect());
 
         Self {
-            bridge,
+            bridge: bridge.core_clone(),
             id,
             dex_id,
             class_id,
@@ -309,7 +310,7 @@ impl<'a> MethodData<'a> {
     }
 
     /// ...
-    pub(crate) fn from_meta_raw(bridge: &'a DexkitBridge, data: &'a [u8]) -> Option<Self> {
+    pub(crate) fn from_meta_raw(bridge: &DexkitBridge, data: &[u8]) -> Option<Self> {
         flatbuffers::root::<FBMethodMeta<'_>>(data)
             .map(|meta| Self::with_meta(bridge, meta))
             .ok()

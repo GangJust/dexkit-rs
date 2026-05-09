@@ -9,16 +9,16 @@ use crate::{
     result::{ClassData, MethodData},
 };
 
-pub struct BatchFindMethodUsingStrings<'a> {
+pub struct BatchFindMethodUsingStrings {
     search_packages: Option<Vec<String>>,
     exclude_packages: Option<Vec<String>>,
     ignore_packages_case: bool,
-    search_classes: Option<Vec<ClassData<'a>>>,
-    search_methods: Option<Vec<MethodData<'a>>>,
+    search_classes: Option<Vec<ClassData>>,
+    search_methods: Option<Vec<MethodData>>,
     search_groups: Option<Vec<StringMatchersGroup>>,
 }
 
-impl<'a> Default for BatchFindMethodUsingStrings<'a> {
+impl Default for BatchFindMethodUsingStrings {
     fn default() -> Self {
         Self {
             search_packages: None,
@@ -31,7 +31,7 @@ impl<'a> Default for BatchFindMethodUsingStrings<'a> {
     }
 }
 
-impl<'a> From<BatchFindMethodUsingStrings<'a>> for Vec<u8> {
+impl From<BatchFindMethodUsingStrings> for Vec<u8> {
     fn from(value: BatchFindMethodUsingStrings) -> Self {
         let mut fbb = FlatBufferBuilder::with_capacity(1024);
         let root = value.inner_build(&mut fbb);
@@ -40,8 +40,7 @@ impl<'a> From<BatchFindMethodUsingStrings<'a>> for Vec<u8> {
     }
 }
 
-impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindMethodUsingStrings<'a>>>
-    for BatchFindMethodUsingStrings<'a>
+impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindMethodUsingStrings<'a>>> for BatchFindMethodUsingStrings
 {
     fn inner_build(
         &self,
@@ -89,7 +88,7 @@ impl<'a> BaseQuery<'a, WIPOffset<FBBatchFindMethodUsingStrings<'a>>>
     }
 }
 
-impl<'a> BatchFindMethodUsingStrings<'a> {
+impl BatchFindMethodUsingStrings {
     pub fn new() -> Self {
         Self::default()
     }
@@ -118,7 +117,7 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
 
     pub fn search_classes<V>(mut self, classes: V) -> Self
     where
-        V: Into<Vec<ClassData<'a>>>,
+        V: Into<Vec<ClassData>>,
     {
         self.search_classes = Some(classes.into());
         self
@@ -126,7 +125,7 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
 
     pub fn search_methods<V>(mut self, methods: V) -> Self
     where
-        V: Into<Vec<MethodData<'a>>>,
+        V: Into<Vec<MethodData>>,
     {
         self.search_methods = Some(methods.into());
         self
@@ -160,13 +159,13 @@ impl<'a> BatchFindMethodUsingStrings<'a> {
     }
 
     // extend search_classes
-    pub fn search_class(mut self, class: ClassData<'a>) -> Self {
+    pub fn search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }
 
     // extend search_methods
-    pub fn search_method(mut self, method: MethodData<'a>) -> Self {
+    pub fn search_method(mut self, method: MethodData) -> Self {
         self.search_methods
             .get_or_insert_with(Vec::new)
             .push(method);
