@@ -50,10 +50,7 @@ impl DexClass {
 
     /// Get the simple class name. e.g. "MyClass"
     pub fn simple_name(&self) -> &str {
-        self.type_name
-            .rsplit('.')
-            .next()
-            .unwrap_or_default()
+        self.type_name.rsplit('.').next().unwrap_or_default()
     }
 
     /// Check if the class is an array type. e.g. "com.example.MyClass[]" -> true

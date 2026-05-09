@@ -106,9 +106,8 @@ impl AnnotationMatcher {
     where
         S: Into<String>,
     {
-        self.type_matcher = Some(
-            ClassMatcher::new().class_name(StringMatcher::contains(class_name)),
-        );
+        self.type_matcher =
+            Some(ClassMatcher::new().class_name(StringMatcher::contains(class_name)));
         self
     }
 
@@ -116,9 +115,7 @@ impl AnnotationMatcher {
     where
         S: Into<String>,
     {
-        self.type_matcher = Some(
-            ClassMatcher::new().class_name(StringMatcher::equals(class_name)),
-        );
+        self.type_matcher = Some(ClassMatcher::new().class_name(StringMatcher::equals(class_name)));
         self
     }
 
@@ -191,10 +188,7 @@ impl AnnotationMatcher {
     where
         S: Into<String>,
     {
-        let matchers: Vec<StringMatcher> = ss
-            .into_iter()
-            .map(StringMatcher::contains)
-            .collect();
+        let matchers: Vec<StringMatcher> = ss.into_iter().map(StringMatcher::contains).collect();
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.extend(matchers);
         } else {
@@ -207,10 +201,7 @@ impl AnnotationMatcher {
     where
         S: Into<String>,
     {
-        let matchers: Vec<StringMatcher> = ss
-            .into_iter()
-            .map(StringMatcher::equals)
-            .collect();
+        let matchers: Vec<StringMatcher> = ss.into_iter().map(StringMatcher::equals).collect();
         if let Some(ref mut vec) = self.using_strings_matcher {
             vec.extend(matchers);
         } else {

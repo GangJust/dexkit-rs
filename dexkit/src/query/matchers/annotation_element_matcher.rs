@@ -118,9 +118,9 @@ impl AnnotationElementMatcher {
     where
         S: Into<String>,
     {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(
-            StringMatcher::equals(value.into()),
-        ));
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(StringMatcher::equals(
+            value.into(),
+        )));
         self
     }
 

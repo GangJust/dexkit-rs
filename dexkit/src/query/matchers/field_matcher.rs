@@ -150,7 +150,10 @@ impl FieldMatcher {
     where
         U: Into<u32>,
     {
-        self.modifiers_matcher = Some(AccessFlagsMatcher::new(modifiers.into(), MatchType::default()));
+        self.modifiers_matcher = Some(AccessFlagsMatcher::new(
+            modifiers.into(),
+            MatchType::default(),
+        ));
         self
     }
 
@@ -159,8 +162,10 @@ impl FieldMatcher {
         U: Into<u32>,
     {
         if self.modifiers_matcher.is_none() {
-            self.modifiers_matcher =
-                Some(AccessFlagsMatcher::new(modifiers.into(), MatchType::default()));
+            self.modifiers_matcher = Some(AccessFlagsMatcher::new(
+                modifiers.into(),
+                MatchType::default(),
+            ));
         } else {
             self.modifiers_matcher = self
                 .modifiers_matcher
@@ -174,8 +179,10 @@ impl FieldMatcher {
         U: Into<u32>,
     {
         if self.modifiers_matcher.is_none() {
-            self.modifiers_matcher =
-                Some(AccessFlagsMatcher::new(modifiers.into(), MatchType::default()));
+            self.modifiers_matcher = Some(AccessFlagsMatcher::new(
+                modifiers.into(),
+                MatchType::default(),
+            ));
         } else {
             self.modifiers_matcher = self
                 .modifiers_matcher
@@ -214,9 +221,7 @@ impl FieldMatcher {
         if self.annotations_matcher.is_none() {
             self.annotations_matcher = Some(AnnotationsMatcher::new().annotation(annotation));
         } else {
-            self.annotations_matcher = self
-                .annotations_matcher
-                .map(|am| am.annotation(annotation));
+            self.annotations_matcher = self.annotations_matcher.map(|am| am.annotation(annotation));
         }
         self
     }
@@ -252,9 +257,9 @@ impl FieldMatcher {
         if self.annotations_matcher.is_none() {
             self.annotation(AnnotationMatcher::new().type_name_contains(annotation))
         } else {
-            self.annotations_matcher = self.annotations_matcher.map(|am| {
-                am.annotation(AnnotationMatcher::new().type_name_contains(annotation))
-            });
+            self.annotations_matcher = self
+                .annotations_matcher
+                .map(|am| am.annotation(AnnotationMatcher::new().type_name_contains(annotation)));
             self
         }
     }
@@ -300,9 +305,7 @@ impl FieldMatcher {
         if self.get_methods_matcher.is_none() {
             self.get_methods_matcher = Some(MethodsMatcher::new().method(method));
         } else {
-            self.get_methods_matcher = self
-                .get_methods_matcher
-                .map(|mm| mm.method(method));
+            self.get_methods_matcher = self.get_methods_matcher.map(|mm| mm.method(method));
         }
         self
     }
@@ -312,9 +315,7 @@ impl FieldMatcher {
         if self.put_methods_matcher.is_none() {
             self.put_methods_matcher = Some(MethodsMatcher::new().method(method));
         } else {
-            self.put_methods_matcher = self
-                .put_methods_matcher
-                .map(|mm| mm.method(method));
+            self.put_methods_matcher = self.put_methods_matcher.map(|mm| mm.method(method));
         }
         self
     }

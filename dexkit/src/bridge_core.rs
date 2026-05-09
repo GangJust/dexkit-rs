@@ -57,6 +57,7 @@ pub(crate) struct BridgeCore {
 }
 
 impl BridgeCore {
+    /// Wrap a validated native handle into the shared internal bridge state.
     fn from_raw_handle(handle: dexkit_sys::DexkitHandle) -> Self {
         Self {
             handle: Arc::new(BridgeHandle::new(handle)),
@@ -101,6 +102,7 @@ impl BridgeCore {
         I: IntoIterator<Item = B>,
         B: AsRef<[u8]>,
     {
+        // Copy each slice into owned buffers before passing raw pointers across FFI.
         let dex_bytes: Vec<Vec<u8>> = dex_bytes_array
             .into_iter()
             .map(|bytes| bytes.as_ref().to_vec())
@@ -395,6 +397,8 @@ impl BridgeCore {
         }
     }
 
+    // Internal helpers below are used by result wrappers to lazily resolve
+    // additional metadata from encoded ids returned by DexKit.
     pub(crate) fn get_type_by_ids(&self, encode_id_array: &[i64]) -> ClassDataList {
         unsafe {
             let mut out_buf: *mut c_void = std::ptr::null_mut();

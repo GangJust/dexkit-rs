@@ -3,6 +3,10 @@ use std::{env, path::PathBuf};
 
 fn main() {
     println!("cargo:rerun-if-env-changed=ANDROID_NDK_HOME");
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=external/dexkit-wrapper/CMakeLists.txt");
+    println!("cargo:rerun-if-changed=external/dexkit-wrapper/dexkit_wrapper.cpp");
+    println!("cargo:rerun-if-changed=external/dexkit-wrapper/dexkit_wrapper.h");
 
     // get build target
     let target = env::var("TARGET").unwrap();

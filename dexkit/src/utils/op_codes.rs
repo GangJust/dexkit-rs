@@ -277,10 +277,7 @@ impl Opcodes {
         if let Some(&opcode) = OP_NAME_MAP.get(op_name) {
             Ok(opcode)
         } else {
-            Err(Error::Opcode(format!(
-                "Invalid opcode name: {}",
-                op_name
-            )))
+            Err(Error::Opcode(format!("Invalid opcode name: {}", op_name)))
         }
     }
 

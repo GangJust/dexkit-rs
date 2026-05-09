@@ -187,7 +187,10 @@ impl ClassMatcher {
     where
         U: Into<u32>,
     {
-        self.modifiers_matcher = Some(AccessFlagsMatcher::new(modifiers.into(), MatchType::default()));
+        self.modifiers_matcher = Some(AccessFlagsMatcher::new(
+            modifiers.into(),
+            MatchType::default(),
+        ));
         self
     }
 
@@ -196,8 +199,10 @@ impl ClassMatcher {
         U: Into<u32>,
     {
         if self.modifiers_matcher.is_none() {
-            self.modifiers_matcher =
-                Some(AccessFlagsMatcher::new(modifiers.into(), MatchType::default()));
+            self.modifiers_matcher = Some(AccessFlagsMatcher::new(
+                modifiers.into(),
+                MatchType::default(),
+            ));
         } else {
             self.modifiers_matcher = self
                 .modifiers_matcher
@@ -211,8 +216,10 @@ impl ClassMatcher {
         U: Into<u32>,
     {
         if self.modifiers_matcher.is_none() {
-            self.modifiers_matcher =
-                Some(AccessFlagsMatcher::new(modifiers.into(), MatchType::default()));
+            self.modifiers_matcher = Some(AccessFlagsMatcher::new(
+                modifiers.into(),
+                MatchType::default(),
+            ));
         } else {
             self.modifiers_matcher = self
                 .modifiers_matcher
@@ -250,12 +257,14 @@ impl ClassMatcher {
         S: Into<String>,
     {
         if self.interfaces_matcher.is_none() {
-            self.interfaces_matcher = Some(InterfacesMatcher::new().interfaces(
-                interfaces
-                    .into_iter()
-                    .map(|s| ClassMatcher::new().class_name_equals(s))
-                    .collect(),
-            ));
+            self.interfaces_matcher = Some(
+                InterfacesMatcher::new().interfaces(
+                    interfaces
+                        .into_iter()
+                        .map(|s| ClassMatcher::new().class_name_equals(s))
+                        .collect(),
+                ),
+            );
             self
         } else {
             self.interfaces_matcher = self
@@ -324,9 +333,7 @@ impl ClassMatcher {
         if self.annotations_matcher.is_none() {
             self.annotations_matcher = Some(AnnotationsMatcher::new().annotation(annotation));
         } else {
-            self.annotations_matcher = self
-                .annotations_matcher
-                .map(|am| am.annotation(annotation));
+            self.annotations_matcher = self.annotations_matcher.map(|am| am.annotation(annotation));
         }
         self
     }
@@ -362,9 +369,9 @@ impl ClassMatcher {
         if self.annotations_matcher.is_none() {
             self.annotation(AnnotationMatcher::new().type_name_contains(annotation))
         } else {
-            self.annotations_matcher = self.annotations_matcher.map(|am| {
-                am.annotation(AnnotationMatcher::new().type_name_contains(annotation))
-            });
+            self.annotations_matcher = self
+                .annotations_matcher
+                .map(|am| am.annotation(AnnotationMatcher::new().type_name_contains(annotation)));
             self
         }
     }
@@ -489,9 +496,7 @@ impl ClassMatcher {
         if self.methods_matcher.is_none() {
             self.methods_matcher = Some(MethodsMatcher::new().method_names(method_names));
         } else {
-            self.methods_matcher = self
-                .methods_matcher
-                .map(|mm| mm.method_names(method_names));
+            self.methods_matcher = self.methods_matcher.map(|mm| mm.method_names(method_names));
         }
         self
     }
