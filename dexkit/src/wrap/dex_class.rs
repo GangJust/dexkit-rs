@@ -1,4 +1,6 @@
 use crate::utils::DexSignature;
+use std::fmt;
+use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
 pub struct DexClass {
@@ -63,5 +65,19 @@ impl DexClass {
 impl PartialEq for DexClass {
     fn eq(&self, other: &Self) -> bool {
         self.descriptor == other.descriptor
+    }
+}
+
+impl Eq for DexClass {}
+
+impl Hash for DexClass {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.descriptor.hash(state);
+    }
+}
+
+impl fmt::Display for DexClass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.descriptor)
     }
 }

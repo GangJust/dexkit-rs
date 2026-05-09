@@ -1,5 +1,7 @@
 use crate::utils::DexSignature;
 use std::cell::OnceCell;
+use std::fmt;
+use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
 pub struct DexMethod {
@@ -123,5 +125,19 @@ impl DexMethod {
 impl PartialEq for DexMethod {
     fn eq(&self, other: &Self) -> bool {
         self.descriptor == other.descriptor
+    }
+}
+
+impl Eq for DexMethod {}
+
+impl Hash for DexMethod {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.descriptor.hash(state);
+    }
+}
+
+impl fmt::Display for DexMethod {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.descriptor)
     }
 }

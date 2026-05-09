@@ -1,5 +1,7 @@
 use crate::utils::DexSignature;
 use std::cell::OnceCell;
+use std::fmt;
+use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
 pub struct DexField {
@@ -87,5 +89,19 @@ impl DexField {
 impl PartialEq for DexField {
     fn eq(&self, other: &Self) -> bool {
         self.descriptor == other.descriptor
+    }
+}
+
+impl Eq for DexField {}
+
+impl Hash for DexField {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.descriptor.hash(state);
+    }
+}
+
+impl fmt::Display for DexField {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.descriptor)
     }
 }
