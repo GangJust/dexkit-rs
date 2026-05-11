@@ -11,18 +11,7 @@ use crate::gen_flatbuffers::dexkit::fb::{
 use crate::query::base::IAnnotationEncodeValue;
 use crate::query::base::INumberEncodeValue;
 
-pub(crate) trait EncodeValue {
-    type Value;
-    fn value(&self) -> &Self::Value;
-}
-
 pub(crate) struct EncodeValueByte(pub i8);
-impl EncodeValue for EncodeValueByte {
-    type Value = i8;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueByte {
     fn inner_build_annotation_union(
         &self,
@@ -39,18 +28,12 @@ impl INumberEncodeValue for EncodeValueByte {
 }
 
 pub(crate) struct EncodeValueShort(pub i16);
-impl EncodeValue for EncodeValueShort {
-    type Value = i16;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueShort {
     fn inner_build_annotation_union(
         &self,
         fbb: &mut FlatBufferBuilder,
     ) -> WIPOffset<UnionWIPOffset> {
-        let value = FBEncodeValueChar::create(fbb, &FBEncodeValueCharArgs { value: self.0 });
+        let value = FBEncodeValueShort::create(fbb, &FBEncodeValueShortArgs { value: self.0 });
         value.as_union_value()
     }
 }
@@ -61,20 +44,14 @@ impl INumberEncodeValue for EncodeValueShort {
 }
 
 pub(crate) struct EncodeValueChar(pub char);
-impl EncodeValue for EncodeValueChar {
-    type Value = char;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueChar {
     fn inner_build_annotation_union(
         &self,
         fbb: &mut FlatBufferBuilder,
     ) -> WIPOffset<UnionWIPOffset> {
-        let value = FBEncodeValueShort::create(
+        let value = FBEncodeValueChar::create(
             fbb,
-            &FBEncodeValueShortArgs {
+            &FBEncodeValueCharArgs {
                 value: self.0 as i16,
             },
         );
@@ -88,12 +65,6 @@ impl INumberEncodeValue for EncodeValueChar {
 }
 
 pub(crate) struct EncodeValueInt(pub i32);
-impl EncodeValue for EncodeValueInt {
-    type Value = i32;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueInt {
     fn inner_build_annotation_union(
         &self,
@@ -110,12 +81,6 @@ impl INumberEncodeValue for EncodeValueInt {
 }
 
 pub(crate) struct EncodeValueLong(pub i64);
-impl EncodeValue for EncodeValueLong {
-    type Value = i64;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueLong {
     fn inner_build_annotation_union(
         &self,
@@ -132,12 +97,6 @@ impl INumberEncodeValue for EncodeValueLong {
 }
 
 pub(crate) struct EncodeValueFloat(pub f32);
-impl EncodeValue for EncodeValueFloat {
-    type Value = f32;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueFloat {
     fn inner_build_annotation_union(
         &self,
@@ -154,12 +113,6 @@ impl INumberEncodeValue for EncodeValueFloat {
 }
 
 pub(crate) struct EncodeValueDouble(pub f64);
-impl EncodeValue for EncodeValueDouble {
-    type Value = f64;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueDouble {
     fn inner_build_annotation_union(
         &self,
@@ -176,20 +129,8 @@ impl INumberEncodeValue for EncodeValueDouble {
 }
 
 pub(crate) struct EncodeValueString(pub String);
-impl EncodeValue for EncodeValueString {
-    type Value = String;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 
 pub(crate) struct EncodeValueNull;
-impl EncodeValue for EncodeValueNull {
-    type Value = ();
-    fn value(&self) -> &Self::Value {
-        &()
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueNull {
     fn inner_build_annotation_union(
         &self,
@@ -201,12 +142,6 @@ impl IAnnotationEncodeValue for EncodeValueNull {
 }
 
 pub(crate) struct EncodeValueBoolean(pub bool);
-impl EncodeValue for EncodeValueBoolean {
-    type Value = bool;
-    fn value(&self) -> &Self::Value {
-        &self.0
-    }
-}
 impl IAnnotationEncodeValue for EncodeValueBoolean {
     fn inner_build_annotation_union(
         &self,

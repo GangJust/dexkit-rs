@@ -5,8 +5,9 @@ use crate::query::base::{BaseQuery, IAnnotationEncodeValue};
 use crate::query::enums::AnnotationEncodeValueType;
 use crate::query::matchers::{
     AnnotationEncodeArrayMatcher, AnnotationMatcher, ClassMatcher, EncodeValueBoolean,
-    EncodeValueByte, EncodeValueDouble, EncodeValueFloat, EncodeValueInt, EncodeValueLong,
-    EncodeValueNull, EncodeValueShort, FieldMatcher, MethodMatcher, StringMatcher,
+    EncodeValueByte, EncodeValueChar, EncodeValueDouble, EncodeValueFloat, EncodeValueInt,
+    EncodeValueLong, EncodeValueNull, EncodeValueShort, FieldMatcher, MethodMatcher,
+    StringMatcher,
 };
 
 pub struct AnnotationEncodeValueMatcher {
@@ -61,6 +62,13 @@ impl AnnotationEncodeValueMatcher {
         Self {
             value: Some(Box::new(EncodeValueShort(short))),
             value_type: Some(AnnotationEncodeValueType::ShortValue),
+        }
+    }
+
+    pub fn char(value: char) -> Self {
+        Self {
+            value: Some(Box::new(EncodeValueChar(value))),
+            value_type: Some(AnnotationEncodeValueType::CharValue),
         }
     }
 

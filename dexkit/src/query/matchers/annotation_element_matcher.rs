@@ -81,6 +81,11 @@ impl AnnotationElementMatcher {
         self
     }
 
+    pub fn char_value(mut self, value: char) -> Self {
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::char(value));
+        self
+    }
+
     pub fn int_value(mut self, value: i32) -> Self {
         self.value_matcher = Some(AnnotationEncodeValueMatcher::int(value));
         self

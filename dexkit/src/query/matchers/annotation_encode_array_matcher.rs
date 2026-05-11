@@ -120,6 +120,11 @@ impl AnnotationEncodeArrayMatcher {
         self
     }
 
+    pub fn char_value(mut self, value: char) -> Self {
+        self = self.add_value(AnnotationEncodeValueMatcher::char(value));
+        self
+    }
+
     pub fn int_value(mut self, value: i32) -> Self {
         self = self.add_value(AnnotationEncodeValueMatcher::int(value));
         self
