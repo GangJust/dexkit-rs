@@ -50,7 +50,9 @@ impl StringMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
+impl StringMatcher {
     pub fn contains<S>(value: S) -> Self
     where
         S: Into<String>,
@@ -72,8 +74,9 @@ impl StringMatcher {
             ignore_case: false,
         }
     }
+}
 
-    // base
+impl StringMatcher {
     pub fn value<S>(mut self, value: S) -> Self
     where
         S: Into<String>,

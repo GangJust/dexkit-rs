@@ -21,7 +21,7 @@ pub struct AnnotationMatcher {
 
 impl Default for AnnotationMatcher {
     fn default() -> Self {
-        AnnotationMatcher {
+        Self {
             type_matcher: None,
             target_element_types_matcher: None,
             using_strings_matcher: None,
@@ -74,8 +74,9 @@ impl AnnotationMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
+impl AnnotationMatcher {
     pub fn annotation_type(mut self, matcher: ClassMatcher) -> Self {
         self.type_matcher = Some(matcher);
         self
@@ -86,8 +87,11 @@ impl AnnotationMatcher {
         self
     }
 
-    pub fn using_strings(mut self, matcher: Vec<StringMatcher>) -> Self {
-        self.using_strings_matcher = Some(matcher);
+    pub fn using_strings<I>(mut self, matcher: I) -> Self
+    where
+        I: IntoIterator<Item = StringMatcher>,
+    {
+        self.using_strings_matcher = Some(matcher.into_iter().collect());
         self
     }
 
@@ -100,35 +104,20 @@ impl AnnotationMatcher {
         self.elements_matcher = Some(matcher);
         self
     }
+}
 
-    // extend type_matcher
-    pub fn type_name_contains<S>(mut self, class_name: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.type_matcher =
-            Some(ClassMatcher::new().class_name(StringMatcher::contains(class_name)));
+impl AnnotationMatcher {
+    pub fn add_using_string(mut self, matcher: StringMatcher) -> Self {
+        if let Some(ref mut vec) = self.using_strings_matcher {
+            vec.push(matcher);
+        } else {
+            self.using_strings_matcher = Some(vec![matcher]);
+        }
         self
     }
+}
 
-    pub fn type_name_equals<S>(mut self, class_name: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.type_matcher = Some(ClassMatcher::new().class_name(StringMatcher::equals(class_name)));
-        self
-    }
-
-    // extend add_element_matcher
-    pub fn element(mut self, matcher: AnnotationElementMatcher) -> Self {
-        self.elements_matcher = Some(
-            self.elements_matcher
-                .unwrap_or_else(AnnotationElementsMatcher::new)
-                .element(matcher),
-        );
-        self
-    }
-
+impl AnnotationMatcher {
     pub fn element_count(mut self, count: u32) -> Self {
         self.elements_matcher = Some(
             self.elements_matcher
@@ -162,77 +151,6 @@ impl AnnotationMatcher {
                 .unwrap_or_else(AnnotationElementsMatcher::new)
                 .count_max(max),
         );
-        self
-    }
-
-    // extend using_strings_matcher
-    pub fn extend_using_strings(mut self, matchers: Vec<StringMatcher>) -> Self {
-        if let Some(ref mut vec) = self.using_strings_matcher {
-            vec.extend(matchers);
-        } else {
-            self.using_strings_matcher = Some(matchers);
-        }
-        self
-    }
-
-    pub fn using_string(mut self, matcher: StringMatcher) -> Self {
-        if let Some(ref mut vec) = self.using_strings_matcher {
-            vec.push(matcher);
-        } else {
-            self.using_strings_matcher = Some(vec![matcher]);
-        }
-        self
-    }
-
-    pub fn using_string_contains_all<S>(mut self, ss: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<StringMatcher> = ss.into_iter().map(StringMatcher::contains).collect();
-        if let Some(ref mut vec) = self.using_strings_matcher {
-            vec.extend(matchers);
-        } else {
-            self.using_strings_matcher = Some(matchers);
-        }
-        self
-    }
-
-    pub fn using_string_equals_all<S>(mut self, ss: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<StringMatcher> = ss.into_iter().map(StringMatcher::equals).collect();
-        if let Some(ref mut vec) = self.using_strings_matcher {
-            vec.extend(matchers);
-        } else {
-            self.using_strings_matcher = Some(matchers);
-        }
-        self
-    }
-
-    pub fn using_string_contains<S>(mut self, s: S) -> Self
-    where
-        S: Into<String>,
-    {
-        let matcher = StringMatcher::contains(s);
-        if let Some(ref mut vec) = self.using_strings_matcher {
-            vec.push(matcher);
-        } else {
-            self.using_strings_matcher = Some(vec![matcher]);
-        }
-        self
-    }
-
-    pub fn using_string_equals<S>(mut self, s: S) -> Self
-    where
-        S: Into<String>,
-    {
-        let matcher = StringMatcher::equals(s);
-        if let Some(ref mut vec) = self.using_strings_matcher {
-            vec.push(matcher);
-        } else {
-            self.using_strings_matcher = Some(vec![matcher]);
-        }
         self
     }
 }

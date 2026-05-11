@@ -16,7 +16,7 @@ pub struct AnnotationElementMatcher {
 
 impl Default for AnnotationElementMatcher {
     fn default() -> Self {
-        AnnotationElementMatcher {
+        Self {
             name_matcher: None,
             value_matcher: None,
         }
@@ -56,8 +56,9 @@ impl AnnotationElementMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
+impl AnnotationElementMatcher {
     pub fn name(mut self, matcher: StringMatcher) -> Self {
         self.name_matcher = Some(matcher);
         self
@@ -67,8 +68,9 @@ impl AnnotationElementMatcher {
         self.value_matcher = Some(matcher);
         self
     }
+}
 
-    // extended methods
+impl AnnotationElementMatcher {
     pub fn byte_value(mut self, value: i8) -> Self {
         self.value_matcher = Some(AnnotationEncodeValueMatcher::byte(value));
         self
@@ -104,26 +106,6 @@ impl AnnotationElementMatcher {
         self
     }
 
-    pub fn string_value_contains<S>(mut self, value: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(
-            StringMatcher::contains(value.into()),
-        ));
-        self
-    }
-
-    pub fn string_value_equals<S>(mut self, value: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.value_matcher = Some(AnnotationEncodeValueMatcher::string(StringMatcher::equals(
-            value.into(),
-        )));
-        self
-    }
-
     pub fn class_value(mut self, value: ClassMatcher) -> Self {
         self.value_matcher = Some(AnnotationEncodeValueMatcher::class(value));
         self
@@ -135,8 +117,7 @@ impl AnnotationElementMatcher {
     }
 
     pub fn enum_value(mut self, value: FieldMatcher) -> Self {
-        let enum_matcher = AnnotationEncodeValueMatcher::enum_value(value);
-        self.value_matcher = Some(enum_matcher);
+        self.value_matcher = Some(AnnotationEncodeValueMatcher::enum_value(value));
         self
     }
 

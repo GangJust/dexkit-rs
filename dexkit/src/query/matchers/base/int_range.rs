@@ -41,8 +41,9 @@ impl IntRange {
             max: count,
         }
     }
+}
 
-    // base
+impl IntRange {
     pub fn min(mut self, min: u32) -> Self {
         self.min = min;
         self
@@ -52,8 +53,9 @@ impl IntRange {
         self.max = max;
         self
     }
+}
 
-    // extend
+impl IntRange {
     pub fn exactly(count: u32) -> Self {
         Self::from_value(count)
     }

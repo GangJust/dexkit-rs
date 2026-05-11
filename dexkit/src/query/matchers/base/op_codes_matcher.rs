@@ -42,3 +42,58 @@ impl<'a> BaseQuery<'a, WIPOffset<FBOpCodesMatcher<'a>>> for OpCodesMatcher {
         )
     }
 }
+
+impl OpCodesMatcher {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl OpCodesMatcher {
+    pub fn op_codes<I>(mut self, op_codes: I) -> Self
+    where
+        I: IntoIterator<Item = i16>,
+    {
+        self.op_codes = Some(op_codes.into_iter().collect());
+        self
+    }
+
+    pub fn match_type(mut self, match_type: OpCodeMatchType) -> Self {
+        self.match_type = match_type;
+        self
+    }
+
+    pub fn range(mut self, range: IntRange) -> Self {
+        self.range_matcher = Some(range);
+        self
+    }
+}
+
+impl OpCodesMatcher {
+    pub fn add_op_code(mut self, op_code: i16) -> Self {
+        self.op_codes.get_or_insert_with(Vec::new).push(op_code);
+        self
+    }
+}
+
+impl OpCodesMatcher {
+    pub fn count(mut self, count: u32) -> Self {
+        self.range_matcher = Some(IntRange::exactly(count));
+        self
+    }
+
+    pub fn count_range(mut self, min: u32, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::range(min, max));
+        self
+    }
+
+    pub fn count_min(mut self, min: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_least(min));
+        self
+    }
+
+    pub fn count_max(mut self, max: u32) -> Self {
+        self.range_matcher = Some(IntRange::at_most(max));
+        self
+    }
+}

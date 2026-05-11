@@ -1,4 +1,4 @@
-use dexkit::query::matchers::{ClassMatcher, MethodMatcher};
+use dexkit::query::matchers::{ClassMatcher, MethodMatcher, StringMatcher};
 use dexkit::query::{FindClass, FindMethod};
 use dexkit::{DexkitBridge, Error};
 use std::path::Path;
@@ -25,7 +25,8 @@ fn main() -> Result<(), Error> {
 
 fn do_search(bridge: DexkitBridge) {
     let class_data_list = bridge.find_class(FindClass::new().matcher(
-        ClassMatcher::new().class_name_equals("io.github.cargo.ndk.plugin.MainActivity"),
+        ClassMatcher::new()
+            .class_name(StringMatcher::equals("io.github.cargo.ndk.plugin.MainActivity")),
     ));
     println!("\nCLASS:");
     for class_data in class_data_list.iter() {
@@ -35,7 +36,7 @@ fn do_search(bridge: DexkitBridge) {
     }
 
     let method_data_list = class_data_list.find_method(
-        FindMethod::new().matcher(MethodMatcher::new().name_contains("test")),
+        FindMethod::new().matcher(MethodMatcher::new().name(StringMatcher::contains("test"))),
     );
     println!("\nMETHOD:");
     for method_data in method_data_list.iter() {

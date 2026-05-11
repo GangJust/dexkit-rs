@@ -56,8 +56,9 @@ impl StringMatchersGroup {
             string_matchers: Vec::new(),
         }
     }
+}
 
-    // base
+impl StringMatchersGroup {
     pub fn group_name<S>(mut self, name: S) -> Self
     where
         S: Into<String>,
@@ -66,48 +67,18 @@ impl StringMatchersGroup {
         self
     }
 
-    pub fn string_matchers(mut self, matchers: Vec<StringMatcher>) -> Self {
-        self.string_matchers = matchers;
+    pub fn string_matchers<I>(mut self, matchers: I) -> Self
+    where
+        I: IntoIterator<Item = StringMatcher>,
+    {
+        self.string_matchers = matchers.into_iter().collect();
         self
     }
+}
 
-    // extend string_matchers
-    pub fn string_matcher(mut self, matcher: StringMatcher) -> Self {
+impl StringMatchersGroup {
+    pub fn add_string_matcher(mut self, matcher: StringMatcher) -> Self {
         self.string_matchers.push(matcher);
-        self
-    }
-
-    pub fn contains_strings<S>(mut self, strings: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        self.string_matchers
-            .extend(strings.into_iter().map(StringMatcher::contains));
-        self
-    }
-
-    pub fn contains_string<S>(mut self, string: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.string_matchers.push(StringMatcher::contains(string));
-        self
-    }
-
-    pub fn equals_strings<S>(mut self, strings: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        self.string_matchers
-            .extend(strings.into_iter().map(StringMatcher::equals));
-        self
-    }
-
-    pub fn equals_string<S>(mut self, string: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.string_matchers.push(StringMatcher::equals(string));
         self
     }
 }

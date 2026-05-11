@@ -48,10 +48,14 @@ impl InterfacesMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn interfaces(mut self, matchers: Vec<ClassMatcher>) -> Self {
-        self.interface_matcher = Some(matchers);
+impl InterfacesMatcher {
+    pub fn interfaces<I>(mut self, matchers: I) -> Self
+    where
+        I: IntoIterator<Item = ClassMatcher>,
+    {
+        self.interface_matcher = Some(matchers.into_iter().collect());
         self
     }
 
@@ -64,60 +68,18 @@ impl InterfacesMatcher {
         self.range_matcher = Some(range);
         self
     }
+}
 
-    // extend interface_name_matcher
-    pub fn extend_interfaces(mut self, matchers: Vec<ClassMatcher>) -> Self {
-        self.interface_matcher
-            .get_or_insert_with(Vec::new)
-            .extend(matchers);
-        self
-    }
-
-    pub fn interface(mut self, matcher: ClassMatcher) -> Self {
+impl InterfacesMatcher {
+    pub fn add_interface(mut self, matcher: ClassMatcher) -> Self {
         self.interface_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);
         self
     }
+}
 
-    pub fn interface_names<S>(mut self, names: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<ClassMatcher> = names
-            .into_iter()
-            .map(|name| ClassMatcher::new().class_name_equals(name))
-            .collect();
-        self.interface_matcher = Some(matchers);
-        self
-    }
-
-    pub fn extend_interface_names<S>(mut self, names: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<ClassMatcher> = names
-            .into_iter()
-            .map(|name| ClassMatcher::new().class_name_equals(name))
-            .collect();
-        self.interface_matcher
-            .get_or_insert_with(Vec::new)
-            .extend(matchers);
-        self
-    }
-
-    pub fn interface_name<S>(mut self, name: S) -> Self
-    where
-        S: Into<String>,
-    {
-        let matcher = ClassMatcher::new().class_name_equals(name);
-        self.interface_matcher
-            .get_or_insert_with(Vec::new)
-            .push(matcher);
-        self
-    }
-
-    // extend range_matcher
+impl InterfacesMatcher {
     pub fn count(mut self, count: u32) -> Self {
         self.range_matcher = Some(IntRange::exactly(count));
         self

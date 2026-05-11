@@ -50,10 +50,14 @@ impl AnnotationElementsMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn elements(mut self, matcher: Vec<AnnotationElementMatcher>) -> Self {
-        self.elements_matcher = Some(matcher);
+impl AnnotationElementsMatcher {
+    pub fn elements<I>(mut self, matchers: I) -> Self
+    where
+        I: IntoIterator<Item = AnnotationElementMatcher>,
+    {
+        self.elements_matcher = Some(matchers.into_iter().collect());
         self
     }
 
@@ -66,18 +70,18 @@ impl AnnotationElementsMatcher {
         self.range_matcher = Some(range);
         self
     }
+}
 
-    // extend elements_matcher
-    pub fn element(mut self, matcher: AnnotationElementMatcher) -> Self {
-        if let Some(ref mut vec) = self.elements_matcher {
-            vec.push(matcher);
-        } else {
-            self.elements_matcher = Some(vec![matcher]);
-        }
+impl AnnotationElementsMatcher {
+    pub fn add_element(mut self, matcher: AnnotationElementMatcher) -> Self {
+        self.elements_matcher
+            .get_or_insert_with(Vec::new)
+            .push(matcher);
         self
     }
+}
 
-    // extend range_matcher
+impl AnnotationElementsMatcher {
     pub fn count(mut self, count: u32) -> Self {
         self.range_matcher = Some(IntRange::exactly(count));
         self

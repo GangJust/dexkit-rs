@@ -45,10 +45,14 @@ impl TargetElementTypesMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn types(mut self, types: Vec<TargetElementType>) -> Self {
-        self.types = Some(types);
+impl TargetElementTypesMatcher {
+    pub fn types<I>(mut self, types: I) -> Self
+    where
+        I: IntoIterator<Item = TargetElementType>,
+    {
+        self.types = Some(types.into_iter().collect());
         self
     }
 
@@ -56,9 +60,10 @@ impl TargetElementTypesMatcher {
         self.match_type = match_type;
         self
     }
+}
 
-    // extend types
-    pub fn target_element_type(mut self, element_type: TargetElementType) -> Self {
+impl TargetElementTypesMatcher {
+    pub fn add_target_element_type(mut self, element_type: TargetElementType) -> Self {
         if let Some(types) = &mut self.types {
             types.push(element_type);
         } else {

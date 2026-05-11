@@ -80,18 +80,21 @@ impl BatchFindClassUsingStrings {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn search_packages<S>(mut self, packages: Vec<S>) -> Self
+impl BatchFindClassUsingStrings {
+    pub fn search_packages<I, S>(mut self, packages: I) -> Self
     where
+        I: IntoIterator<Item = S>,
         S: Into<String>,
     {
         self.search_packages = Some(packages.into_iter().map(|s| s.into()).collect());
         self
     }
 
-    pub fn exclude_packages<S>(mut self, packages: Vec<S>) -> Self
+    pub fn exclude_packages<I, S>(mut self, packages: I) -> Self
     where
+        I: IntoIterator<Item = S>,
         S: Into<String>,
     {
         self.exclude_packages = Some(packages.into_iter().map(|s| s.into()).collect());
@@ -103,21 +106,25 @@ impl BatchFindClassUsingStrings {
         self
     }
 
-    pub fn search_classes<V>(mut self, classes: V) -> Self
+    pub fn search_classes<I>(mut self, classes: I) -> Self
     where
-        V: Into<Vec<ClassData>>,
+        I: IntoIterator<Item = ClassData>,
     {
-        self.search_classes = Some(classes.into());
+        self.search_classes = Some(classes.into_iter().collect());
         self
     }
 
-    pub fn groups(mut self, groups: Vec<StringMatchersGroup>) -> Self {
-        self.search_groups = Some(groups);
+    pub fn groups<I>(mut self, groups: I) -> Self
+    where
+        I: IntoIterator<Item = StringMatchersGroup>,
+    {
+        self.search_groups = Some(groups.into_iter().collect());
         self
     }
+}
 
-    // extend search_packages
-    pub fn search_package<S>(mut self, package: S) -> Self
+impl BatchFindClassUsingStrings {
+    pub fn add_search_package<S>(mut self, package: S) -> Self
     where
         S: Into<String>,
     {
@@ -126,9 +133,10 @@ impl BatchFindClassUsingStrings {
             .push(package.into());
         self
     }
+}
 
-    // extend exclude_packages
-    pub fn exclude_package<S>(mut self, package: S) -> Self
+impl BatchFindClassUsingStrings {
+    pub fn add_exclude_package<S>(mut self, package: S) -> Self
     where
         S: Into<String>,
     {
@@ -137,15 +145,17 @@ impl BatchFindClassUsingStrings {
             .push(package.into());
         self
     }
+}
 
-    // extend search_classes
-    pub fn search_class(mut self, class: ClassData) -> Self {
+impl BatchFindClassUsingStrings {
+    pub fn add_search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }
+}
 
-    // extend groups
-    pub fn group(mut self, group: StringMatchersGroup) -> Self {
+impl BatchFindClassUsingStrings {
+    pub fn add_group(mut self, group: StringMatchersGroup) -> Self {
         self.search_groups.get_or_insert_with(Vec::new).push(group);
         self
     }

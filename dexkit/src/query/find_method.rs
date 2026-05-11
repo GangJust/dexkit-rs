@@ -87,18 +87,21 @@ impl FindMethod {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn search_packages<S>(mut self, packages: Vec<S>) -> Self
+impl FindMethod {
+    pub fn search_packages<I, S>(mut self, packages: I) -> Self
     where
+        I: IntoIterator<Item = S>,
         S: Into<String>,
     {
         self.search_packages = Some(packages.into_iter().map(Into::into).collect());
         self
     }
 
-    pub fn exclude_packages<S>(mut self, packages: Vec<S>) -> Self
+    pub fn exclude_packages<I, S>(mut self, packages: I) -> Self
     where
+        I: IntoIterator<Item = S>,
         S: Into<String>,
     {
         self.exclude_packages = Some(packages.into_iter().map(Into::into).collect());
@@ -110,19 +113,19 @@ impl FindMethod {
         self
     }
 
-    pub fn search_classes<V>(mut self, classes: V) -> Self
+    pub fn search_classes<I>(mut self, classes: I) -> Self
     where
-        V: Into<Vec<ClassData>>,
+        I: IntoIterator<Item = ClassData>,
     {
-        self.search_classes = Some(classes.into());
+        self.search_classes = Some(classes.into_iter().collect());
         self
     }
 
-    pub fn search_methods<V>(mut self, methods: V) -> Self
+    pub fn search_methods<I>(mut self, methods: I) -> Self
     where
-        V: Into<Vec<MethodData>>,
+        I: IntoIterator<Item = MethodData>,
     {
-        self.search_methods = Some(methods.into());
+        self.search_methods = Some(methods.into_iter().collect());
         self
     }
 
@@ -135,9 +138,10 @@ impl FindMethod {
         self.matcher = Some(matcher);
         self
     }
+}
 
-    // extend search_packages
-    pub fn search_package<S>(mut self, package: S) -> Self
+impl FindMethod {
+    pub fn add_search_package<S>(mut self, package: S) -> Self
     where
         S: Into<String>,
     {
@@ -146,9 +150,10 @@ impl FindMethod {
             .push(package.into());
         self
     }
+}
 
-    // extend exclude_packages
-    pub fn exclude_package<S>(mut self, package: S) -> Self
+impl FindMethod {
+    pub fn add_exclude_package<S>(mut self, package: S) -> Self
     where
         S: Into<String>,
     {
@@ -157,15 +162,17 @@ impl FindMethod {
             .push(package.into());
         self
     }
+}
 
-    // extend search_classes
-    pub fn search_class(mut self, class: ClassData) -> Self {
+impl FindMethod {
+    pub fn add_search_class(mut self, class: ClassData) -> Self {
         self.search_classes.get_or_insert_with(Vec::new).push(class);
         self
     }
+}
 
-    // extend search_fields
-    pub fn search_method(mut self, method: MethodData) -> Self {
+impl FindMethod {
+    pub fn add_search_method(mut self, method: MethodData) -> Self {
         self.search_methods
             .get_or_insert_with(Vec::new)
             .push(method);

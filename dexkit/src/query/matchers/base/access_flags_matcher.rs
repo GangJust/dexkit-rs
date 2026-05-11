@@ -40,8 +40,9 @@ impl AccessFlagsMatcher {
             match_type,
         }
     }
+}
 
-    // base
+impl AccessFlagsMatcher {
     pub fn modifiers(mut self, modifiers: u32) -> Self {
         self.modifiers = modifiers;
         self
@@ -51,8 +52,9 @@ impl AccessFlagsMatcher {
         self.match_type = match_type;
         self
     }
+}
 
-    // extend modifiers
+impl AccessFlagsMatcher {
     pub fn or_modifiers(mut self, modifiers: u32) -> Self {
         self.modifiers |= modifiers;
         self

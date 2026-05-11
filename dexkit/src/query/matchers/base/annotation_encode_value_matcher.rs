@@ -16,14 +16,13 @@ pub struct AnnotationEncodeValueMatcher {
 
 impl Default for AnnotationEncodeValueMatcher {
     fn default() -> Self {
-        AnnotationEncodeValueMatcher {
+        Self {
             value: None,
             value_type: None,
         }
     }
 }
 
-// marker..
 impl<'a> BaseQuery<'a, Option<WIPOffset<UnionWIPOffset>>> for AnnotationEncodeValueMatcher {
     fn inner_build(&self, fbb: &mut FlatBufferBuilder<'a>) -> Option<WIPOffset<UnionWIPOffset>> {
         if let Some(value) = &self.value {
@@ -34,7 +33,6 @@ impl<'a> BaseQuery<'a, Option<WIPOffset<UnionWIPOffset>>> for AnnotationEncodeVa
     }
 }
 
-// marker..
 impl From<&AnnotationEncodeValueMatcher> for FBAnnotationEncodeValueMatcher {
     fn from(matcher: &AnnotationEncodeValueMatcher) -> Self {
         if let Some(value_type) = matcher.value_type {
@@ -46,11 +44,12 @@ impl From<&AnnotationEncodeValueMatcher> for FBAnnotationEncodeValueMatcher {
 }
 
 impl AnnotationEncodeValueMatcher {
-    // create
     pub fn new() -> Self {
         Self::default()
     }
+}
 
+impl AnnotationEncodeValueMatcher {
     pub fn byte(byte: i8) -> Self {
         Self {
             value: Some(Box::new(EncodeValueByte(byte))),
@@ -148,8 +147,9 @@ impl AnnotationEncodeValueMatcher {
             value_type: Some(AnnotationEncodeValueType::BoolValue),
         }
     }
+}
 
-    // base
+impl AnnotationEncodeValueMatcher {
     pub(crate) fn set_value(mut self, value: Box<dyn IAnnotationEncodeValue>) -> Self {
         self.value = Some(value);
         self
@@ -158,25 +158,5 @@ impl AnnotationEncodeValueMatcher {
     pub fn value_type(mut self, value_type: AnnotationEncodeValueType) -> Self {
         self.value_type = Some(value_type);
         self
-    }
-
-    // extend value
-    pub fn string_contains<S>(value: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            value: Some(Box::new(StringMatcher::contains(value))),
-            value_type: Some(AnnotationEncodeValueType::StringValue),
-        }
-    }
-    pub fn string_equals<S>(value: S) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            value: Some(Box::new(StringMatcher::equals(value))),
-            value_type: Some(AnnotationEncodeValueType::StringValue),
-        }
     }
 }

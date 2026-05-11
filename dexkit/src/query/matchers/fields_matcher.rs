@@ -47,17 +47,14 @@ impl FieldsMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn fields(mut self, matchers: Vec<FieldMatcher>) -> Self {
-        self.fields_matcher = Some(matchers);
-        self
-    }
-
-    pub fn field(mut self, matcher: FieldMatcher) -> Self {
-        self.fields_matcher
-            .get_or_insert_with(Vec::new)
-            .push(matcher);
+impl FieldsMatcher {
+    pub fn fields<I>(mut self, matchers: I) -> Self
+    where
+        I: IntoIterator<Item = FieldMatcher>,
+    {
+        self.fields_matcher = Some(matchers.into_iter().collect());
         self
     }
 
@@ -70,50 +67,18 @@ impl FieldsMatcher {
         self.range_matcher = Some(range);
         self
     }
+}
 
-    // extend fields_matcher
-    pub fn field_names<S>(mut self, field_names: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<FieldMatcher> = field_names
-            .into_iter()
-            .map(|name| FieldMatcher::new().name_contains(name))
-            .collect();
-        self.fields_matcher = Some(matchers);
-        self
-    }
-
-    pub fn extend_field_names<S>(mut self, field_names: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<FieldMatcher> = field_names
-            .into_iter()
-            .map(|name| FieldMatcher::new().name_contains(name))
-            .collect();
-        if self.fields_matcher.is_none() {
-            self.fields_matcher = Some(matchers);
-        } else {
-            self.fields_matcher
-                .as_mut()
-                .unwrap()
-                .extend(matchers.into_iter());
-        }
-        self
-    }
-
-    pub fn field_name<S>(mut self, field_name: S) -> Self
-    where
-        S: Into<String>,
-    {
+impl FieldsMatcher {
+    pub fn add_field(mut self, matcher: FieldMatcher) -> Self {
         self.fields_matcher
             .get_or_insert_with(Vec::new)
-            .push(FieldMatcher::new().name_contains(field_name));
+            .push(matcher);
         self
     }
+}
 
-    // extend range_matcher
+impl FieldsMatcher {
     pub fn count(mut self, count: u32) -> Self {
         self.range_matcher = Some(IntRange::exactly(count));
         self

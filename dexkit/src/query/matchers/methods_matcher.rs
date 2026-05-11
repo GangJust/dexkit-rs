@@ -45,10 +45,14 @@ impl MethodsMatcher {
     pub fn new() -> Self {
         MethodsMatcher::default()
     }
+}
 
-    // base
-    pub fn methods(mut self, matchers: Vec<MethodMatcher>) -> Self {
-        self.methods_matcher = Some(matchers);
+impl MethodsMatcher {
+    pub fn methods<I>(mut self, matchers: I) -> Self
+    where
+        I: IntoIterator<Item = MethodMatcher>,
+    {
+        self.methods_matcher = Some(matchers.into_iter().collect());
         self
     }
 
@@ -61,34 +65,18 @@ impl MethodsMatcher {
         self.range_matcher = Some(range);
         self
     }
+}
 
-    // extend methods_matcher
-    pub fn method(mut self, matcher: MethodMatcher) -> Self {
+impl MethodsMatcher {
+    pub fn add_method(mut self, matcher: MethodMatcher) -> Self {
         self.methods_matcher
             .get_or_insert_with(Vec::new)
             .push(matcher);
         self
     }
+}
 
-    pub fn method_names<S>(self, method_name: Vec<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        let matchers: Vec<MethodMatcher> = method_name
-            .into_iter()
-            .map(|name| MethodMatcher::new().name_contains(name))
-            .collect();
-        self.methods(matchers)
-    }
-
-    pub fn method_name<S>(self, method_name: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.method(MethodMatcher::new().name_contains(method_name))
-    }
-
-    // extend range_matcher
+impl MethodsMatcher {
     pub fn count(mut self, count: u32) -> Self {
         self.range_matcher = Some(IntRange::exactly(count));
         self

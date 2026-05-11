@@ -36,12 +36,13 @@ impl<'a> BaseQuery<'a, WIPOffset<FBParameterMatcher<'a>>> for ParameterMatcher {
     }
 }
 
-impl<'a> ParameterMatcher {
+impl ParameterMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
+impl ParameterMatcher {
     pub fn annotations(mut self, matcher: AnnotationsMatcher) -> Self {
         self.annotations_matcher = Some(matcher);
         self
@@ -51,7 +52,4 @@ impl<'a> ParameterMatcher {
         self.type_matcher = Some(matcher);
         self
     }
-
-    // extend
-    // todo!
 }

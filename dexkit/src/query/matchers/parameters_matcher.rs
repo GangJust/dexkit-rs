@@ -51,10 +51,14 @@ impl ParametersMatcher {
     pub fn new() -> Self {
         Self::default()
     }
+}
 
-    // base
-    pub fn params(mut self, params: Vec<Option<ParameterMatcher>>) -> Self {
-        self.params_matcher = Some(params);
+impl ParametersMatcher {
+    pub fn params<I>(mut self, params: I) -> Self
+    where
+        I: IntoIterator<Item = Option<ParameterMatcher>>,
+    {
+        self.params_matcher = Some(params.into_iter().collect());
         self
     }
 
@@ -62,27 +66,18 @@ impl ParametersMatcher {
         self.range_matcher = Some(range);
         self
     }
+}
 
-    // extend params_matcher
-    pub fn extend_params(mut self, params: Vec<Option<ParameterMatcher>>) -> Self {
-        if let Some(ref mut existing_params) = self.params_matcher {
-            existing_params.extend(params);
-        } else {
-            self.params_matcher = Some(params);
-        }
+impl ParametersMatcher {
+    pub fn add_param(mut self, param: Option<ParameterMatcher>) -> Self {
+        self.params_matcher
+            .get_or_insert_with(Vec::new)
+            .push(param);
         self
     }
+}
 
-    pub fn param(mut self, param: Option<ParameterMatcher>) -> Self {
-        if let Some(ref mut params) = self.params_matcher {
-            params.push(param);
-        } else {
-            self.params_matcher = Some(vec![param]);
-        }
-        self
-    }
-
-    // extend range_matcher
+impl ParametersMatcher {
     pub fn count(mut self, count: u32) -> Self {
         self.range_matcher = Some(IntRange::exactly(count));
         self

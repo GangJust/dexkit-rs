@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use android_logcat::Log;
 use dexkit::{
     Error,
-    query::{matchers::StringMatchersGroup, BatchFindMethodUsingStrings},
+    query::{matchers::{StringMatcher, StringMatchersGroup}, BatchFindMethodUsingStrings},
     DexkitBridge,
 };
 use jni::{
@@ -41,7 +41,10 @@ fn do_search(apk_path: String) -> Result<(), Error> {
 
     let result = bridge.batch_find_method_using_strings(
         BatchFindMethodUsingStrings::new()
-            .group(StringMatchersGroup::new("group1").contains_string("John")),
+            .add_group(
+                StringMatchersGroup::new("group1")
+                    .add_string_matcher(StringMatcher::contains("John")),
+            ),
     );
 
     Log::d(format!("Result: {:#?}", result));
